@@ -1,0 +1,40 @@
+# generated using pymatgen
+data_Sr3NdCrCoO8
+_symmetry_space_group_name_H-M   'P 1'
+_cell_length_a   5.48555613
+_cell_length_b   5.41290665
+_cell_length_c   6.74837542
+_cell_angle_alpha   89.80346680
+_cell_angle_beta   114.00442505
+_cell_angle_gamma   89.68520355
+_symmetry_Int_Tables_number   1
+_chemical_formula_structural   Sr3NdCrCoO8
+_chemical_formula_sum   'Sr3 Nd1 Cr1 Co1 O8'
+_cell_volume   183.04200122
+_cell_formula_units_Z   1
+loop_
+ _symmetry_equiv_pos_site_id
+ _symmetry_equiv_pos_as_xyz
+  1  'x, y, z'
+loop_
+ _atom_site_type_symbol
+ _atom_site_label
+ _atom_site_symmetry_multiplicity
+ _atom_site_fract_x
+ _atom_site_fract_y
+ _atom_site_fract_z
+ _atom_site_occupancy
+  Sr  Sr0  1  0.01260936  0.68035913  0.83376575  1
+  Sr  Sr1  1  0.51436841  0.13346510  0.86591947  1
+  Sr  Sr2  1  0.19951805  0.70542085  0.41086161  1
+  Nd  Nd3  1  0.63861883  0.22440660  0.41778725  1
+  Cr  Cr4  1  0.53077036  0.65811193  0.98422980  1
+  Co  Co5  1  0.96536732  0.13056137  0.17461145  1
+  O  O6  1  0.14544728  0.05050076  0.56917846  1
+  O  O7  1  0.69151998  0.78761029  0.49185342  1
+  O  O8  1  0.57239234  0.58899373  0.80310023  1
+  O  O9  1  0.23706478  0.40790185  0.01332041  1
+  O  O10  1  0.31088191  0.93225610  0.13663076  1
+  O  O11  1  0.78984016  0.41870654  0.17199413  1
+  O  O12  1  0.25781879  0.39609158  0.46529818  1
+  O  O13  1  0.79282326  0.92127246  0.13402860  1

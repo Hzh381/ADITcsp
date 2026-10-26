@@ -1,0 +1,45 @@
+# generated using pymatgen
+data_Ba2NdDyTi2Cu2O11
+_symmetry_space_group_name_H-M   'P 1'
+_cell_length_a   3.98907042
+_cell_length_b   4.00361729
+_cell_length_c   16.28388596
+_cell_angle_alpha   89.31983185
+_cell_angle_beta   89.59397888
+_cell_angle_gamma   89.88690186
+_symmetry_Int_Tables_number   1
+_chemical_formula_structural   Ba2NdDyTi2Cu2O11
+_chemical_formula_sum   'Ba2 Nd1 Dy1 Ti2 Cu2 O11'
+_cell_volume   260.03992258
+_cell_formula_units_Z   1
+loop_
+ _symmetry_equiv_pos_site_id
+ _symmetry_equiv_pos_as_xyz
+  1  'x, y, z'
+loop_
+ _atom_site_type_symbol
+ _atom_site_label
+ _atom_site_symmetry_multiplicity
+ _atom_site_fract_x
+ _atom_site_fract_y
+ _atom_site_fract_z
+ _atom_site_occupancy
+  Ba  Ba0  1  0.51160407  0.53934956  0.27133867  1
+  Ba  Ba1  1  0.53193223  0.53651166  0.74407554  1
+  Nd  Nd2  1  0.53621423  0.51585412  -0.02613740  1
+  Dy  Dy3  1  0.54000914  0.54613817  0.50071573  1
+  Ti  Ti4  1  0.00064822  -0.00267126  0.10870415  1
+  Ti  Ti5  1  -0.02529949  0.02425641  0.88638818  1
+  Cu  Cu6  1  0.00841573  0.01518726  0.42070752  1
+  Cu  Cu7  1  0.00630400  0.02426312  0.62592077  1
+  O  O8  1  -0.00461626  0.00467759  0.25413558  1
+  O  O9  1  -0.01954665  0.01653834  0.76639950  1
+  O  O10  1  0.01721568  0.52067894  0.10419931  1
+  O  O11  1  0.00007565  0.53336924  0.89809304  1
+  O  O12  1  0.54366189  0.00761693  0.10234714  1
+  O  O13  1  0.53631115  0.00458652  0.89985979  1
+  O  O14  1  0.01084367  -0.03078692  0.05528132  1
+  O  O15  1  0.01491391  0.51927179  0.40528029  1
+  O  O16  1  0.00683571  0.51499981  0.59290373  1
+  O  O17  1  0.53510630  -0.00362152  0.41797799  1
+  O  O18  1  0.53130656  -0.00146542  0.59606797  1

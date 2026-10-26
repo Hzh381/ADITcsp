@@ -1,0 +1,11 @@
+{
+  "vae_checkpoint": "D:\\code\\workspace_pythoncode\\thesisprojector\\all-atom-diffusion-transformer\\data\\checkpoints\\vae.ckpt",
+  "ldm_checkpoint": "D:\\code\\workspace_pythoncode\\thesisprojector\\all-atom-diffusion-transformer\\data\\checkpoints\\ldm.ckpt",
+  "split_manifest": "D:\\code\\workspace_pythoncode\\thesisprojector\\all-atom-diffusion-transformer\\experiment\\hilo_signal\\data\\splits\\mp20_atoms_4_20_seed0.json",
+  "test_count": 100,
+  "stage": "all",
+  "seed": 9,
+  "num_timesteps": 250,
+  "cfg_scale": 4.0,
+  "generation_batch_size": 5
+}

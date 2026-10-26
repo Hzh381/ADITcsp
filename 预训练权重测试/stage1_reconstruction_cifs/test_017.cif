@@ -1,0 +1,42 @@
+# generated using pymatgen
+data_Zr4NbGa3
+_symmetry_space_group_name_H-M   'P 1'
+_cell_length_a   5.44493628
+_cell_length_b   7.68842745
+_cell_length_c   8.73257446
+_cell_angle_alpha   82.70450592
+_cell_angle_beta   71.15946960
+_cell_angle_gamma   68.53213501
+_symmetry_Int_Tables_number   1
+_chemical_formula_structural   Zr4NbGa3
+_chemical_formula_sum   'Zr8 Nb2 Ga6'
+_cell_volume   321.96533254
+_cell_formula_units_Z   2
+loop_
+ _symmetry_equiv_pos_site_id
+ _symmetry_equiv_pos_as_xyz
+  1  'x, y, z'
+loop_
+ _atom_site_type_symbol
+ _atom_site_label
+ _atom_site_symmetry_multiplicity
+ _atom_site_fract_x
+ _atom_site_fract_y
+ _atom_site_fract_z
+ _atom_site_occupancy
+  Zr  Zr0  1  0.29226780  0.31007850  0.17461768  1
+  Zr  Zr1  1  0.71216518  0.68815839  0.86559314  1
+  Zr  Zr2  1  0.22959282  0.85468698  0.73110151  1
+  Zr  Zr3  1  0.77345544  0.15981981  0.30285785  1
+  Zr  Zr4  1  0.43548042  0.86231184  0.31194326  1
+  Zr  Zr5  1  0.57621306  0.14803642  0.69380045  1
+  Zr  Zr6  1  0.91891038  0.29770958  0.83918768  1
+  Zr  Zr7  1  0.08895699  0.69583344  0.14566648  1
+  Nb  Nb8  1  0.75711322  0.52744579  0.51011598  1
+  Nb  Nb9  1  0.27226925  0.51129621  0.54800820  1
+  Ga  Ga10  1  0.83852863  0.82730228  0.49230874  1
+  Ga  Ga11  1  0.15866391  0.16806656  0.52112281  1
+  Ga  Ga12  1  0.65905190  0.50894129  0.19903399  1
+  Ga  Ga13  1  0.34160781  0.50052118  0.82743156  1
+  Ga  Ga14  1  0.26766166  0.98766214  0.01899414  1
+  Ga  Ga15  1  0.75147301  0.98262489  0.95741606  1

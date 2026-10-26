@@ -1,0 +1,42 @@
+# generated using pymatgen
+data_ErSiPd2
+_symmetry_space_group_name_H-M   'P 1'
+_cell_length_a   5.78295851
+_cell_length_b   6.59822989
+_cell_length_c   7.22130251
+_cell_angle_alpha   89.56229401
+_cell_angle_beta   90.64614105
+_cell_angle_gamma   89.89180756
+_symmetry_Int_Tables_number   1
+_chemical_formula_structural   ErSiPd2
+_chemical_formula_sum   'Er4 Si4 Pd8'
+_cell_volume   275.51923302
+_cell_formula_units_Z   4
+loop_
+ _symmetry_equiv_pos_site_id
+ _symmetry_equiv_pos_as_xyz
+  1  'x, y, z'
+loop_
+ _atom_site_type_symbol
+ _atom_site_label
+ _atom_site_symmetry_multiplicity
+ _atom_site_fract_x
+ _atom_site_fract_y
+ _atom_site_fract_z
+ _atom_site_occupancy
+  Er  Er0  1  0.36188936  0.13700214  0.61604029  1
+  Er  Er1  1  0.05696589  0.65633941  0.58034885  1
+  Er  Er2  1  0.84308797  0.66799617  0.05618727  1
+  Er  Er3  1  0.58383757  0.17313245  0.08950538  1
+  Si  Si4  1  1.00834680  0.13967729  0.93978012  1
+  Si  Si5  1  0.38345557  0.64642632  0.20203443  1
+  Si  Si6  1  0.53507566  0.65328145  0.77025515  1
+  Si  Si7  1  0.86658782  0.14495572  0.44865274  1
+  Pd  Pd8  1  0.13971627  0.95274472  0.26401240  1
+  Pd  Pd9  1  0.76975536  0.92067283  0.76225197  1
+  Pd  Pd10  1  0.27528411  0.88258177  0.91858602  1
+  Pd  Pd11  1  0.61120915  0.46845314  0.42914653  1
+  Pd  Pd12  1  0.58458948  0.84306216  0.40393117  1
+  Pd  Pd13  1  0.79295653  0.36525929  0.77574325  1
+  Pd  Pd14  1  0.12251169  0.36009443  0.27168363  1
+  Pd  Pd15  1  0.28410736  0.42516944  0.90110135  1

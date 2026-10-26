@@ -1,0 +1,38 @@
+# generated using pymatgen
+data_SrMgSn
+_symmetry_space_group_name_H-M   'P 1'
+_cell_length_a   4.90124798
+_cell_length_b   8.31729507
+_cell_length_c   8.84621048
+_cell_angle_alpha   90.34851074
+_cell_angle_beta   89.92726898
+_cell_angle_gamma   89.22514343
+_symmetry_Int_Tables_number   1
+_chemical_formula_structural   SrMgSn
+_chemical_formula_sum   'Sr4 Mg4 Sn4'
+_cell_volume   360.57690521
+_cell_formula_units_Z   4
+loop_
+ _symmetry_equiv_pos_site_id
+ _symmetry_equiv_pos_as_xyz
+  1  'x, y, z'
+loop_
+ _atom_site_type_symbol
+ _atom_site_label
+ _atom_site_symmetry_multiplicity
+ _atom_site_fract_x
+ _atom_site_fract_y
+ _atom_site_fract_z
+ _atom_site_occupancy
+  Sr  Sr0  1  0.77497733  0.99597454  0.80835384  1
+  Sr  Sr1  1  0.24618618  0.53055245  0.34136215  1
+  Sr  Sr2  1  0.20725639  0.01575821  0.22973382  1
+  Sr  Sr3  1  0.73888469  0.49518341  0.68393064  1
+  Mg  Mg4  1  0.74664468  0.36210412  0.07406434  1
+  Mg  Mg5  1  0.24264231  0.64008957  0.93333125  1
+  Mg  Mg6  1  0.76667339  0.87357789  0.44335479  1
+  Mg  Mg7  1  0.21812677  0.13922918  0.57208824  1
+  Sn  Sn8  1  0.25322562  0.77860022  0.59393668  1
+  Sn  Sn9  1  0.23794112  0.27994215  0.86567050  1
+  Sn  Sn10  1  0.74496436  0.72641361  0.12674096  1
+  Sn  Sn11  1  0.73425734  0.23633975  0.39276052  1

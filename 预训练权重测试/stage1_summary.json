@@ -1,0 +1,23 @@
+{
+  "checkpoint": "D:\\code\\workspace_pythoncode\\thesisprojector\\all-atom-diffusion-transformer\\data\\checkpoints\\vae.ckpt",
+  "checkpoint_epoch": 999,
+  "checkpoint_global_step": 138000,
+  "num_test_structures": 100,
+  "cartesian_rmse_angstrom": 6.016539729919307,
+  "cartesian_mae_angstrom": 5.0117087125778195,
+  "fractional_rmse": 0.02142200309360638,
+  "fractional_mae": 0.017045370736159384,
+  "lattice_length_rmse_angstrom": 0.2184169888318592,
+  "lattice_length_mae_angstrom": 0.19255810086615383,
+  "lattice_angle_rmse_degrees": 3.1932608131971647,
+  "lattice_angle_mae_degrees": 2.81712469288148,
+  "atom_type_accuracy_percent": 100.0,
+  "composition_valid_rate_percent": 92.0,
+  "structure_valid_rate_percent": 100.0,
+  "total_valid_rate_percent": 92.0,
+  "match_rate_percent": 86.0,
+  "normalized_rms_matched_only": 0.06915773261229569,
+  "posterior_protocol": "deterministic posterior mean",
+  "metric_note": "Paired reconstruction metrics use predicted and ground-truth arrays in the original test coordinate frame. No rotation alignment is applied.",
+  "cartesian_metric_note": "The pretrained MP20 loss has loss_pos=0, so the raw Cartesian pos head is not directly supervised. Use fractional-coordinate and lattice errors, validity, and match rate for structural quality."
+}

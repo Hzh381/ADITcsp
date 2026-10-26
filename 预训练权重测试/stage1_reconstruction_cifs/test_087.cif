@@ -1,0 +1,40 @@
+# generated using pymatgen
+data_ZrTiCuS4
+_symmetry_space_group_name_H-M   'P 1'
+_cell_length_a   6.77479124
+_cell_length_b   6.75911093
+_cell_length_c   7.63612127
+_cell_angle_alpha   65.61715698
+_cell_angle_beta   65.79128265
+_cell_angle_gamma   60.64077759
+_symmetry_Int_Tables_number   1
+_chemical_formula_structural   ZrTiCuS4
+_chemical_formula_sum   'Zr2 Ti2 Cu2 S8'
+_cell_volume   267.91156019
+_cell_formula_units_Z   2
+loop_
+ _symmetry_equiv_pos_site_id
+ _symmetry_equiv_pos_as_xyz
+  1  'x, y, z'
+loop_
+ _atom_site_type_symbol
+ _atom_site_label
+ _atom_site_symmetry_multiplicity
+ _atom_site_fract_x
+ _atom_site_fract_y
+ _atom_site_fract_z
+ _atom_site_occupancy
+  Zr  Zr0  1  0.03691316  0.02692974  0.06977076  1
+  Zr  Zr1  1  0.02949364  0.54562789  0.53676593  1
+  Ti  Ti2  1  0.53034908  0.52258795  0.01509603  1
+  Ti  Ti3  1  0.00090045  0.53753763  0.97768253  1
+  Cu  Cu4  1  0.61563712  0.12200031  0.61519957  1
+  Cu  Cu5  1  0.35637647  0.91994941  0.38993484  1
+  S  S6  1  0.22477558  0.26383489  0.78980255  1
+  S  S7  1  0.73318315  0.26439381  0.77657586  1
+  S  S8  1  0.73736542  0.76085889  0.77655280  1
+  S  S9  1  0.74008757  0.28376043  0.26590216  1
+  S  S10  1  0.74368775  0.77994281  0.27029893  1
+  S  S11  1  0.24423835  0.79033458  0.26819950  1
+  S  S12  1  0.23304522  0.28578448  0.27016956  1
+  S  S13  1  0.23174746  0.77944630  0.82079959  1

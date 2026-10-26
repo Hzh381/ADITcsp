@@ -1,0 +1,36 @@
+# generated using pymatgen
+data_BaN3Cl
+_symmetry_space_group_name_H-M   'P 1'
+_cell_length_a   4.90255547
+_cell_length_b   5.72635698
+_cell_length_c   7.67305422
+_cell_angle_alpha   100.82589722
+_cell_angle_beta   92.41505432
+_cell_angle_gamma   90.66773224
+_symmetry_Int_Tables_number   1
+_chemical_formula_structural   BaN3Cl
+_chemical_formula_sum   'Ba2 N6 Cl2'
+_cell_volume   211.34790136
+_cell_formula_units_Z   2
+loop_
+ _symmetry_equiv_pos_site_id
+ _symmetry_equiv_pos_as_xyz
+  1  'x, y, z'
+loop_
+ _atom_site_type_symbol
+ _atom_site_label
+ _atom_site_symmetry_multiplicity
+ _atom_site_fract_x
+ _atom_site_fract_y
+ _atom_site_fract_z
+ _atom_site_occupancy
+  Ba  Ba0  1  0.73726410  0.31857747  0.26991224  1
+  Ba  Ba1  1  0.23973878  0.70167971  0.78189158  1
+  N  N2  1  0.23887968  0.64578485  0.39771214  1
+  N  N3  1  0.75404108  0.94111037  0.64749980  1
+  N  N4  1  0.24369061  0.86666346  0.37120643  1
+  N  N5  1  0.21328846  0.02677257  0.36432824  1
+  N  N6  1  0.74774528  0.14114217  0.62675095  1
+  N  N7  1  0.74843442  0.35079485  0.61599702  1
+  Cl  Cl8  1  0.74396569  0.77617753  0.05865923  1
+  Cl  Cl9  1  0.22264728  0.23674494  0.92613578  1

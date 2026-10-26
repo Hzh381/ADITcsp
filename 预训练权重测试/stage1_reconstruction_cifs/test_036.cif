@@ -1,0 +1,35 @@
+# generated using pymatgen
+data_TiGaNi
+_symmetry_space_group_name_H-M   'P 1'
+_cell_length_a   3.14389420
+_cell_length_b   6.80097294
+_cell_length_c   6.78292656
+_cell_angle_alpha   119.77343750
+_cell_angle_beta   90.38523102
+_cell_angle_gamma   90.68320465
+_symmetry_Int_Tables_number   1
+_chemical_formula_structural   TiGaNi
+_chemical_formula_sum   'Ti3 Ga3 Ni3'
+_cell_volume   125.86260544
+_cell_formula_units_Z   3
+loop_
+ _symmetry_equiv_pos_site_id
+ _symmetry_equiv_pos_as_xyz
+  1  'x, y, z'
+loop_
+ _atom_site_type_symbol
+ _atom_site_label
+ _atom_site_symmetry_multiplicity
+ _atom_site_fract_x
+ _atom_site_fract_y
+ _atom_site_fract_z
+ _atom_site_occupancy
+  Ti  Ti0  1  0.52026951  0.01113433  0.59960115  1
+  Ti  Ti1  1  0.52651674  0.60337311  0.98898888  1
+  Ti  Ti2  1  0.52393055  0.40875044  0.40832442  1
+  Ga  Ga3  1  -0.02831674  -0.01834458  0.28969061  1
+  Ga  Ga4  1  -0.00904461  0.28726298  0.94331461  1
+  Ga  Ga5  1  0.00968031  0.76733100  0.72385424  1
+  Ni  Ni6  1  0.50798273  0.01626474  0.03251491  1
+  Ni  Ni7  1  0.04381495  0.69459474  0.37168348  1
+  Ni  Ni8  1  0.02778384  0.34656331  0.68596792  1

@@ -1,0 +1,46 @@
+# generated using pymatgen
+data_SmCuO3
+_symmetry_space_group_name_H-M   'P 1'
+_cell_length_a   5.24056005
+_cell_length_b   6.67306280
+_cell_length_c   7.56442881
+_cell_angle_alpha   91.18534851
+_cell_angle_beta   91.45036316
+_cell_angle_gamma   90.72205353
+_symmetry_Int_Tables_number   1
+_chemical_formula_structural   SmCuO3
+_chemical_formula_sum   'Sm4 Cu4 O12'
+_cell_volume   264.36837196
+_cell_formula_units_Z   4
+loop_
+ _symmetry_equiv_pos_site_id
+ _symmetry_equiv_pos_as_xyz
+  1  'x, y, z'
+loop_
+ _atom_site_type_symbol
+ _atom_site_label
+ _atom_site_symmetry_multiplicity
+ _atom_site_fract_x
+ _atom_site_fract_y
+ _atom_site_fract_z
+ _atom_site_occupancy
+  Sm  Sm0  1  0.96773100  0.12486017  0.26933363  1
+  Sm  Sm1  1  0.49396673  0.40860280  0.74959528  1
+  Sm  Sm2  1  0.54609346  0.62916064  0.27352542  1
+  Sm  Sm3  1  0.05270736  0.92262000  0.76176512  1
+  Cu  Cu4  1  0.48031357  -0.00723788  0.00129185  1
+  Cu  Cu5  1  0.49260384  -0.01043315  0.51416475  1
+  Cu  Cu6  1  0.00513247  0.49653170  0.02674742  1
+  Cu  Cu7  1  -0.00010996  0.49524260  0.53134072  1
+  O  O8  1  0.60297632  0.02958214  0.74085647  1
+  O  O9  1  0.19398060  0.15724899  0.54627663  1
+  O  O10  1  0.19830188  0.15553415  0.91326725  1
+  O  O11  1  0.72355211  0.34432679  0.45349571  1
+  O  O12  1  0.71115345  0.35192630  0.05649789  1
+  O  O13  1  0.11320537  0.47202736  0.27179259  1
+  O  O14  1  0.89804614  0.54229099  0.74444652  1
+  O  O15  1  0.29870012  0.66213632  0.92162728  1
+  O  O16  1  0.29979730  0.65894341  0.55678117  1
+  O  O17  1  0.80039370  0.86141944  0.06443878  1
+  O  O18  1  0.80494171  0.85412252  0.45220545  1
+  O  O19  1  0.41411230  0.97398770  0.26781386  1

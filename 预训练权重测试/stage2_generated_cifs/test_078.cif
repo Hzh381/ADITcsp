@@ -1,0 +1,35 @@
+# generated using pymatgen
+data_Ni6AsP2
+_symmetry_space_group_name_H-M   'P 1'
+_cell_length_a   3.36731625
+_cell_length_b   5.77576399
+_cell_length_c   5.80302525
+_cell_angle_alpha   119.12134552
+_cell_angle_beta   90.19769287
+_cell_angle_gamma   90.19256592
+_symmetry_Int_Tables_number   1
+_chemical_formula_structural   Ni6AsP2
+_chemical_formula_sum   'Ni6 As1 P2'
+_cell_volume   98.59301129
+_cell_formula_units_Z   1
+loop_
+ _symmetry_equiv_pos_site_id
+ _symmetry_equiv_pos_as_xyz
+  1  'x, y, z'
+loop_
+ _atom_site_type_symbol
+ _atom_site_label
+ _atom_site_symmetry_multiplicity
+ _atom_site_fract_x
+ _atom_site_fract_y
+ _atom_site_fract_z
+ _atom_site_occupancy
+  Ni  Ni0  1  0.73578084  0.21760318  0.04747348  1
+  Ni  Ni1  1  0.73929334  0.58645427  0.89607871  1
+  Ni  Ni2  1  0.73885691  0.79198182  0.49216312  1
+  Ni  Ni3  1  0.25128421  0.91683090  0.20336233  1
+  Ni  Ni4  1  0.24965572  0.44963908  0.47637355  1
+  Ni  Ni5  1  0.26716489  0.19874960  0.73795623  1
+  P  P6  1  0.74458051  0.20486218  0.47306859  1
+  As  As7  1  0.25497210  0.87620240  0.81371367  1
+  P  P8  1  0.25477079  0.53600520  0.14439869  1

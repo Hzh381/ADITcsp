@@ -1,167 +1,216 @@
-# All-atom Diffusion Transformers
+# 基于 ADiT 的 Carbon-24 晶体结构预测
 
-[![arXiv](https://img.shields.io/badge/PDF-arXiv-blue)](https://www.arxiv.org/abs/2503.03965)
-[![Code](https://img.shields.io/badge/Code-GitHub-red)](https://github.com/facebookresearch/all-atom-diffusion-transformer/)
-[![Weights](https://img.shields.io/badge/Weights-HuggingFace-yellow)](https://huggingface.co/chaitjo/all-atom-diffusion-transformer)
-[![X](https://img.shields.io/badge/X_thread-@chaitjo-blue)](https://x.com/chaitjo/status/1899114667219304525)
-[![YouTube](https://img.shields.io/badge/Talk-YouTube-red)](https://www.youtube.com/watch?v=NiY4NLzemnU)
-[![Slides](https://img.shields.io/badge/Slides-chaitjo.com-green)](https://www.chaitjo.com/publication/joshi-2025-allatom/All_Atom_Diffusion_Transformers_Slides.pdf)
-<a target="_blank" href="https://colab.research.google.com/drive/1wHXsP0SHZ-Lx6Brgg-osuvTFrWw3M7oW?usp=sharing">
-  <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
-</a>
+本项目已精简为面向 Carbon-24 数据集的晶体结构预测（CSP）实验。模型接收
+目标成分，在潜空间中生成候选结构，再由 VAE 解码器输出原子类型、分数坐标
+和晶格参数。
 
+## 项目范围
 
-Code for the paper [*"All-atom Diffusion Transformers: Unified generative modelling of molecules and materials"*](https://www.arxiv.org/abs/2503.03965), by [Chaitanya K. Joshi](https://www.chaitjo.com/), [Xiang Fu](https://xiangfu.co/), [Yi-Lun Liao](https://www.linkedin.com/in/yilunliao), [Vahe Gharakhanyan](https://gvahe.github.io/), [Benjamin Kurt Miller](https://www.mathben.com/), [Anuroop Sriram*](https://anuroopsriram.com/), and [Zachary W. Ulissi*](https://zulissi.github.io/) from FAIR Chemistry at Meta, published at ICML 2025 (* Joint last author).
+- 数据集：Carbon-24，每个晶胞包含 6–24 个碳原子。
+- 数据划分：训练集 6,091 条、验证集 2,032 条、测试集 2,030 条。
+- 模型：成分条件 VAE + 潜空间流匹配 DiT。
+- 输入：100 维元素计数向量。Carbon-24 中仅碳元素计数 `C_n` 非零。
+- 输出：候选晶体结构、有效候选的 CIF 文件和 CSP 评价指标。
 
-All-atom Diffusion Transformers (ADiTs) jointly generate both periodic materials and non-periodic molecular systems using a unified latent diffusion framework:
-- An autoencoder maps a unified, all-atom representations of molecules and materials to a shared latent embedding space; and
-- A diffusion model is trained to generate new latent embeddings that the autoencoder can decode to sample new molecules or materials.
+原先的 QM9/MP20/QMOF 联合训练、Hydra 配置和旧评估入口已从当前支持范围
+中移除。
 
-![](ADiT.png)
+## 模型流程
 
-## Installation
+第一阶段训练 Transformer VAE。编码器接收原子类型、笛卡尔坐标、分数坐标
+和 token 位置，将其压缩为 8 维潜变量。解码器同时接收潜变量和目标成分，
+预测原子类型、分数坐标以及晶格长度和晶格角。训练损失包含原子类型损失、
+成分约束损失、几何重建损失和 KL 正则项。
 
-List of dependencies used is available as `requirements.txt`, exported with `pipreqs`.
-It may be possible that some ad-hoc dependencies are missing, in which case you can simply `pip install` them.
+第二阶段冻结 VAE，在 8 维潜空间中训练流匹配 DiT。DiT 使用目标成分作为
+条件，并通过无分类器引导（classifier-free guidance）控制条件强度。当前固定
+支持三种规模：
 
-```bash
-# clone project
-git clone https://github.com/facebookresearch/all-atom-diffusion-transformer
-cd all-atom-diffusion-transformer
+| 规模 | `d_model` | DiT 块数 | Attention 头数 |
+| --- | ---: | ---: | ---: |
+| `s` | 384 | 6 | 12 |
+| `b` | 768 | 12 | 12 |
+| `l` | 1024 | 16 | 24 |
 
-# create new python environment
-mamba create -n myenv python=3.10 -c defaults
-mamba activate myenv
+当前模型从编码器到解码器均支持成分条件。原项目在 QM9/MP20 上训练的联合
+模型权重与本版本的输入词表和条件结构不兼容，不能直接用于 Carbon-24 CSP。
 
-# install pytorch according to instructions (use CUDA version for your system)
-# https://pytorch.org/get-started/
-mamba install -y pytorch==2.3.1 torchvision==0.18.1 torchaudio==2.3.1 pytorch-cuda=12.1 -c pytorch -c nvidia -c defaults
+## 目录结构
 
-# install pytorch geometric (use CUDA version for your system)
-# https://pytorch-geometric.readthedocs.io/
-pip install torch_geometric
-pip install torch_scatter torch_cluster -f https://data.pyg.org/whl/torch-2.3.0+cu121.html
-
-# install other libraries (see requirements.txt for versions)
-pip install lightning==2.4.0 hydra-core==1.* hydra-colorlog
-mamba install -y ase==3.23.0  # individually installed due to dependency conflict
-mamba install -y matminer==0.9.2  # individually installed due to dependency conflict
-mamba install -y smact==2.6  # individually installed due to dependency conflict
-mamba install -y openbabel==3.1.1  # individually installed due to dependency conflict
-mamba install -y jupyterlab pandas seaborn joblib yaml -c conda-forge
-pip install pyxtal==0.6.7 mofchecker==0.9.6 rdkit==2024.3.5 e3nn==0.5.1 posebusters==0.3.1 download==0.3.5 ipdb wandb rootutils rich pathos p-tqdm einops svgwrite cairosvg reportlab lmdb torchdiffeq huggingface_hub
-
-# install pre-commit hooks (optional)
-pip install pre-commit
-pre-commit install
+```text
+data/carbon_24/                 train.csv、val.csv、test.csv、train_ori.pt、val_ori.pt
+src/
+  train_csp.py                  VAE 或 DiT 训练入口
+  test_csp.py                   候选结构采样、CIF 输出和 CSP 评价
+  data/
+    carbon24_datamodule.py
+    components/carbon24_dataset.py
+    components/cif.py
+    components/composition_utils.py
+  models/
+    vae_module.py               成分条件 VAE
+    ldm_module.py               潜空间采样与流匹配模块
+    encoders/transformer.py
+    decoders/transformer.py
+    denoisers/dit.py
+    interpolants/flow_matching.py
+  eval/
+    crystal.py
+    crystal_reconstruction.py
 ```
 
-## Usage
+以下目录被保留，因为其中包含已有实验、预训练权重测试结果或论文图件：
 
-Our codebase is built upon the [lightning-hydra template](https://github.com/ashleve/lightning-hydra-template/), who's README provides a general overview of usage.
+- `experiment/`
+- `experiment2/`
+- `预训练权重测试/`
+- `ccfa-workfiles/`
 
-**Datasets:**
+其中 `experiment/hilo_signal/` 是保留的 HiLo 对比实验，仍使用 MP20 兼容
+数据读取与预处理代码。
 
-All datasets will be downloaded and processed automatically when running the code for the first time via PyG/HuggingFace:
-- Small molecules: [QM9 on PyG](https://pytorch-geometric.readthedocs.io/en/latest/generated/torch_geometric.datasets.QM9.html) (also [on HuggingFace](https://huggingface.co/datasets/chaitjo/QM9_ADiT) for processed files) or [GEOM-DRUGS on HuggingFace](https://huggingface.co/datasets/chaitjo/GEOM-DRUGS_ADiT) (includes processed files)
-- Inorganic crystals: [MP20 on HuggingFace](https://huggingface.co/datasets/chaitjo/MP20_ADiT) (includes processed files)
-- Metal-organic frameworks: [QMOF150 on HuggingFace](https://huggingface.co/datasets/chaitjo/QMOF150_ADiT) (includes processed files)
+## 环境激活
 
-Downloading and processing all three datasets can take around 30 minutes, but only needs to happen one time.
-
-**Training and evaluating models:**
-
-Running training scripts for VAEs and DiTs will train the model as well as compute evaluation metrics during validation.
-Everything is logged to W&B and CIF/PDB files can also be optionally saved for visualization over the course of training.
-All our experiments were performed on V100 GPUs. We generally trained all models on 4 or 8 GPUs, and train till convergence or if we hit a time limit of 3 days per job on a SLURM cluster.
-
-**Step 0:** Set paths to data and logging directories in `configs/paths/default.yaml` and wandb entity/project in `configs/logging/wandb.yaml`.
-
-**Step 1:** Train a VAE model; example script: `slurm/train_ddp_vae.sh`. Key hyperparameters to be specified in `configs/autoencoder_module/vae.yaml` include:
-
-- Choice of encoder and decoder (pure Transformer, Equiformer)
-- Latent dimension (generally something small like 4/8 works well)
-- KL regularization loss weight (we use 0.0001/0.00001, higher weight leads to slower convergence)
-- Denoising objective corruption percentage (use 10%/25%)
-
-**Step 2:** Train a DiT model with (frozen) VAE as a component; example script: `slurm/train_ddp_diffusion.sh`. Key hyperparameters to be specified in `configs/diffusion_module/ldm.yaml` include:
-
-- DiT model scale (DiT-S: 30M, DiT-B: 150M, DiT-L: 450M; DiT-S works well enough)
-- Frozen VAE checkpoint path and latent dimension.
-
-**Step 4:** Evaluate trained DiT model for molecule and crystal generation by setting the checkpoint path in `configs/eval_diffusion.yaml` and running `src/eval_diffusion.py`.
-Note that evaluation is best done via wandb sweep (template: `configs/sweep/eval_sweep_template.yaml`) and example script: `slurm/sweep_gpu.sh`. The sweep template requires setting the path to the checkpoint of the DiT to be evaluated (as well as the corresponding VAE) and needs to be started on wandb. Once created, you will get the command to run the sweep based on its wandb id. You can then launch the sweep on your cluster via `slurm/sweep_gpu.sh`.
-
-**Model weights:**
-
-Model weights for ADiT trained jointly on QM9 and MP20 can be downloaded [on HuggingFace](https://huggingface.co/chaitjo/all-atom-diffusion-transformer). 
-Note that these checkpoints are the result of an independent reproduction of this research by Chaitanya K. Joshi, and may not correspond to the exact models/performance metrics reported in the final manuscript. These checkpoints can be used to run inference as described in Step 4 above.
-
-Here is a minimal notebook for loading an ADiT checkpoint and sampling some crystals or molecules: 
-<a target="_blank" href="https://colab.research.google.com/drive/1wHXsP0SHZ-Lx6Brgg-osuvTFrWw3M7oW?usp=sharing">
-  <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
-</a>
-
-Examples of 10,000 sampled crystals and molecules are also available on HuggingFace:
-- [Crystals as CIF files](https://huggingface.co/chaitjo/all-atom-diffusion-transformer/resolve/main/ADiT_crystals_mp20.zip) (MP20)
-- [Molecules as PDB files](https://huggingface.co/chaitjo/all-atom-diffusion-transformer/resolve/main/ADiT_molecules_qm9.zip) (QM9)
-- [Molecules as PDB files](https://huggingface.co/chaitjo/all-atom-diffusion-transformer/resolve/main/ADiT_molecules_geom.zip) (GEOM-DRUGS)
-
-## Project Structure
-
-```
-├── configs                             <- Hydra configs
-│   ├── autoencoder_module                <- VAE LitModule configs
-│   ├── callbacks                         <- Callbacks configs
-│   ├── data                              <- Data configs
-│   ├── encoder                           <- VAE encoder configs
-│   ├── decoder                           <- VAE decoder configs
-│   ├── diffusion_module                  <- Latent diffusion/DiT LitModule configs
-│   ├── extras                            <- Extra utilities configs
-│   ├── hydra                             <- Hydra configs
-│   ├── logger                            <- Logger configs (for W&B)
-│   ├── paths                             <- Project paths configs
-│   ├── trainer                           <- Trainer configs
-│   │
-│   ├── train_autoencoder.yaml          <- Main config for training VAEs
-│   ├── train_diffusion.yaml            <- Main config for training DiTs
-│   ├── eval_autoencoder.yaml           <- Main config for evaluating trained VAEs
-│   └── eval_diffusion.yaml             <- Main config for sampling from/evaluating trained DiTs
-|
-├── src                       <- Source code (same directory structure as configs)
-|
-├── slurm                     <- Example slurm scripts for launching training runs and experiments
-│
-├── data                      <- Datasets directory
-│
-├── .gitignore                <- List of files ignored by git
-├── .pre-commit-config.yaml   <- Configuration of pre-commit hooks for code formatting
-├── .project-root             <- File for inferring the position of project root directory
-├── CODE_OF_CONDUCT.md        <- Code of conduct to define community standards
-├── CONTRIBUTING              <- Guidelines for repository contributions
-├── LICENCE                   <- CC-BY-NC license file
-├── pyproject.toml            <- Configuration options for testing and linting
-├── requirements.txt          <- File for installing python dependencies
-|
-└── README.md
+```powershell
+conda activate adit
+$env:PYTHONUTF8 = "1"
+$env:PYTHONIOENCODING = "utf-8"
 ```
 
-## Citation
+完整环境说明见 [SETUP.md](SETUP.md)。
 
-Accepted as a conference paper at ICML 2025.
-Also presented as a [Spotlight talk](https://www.youtube.com/watch?v=NiY4NLzemnU) at ICLR 2025 AI for Accelerated Materials Design Workshop.
-ArXiv link: [*All-atom Diffusion Transformers: Unified generative modelling of molecules and materials*](https://www.arxiv.org/abs/2503.03965)
+## 第一阶段：训练 VAE
 
-```
-@inproceedings{joshi2025allatom,
-  title={All-atom Diffusion Transformers: Unified generative modelling of molecules and materials},
-  author={Chaitanya K. Joshi and Xiang Fu and Yi-Lun Liao and Vahe Gharakhanyan and Benjamin Kurt Miller and Anuroop Sriram and Zachary W. Ulissi},
-  booktitle={International Conference on Machine Learning},
-  year={2025},
-}
+```powershell
+python src/train_csp.py `
+  --stage vae `
+  --epochs 300 `
+  --batch-size 32 `
+  --output-dir runs/carbon24_vae
 ```
 
-## Licence
+在 NVIDIA GPU 机器上增加 `--device cuda`。本机默认使用 CPU。
 
-The majority of the All-atom Diffusion Transformers code is licenced under CC-BY-NC.
-Portions of the code are adapted from [ase-notebook](https://github.com/chrisjsewell/ase-notebook/) (MIT licence) and [equiformer-v2](https://github.com/atomicarchitects/equiformer_v2/) (MIT license).
+CPU 快速检查：
+
+```powershell
+python src/train_csp.py `
+  --stage vae `
+  --epochs 10 `
+  --limit-batches 1 `
+  --batch-size 2 `
+  --output-dir runs/smoke_vae
+```
+
+`--limit-batches 1` 表示每个 epoch 只运行一个训练 batch。验证固定每 10 个
+epoch 执行一次，因此上述命令会执行 10 次训练更新、1 个验证 batch，并生成
+按验证指标选择的 checkpoint。
+
+## 第二阶段：训练 DiT
+
+```powershell
+python src/train_csp.py `
+  --stage dit `
+  --vae-ckpt runs/carbon24_vae/checkpoints/last.ckpt `
+  --epochs 500 `
+  --batch-size 32 `
+  --dit-size s `
+  --output-dir runs/carbon24_dit
+```
+
+DiT 训练期间 VAE 保持冻结。`--dit-size` 可设为 `s`、`b` 或 `l`。
+
+主要 checkpoint：
+
+```text
+runs/carbon24_vae/checkpoints/last.ckpt
+runs/carbon24_dit/checkpoints/last.ckpt
+```
+
+## 测试 CSP
+
+```powershell
+python src/test_csp.py `
+  --ckpt runs/carbon24_dit/checkpoints/last.ckpt `
+  --vae-ckpt runs/carbon24_vae/checkpoints/last.ckpt `
+  --candidates 4 `
+  --limit 50 `
+  --device cpu `
+  --output runs/carbon24_test
+```
+
+`--limit 0` 表示评价完整的 2,030 条测试结构。输出文件为：
+
+```text
+runs/carbon24_test/summary.json
+runs/carbon24_test/per_target.json
+runs/carbon24_test/generated/*.cif
+```
+
+### 评价指标
+
+- `composition_match_rate`：所有候选中，元素计数与目标成分完全一致的候选
+  比例。
+- `composition_success_at_k`：至少有一个候选成分正确的目标比例。
+- `struct_valid_rate`：结构合法候选的比例。合法结构要求晶格参数有限且
+  为正、晶胞体积有效，并且任意两个原子间距离不小于 0.5 Å。
+- `overall_valid_rate`：同时满足成分正确和结构合法的候选比例。
+- `structure_match_at_k`：至少有一个候选被 StructureMatcher 匹配到目标
+  结构的比例。
+- `mean_best_rms`：每个目标的最佳有限 StructureMatcher RMSD 的均值。
+
+StructureMatcher 固定使用 `ltol=0.3`、`stol=0.5` 和 `angle_tol=10°`。
+
+快速验证检查点仅使用一个 batch 训练，其输出接近随机模型。对应指标只能
+证明训练、采样、CIF 导出和指标计算流程可运行，不能作为模型效果结论。
+
+## 训练命令参数
+
+`src/train_csp.py` 已移除大部分低频参数，常用参数如下：
+
+```text
+--stage vae|dit
+--epochs
+--batch-size
+--vae-ckpt          仅 DiT 阶段需要
+--dit-size s|b|l
+--device auto|cpu|cuda
+--output-dir
+--limit-batches     仅用于快速验证，0 表示使用全部 batch
+```
+
+其余训练设置固定在脚本中，以保持命令行简洁：
+
+| 设置 | 固定值 |
+| --- | --- |
+| VAE 学习率 | `1e-4` |
+| DiT 学习率 | `1e-4` |
+| 潜变量维度 | `8` |
+| 采样步数 | `100` |
+| CFG scale | `2.0` |
+| 验证间隔 | 每 10 个 epoch |
+| DataLoader workers | `0` |
+| 随机种子 | `0` |
+
+## 测试命令参数
+
+```text
+--ckpt
+--vae-ckpt
+--candidates
+--limit             0 表示评价全部 2,030 条测试结构
+--device cpu|cuda
+--output
+```
+
+## 已移除的旧入口
+
+Hydra 配置和以下旧入口已不再属于当前支持范围：
+
+- `train_autoencoder`
+- `train_diffusion`
+- `eval_autoencoder`
+- `eval_diffusion`
+- `eval_csp`
+
+现在统一使用 `src/train_csp.py` 和 `src/test_csp.py`。

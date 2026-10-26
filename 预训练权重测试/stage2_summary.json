@@ -1,0 +1,20 @@
+{
+  "ldm_checkpoint": "D:\\code\\workspace_pythoncode\\thesisprojector\\all-atom-diffusion-transformer\\data\\checkpoints\\ldm.ckpt",
+  "vae_checkpoint": "D:\\code\\workspace_pythoncode\\thesisprojector\\all-atom-diffusion-transformer\\data\\checkpoints\\vae.ckpt",
+  "ldm_checkpoint_epoch": 7249,
+  "ldm_checkpoint_global_step": 487502,
+  "seed": 9,
+  "num_timesteps": 250,
+  "cfg_scale": 4.0,
+  "conditioning": "MP20 dataset class + corresponding test atom count",
+  "num_generated_structures": 100,
+  "composition_valid_rate_percent": 84.0,
+  "structure_valid_rate_percent": 99.0,
+  "total_valid_rate_percent": 84.0,
+  "match_to_corresponding_test_reference_percent": 0.0,
+  "cartesian_rmse_angstrom": null,
+  "cartesian_mae_angstrom": null,
+  "fractional_rmse": null,
+  "fractional_mae": null,
+  "metric_note": "Stage 2 is unconditional generation conditioned only on atom count. Generated structures have no one-to-one ground-truth atom mapping, so paired RMSE/MAE are undefined. Match rate is a reference-hit rate against the corresponding test structure, not reconstruction accuracy."
+}

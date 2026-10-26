@@ -90,6 +90,10 @@ class TransformerDecoder(nn.Module):
         """
         x = encoded_batch["x"]
 
+        composition_embed = encoded_batch.get("composition_embed")
+        if composition_embed is not None:
+            x = x + composition_embed[encoded_batch["batch"]]
+
         # Positional embedding
         x += get_index_embedding(encoded_batch["token_idx"], self.d_model)
 

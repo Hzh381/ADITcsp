@@ -1,5 +1,6 @@
 """Copyright (c) Meta Platforms, Inc. and affiliates."""
 
+import os
 from typing import Iterable, Literal
 
 import tqdm
@@ -115,6 +116,12 @@ def joblib_map(
     total: int | None = None,
     backend: Literal["sequential", "loky", "threading", "multiprocessing"] = "loky",
 ) -> list:
+    # Windows + loky requires spawning processes, which can be blocked by
+    # restricted environments. Use the sequential path for local reliability.
+    if os.name == "nt" and backend == "loky" and n_jobs != 1:
+        backend = "sequential"
+        n_jobs = 1
+        inner_max_num_threads = None
     if backend != "loky" and inner_max_num_threads is not None:
         print(f"{backend=} does not support {inner_max_num_threads=}, setting to None.")
         inner_max_num_threads = None

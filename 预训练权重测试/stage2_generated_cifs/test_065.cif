@@ -1,0 +1,30 @@
+# generated using pymatgen
+data_LaErZn2
+_symmetry_space_group_name_H-M   'P 1'
+_cell_length_a   5.11166334
+_cell_length_b   5.09590101
+_cell_length_c   5.03027534
+_cell_angle_alpha   59.52844620
+_cell_angle_beta   60.10034561
+_cell_angle_gamma   59.08067322
+_symmetry_Int_Tables_number   1
+_chemical_formula_structural   LaErZn2
+_chemical_formula_sum   'La1 Er1 Zn2'
+_cell_volume   91.73221631
+_cell_formula_units_Z   1
+loop_
+ _symmetry_equiv_pos_site_id
+ _symmetry_equiv_pos_as_xyz
+  1  'x, y, z'
+loop_
+ _atom_site_type_symbol
+ _atom_site_label
+ _atom_site_symmetry_multiplicity
+ _atom_site_fract_x
+ _atom_site_fract_y
+ _atom_site_fract_z
+ _atom_site_occupancy
+  La  La0  1  -0.00681028  0.64490807  0.68858731  1
+  Er  Er1  1  0.49896652  0.19978243  0.12193809  1
+  Zn  Zn2  1  0.75014472  0.42491254  0.32668388  1
+  Zn  Zn3  1  0.20870455  0.92974550  0.90712953  1

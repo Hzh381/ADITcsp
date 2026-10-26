@@ -1,0 +1,38 @@
+# generated using pymatgen
+data_U2Te2PO
+_symmetry_space_group_name_H-M   'P 1'
+_cell_length_a   3.91040063
+_cell_length_b   3.92358375
+_cell_length_c   19.29314804
+_cell_angle_alpha   95.82096100
+_cell_angle_beta   95.80123138
+_cell_angle_gamma   90.14875031
+_symmetry_Int_Tables_number   1
+_chemical_formula_structural   U2Te2PO
+_chemical_formula_sum   'U4 Te4 P2 O2'
+_cell_volume   292.95140797
+_cell_formula_units_Z   2
+loop_
+ _symmetry_equiv_pos_site_id
+ _symmetry_equiv_pos_as_xyz
+  1  'x, y, z'
+loop_
+ _atom_site_type_symbol
+ _atom_site_label
+ _atom_site_symmetry_multiplicity
+ _atom_site_fract_x
+ _atom_site_fract_y
+ _atom_site_fract_z
+ _atom_site_occupancy
+  U  U0  1  0.71442199  0.71988302  0.43525699  1
+  U  U1  1  0.27916500  0.28462601  0.56474298  1
+  U  U2  1  0.97291601  0.05559500  0.90034503  1
+  U  U3  1  0.07257100  0.15525000  0.09965500  1
+  Te  Te4  1  0.82322401  0.83166599  0.65174901  1
+  Te  Te5  1  0.17147499  0.17991699  0.34825099  1
+  Te  Te6  1  0.60895699  0.69100499  0.17452399  1
+  Te  Te7  1  0.43443301  0.51648098  0.82547599  1
+  P  P8  1  0.02396000  0.60705298  0.00000000  1
+  P  P9  1  0.52232897  0.11272500  1.00000000  1
+  O  O10  1  0.74581897  0.25154501  0.49989000  1
+  O  O11  1  0.24592900  0.75165498  0.50010997  1

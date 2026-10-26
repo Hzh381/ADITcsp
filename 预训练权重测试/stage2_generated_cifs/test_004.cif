@@ -1,0 +1,38 @@
+# generated using pymatgen
+data_Rb2Ag(Te2Au)3
+_symmetry_space_group_name_H-M   'P 1'
+_cell_length_a   6.02958250
+_cell_length_b   8.55326462
+_cell_length_c   8.45913315
+_cell_angle_alpha   114.86765289
+_cell_angle_beta   90.18773651
+_cell_angle_gamma   91.90274048
+_symmetry_Int_Tables_number   1
+_chemical_formula_structural   Rb2Ag(Te2Au)3
+_chemical_formula_sum   'Rb2 Ag1 Te6 Au3'
+_cell_volume   395.52057277
+_cell_formula_units_Z   1
+loop_
+ _symmetry_equiv_pos_site_id
+ _symmetry_equiv_pos_as_xyz
+  1  'x, y, z'
+loop_
+ _atom_site_type_symbol
+ _atom_site_label
+ _atom_site_symmetry_multiplicity
+ _atom_site_fract_x
+ _atom_site_fract_y
+ _atom_site_fract_z
+ _atom_site_occupancy
+  Rb  Rb0  1  0.17685258  0.64555943  0.58329707  1
+  Rb  Rb1  1  0.70270264  0.92662156  0.22859579  1
+  Au  Au2  1  0.17398097  0.35598093  0.07031791  1
+  Au  Au3  1  0.98262572  0.16542953  0.78988463  1
+  Au  Au4  1  0.45819503  0.19554970  0.59782624  1
+  Ag  Ag5  1  0.67866206  0.36987436  0.89156818  1
+  Te  Te6  1  0.80435276  0.45105481  0.66853499  1
+  Te  Te7  1  0.57047325  0.90045428  0.72095287  1
+  Te  Te8  1  0.08923916  0.08346314  0.49558187  1
+  Te  Te9  1  0.01877691  0.70206153  0.98710257  1
+  Te  Te10  1  0.34207568  0.61243463  0.10854727  1
+  Te  Te11  1  0.55183291  0.33025226  0.29795367  1

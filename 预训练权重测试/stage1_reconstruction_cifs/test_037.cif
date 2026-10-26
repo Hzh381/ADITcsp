@@ -1,0 +1,38 @@
+# generated using pymatgen
+data_Ce2P2AuO
+_symmetry_space_group_name_H-M   'P 1'
+_cell_length_a   4.40257025
+_cell_length_b   7.76758766
+_cell_length_c   7.68976164
+_cell_angle_alpha   74.76874542
+_cell_angle_beta   72.90179443
+_cell_angle_gamma   74.29615021
+_symmetry_Int_Tables_number   1
+_chemical_formula_structural   Ce2P2AuO
+_chemical_formula_sum   'Ce4 P4 Au2 O2'
+_cell_volume   237.12378366
+_cell_formula_units_Z   2
+loop_
+ _symmetry_equiv_pos_site_id
+ _symmetry_equiv_pos_as_xyz
+  1  'x, y, z'
+loop_
+ _atom_site_type_symbol
+ _atom_site_label
+ _atom_site_symmetry_multiplicity
+ _atom_site_fract_x
+ _atom_site_fract_y
+ _atom_site_fract_z
+ _atom_site_occupancy
+  Ce  Ce0  1  0.87859201  0.95958400  0.33350509  1
+  Ce  Ce1  1  0.09152891  0.04517829  0.71857786  1
+  Ce  Ce2  1  0.84060943  0.62695754  0.75120819  1
+  Ce  Ce3  1  0.14423712  0.39510897  0.29106155  1
+  P  P4  1  0.47729880  0.64378178  0.46486703  1
+  P  P5  1  0.55692196  0.37484473  0.54170817  1
+  P  P6  1  0.83957160  0.29208145  0.07275175  1
+  P  P7  1  0.17281158  0.72433186  0.92293000  1
+  Au  Au8  1  0.58923417  0.70425403  0.14251477  1
+  Au  Au9  1  0.40581936  0.30808491  0.86698067  1
+  O  O10  1  0.75750661  0.94168568  0.64652085  1
+  O  O11  1  0.27706641  0.07910670  0.40393960  1

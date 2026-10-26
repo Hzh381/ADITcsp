@@ -108,6 +108,7 @@ class FlowMatchingInterpolant:
         x_1=None,
         token_mask=None,
         token_idx=None,
+        composition=None,
     ):
         """Generates new samples of a specified (B, N, d) using denoiser model.
 
@@ -163,7 +164,13 @@ class FlowMatchingInterpolant:
             # Run denoiser model
             with torch.no_grad():
                 pred_x_1 = model(
-                    x, t, dataset_idx, spacegroup, token_mask, x_sc
+                    x,
+                    t,
+                    dataset_idx,
+                    spacegroup,
+                    token_mask,
+                    x_sc,
+                    composition=composition,
                 )
 
             # Process model output
@@ -189,7 +196,13 @@ class FlowMatchingInterpolant:
         t = torch.ones((batch_size, 1), device=self.device) * t_1
         with torch.no_grad():
             pred_x_1 = model(
-                x, t, dataset_idx, spacegroup, token_mask, x_sc
+                x,
+                t,
+                dataset_idx,
+                spacegroup,
+                token_mask,
+                x_sc,
+                composition=composition,
             )
         clean_traj.append(pred_x_1)
         tokens_traj.append(pred_x_1)
@@ -210,6 +223,7 @@ class FlowMatchingInterpolant:
         x_1=None,
         token_mask=None,
         token_idx=None,
+        composition=None,
     ):
         """Generates new samples of a specified (B, N, d) using denoiser model with classifier-free
         guidance.
@@ -254,6 +268,9 @@ class FlowMatchingInterpolant:
         spacegroup_null = torch.zeros_like(spacegroup)
         spacegroup = torch.cat([spacegroup, spacegroup_null], dim=0)  # (2B, 1)
         token_mask = torch.cat([token_mask, token_mask], dim=0)  # (2B, N)
+        if composition is not None:
+            composition = composition.to(device=self.device, dtype=torch.float32)
+            composition = torch.cat([composition, torch.zeros_like(composition)], dim=0)
 
         # Set-up time
         if num_timesteps is None:
@@ -279,7 +296,14 @@ class FlowMatchingInterpolant:
             # Run denoiser model
             with torch.no_grad():
                 pred_x_1 = model.forward_with_cfg(
-                    x, t, dataset_idx, spacegroup, token_mask, cfg_scale, x_sc
+                    x,
+                    t,
+                    dataset_idx,
+                    spacegroup,
+                    token_mask,
+                    cfg_scale,
+                    x_sc,
+                    composition=composition,
                 )
 
             # Process model output
@@ -305,7 +329,14 @@ class FlowMatchingInterpolant:
         t = torch.ones((2 * batch_size, 1), device=self.device) * t_1
         with torch.no_grad():
             pred_x_1 = model.forward_with_cfg(
-                x, t, dataset_idx, spacegroup, token_mask, cfg_scale, x_sc
+                x,
+                t,
+                dataset_idx,
+                spacegroup,
+                token_mask,
+                cfg_scale,
+                x_sc,
+                composition=composition,
             )
         clean_traj.append(pred_x_1.chunk(2, dim=0)[0])  # Remove null class samples
         tokens_traj.append(pred_x_1)

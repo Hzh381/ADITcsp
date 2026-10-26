@@ -1,0 +1,36 @@
+# generated using pymatgen
+data_ErRe2SiC
+_symmetry_space_group_name_H-M   'P 1'
+_cell_length_a   3.96361113
+_cell_length_b   5.82121181
+_cell_length_c   7.08606195
+_cell_angle_alpha   90.34833527
+_cell_angle_beta   90.02050018
+_cell_angle_gamma   109.86799622
+_symmetry_Int_Tables_number   1
+_chemical_formula_structural   ErRe2SiC
+_chemical_formula_sum   'Er2 Re4 Si2 C2'
+_cell_volume   153.76185419
+_cell_formula_units_Z   2
+loop_
+ _symmetry_equiv_pos_site_id
+ _symmetry_equiv_pos_as_xyz
+  1  'x, y, z'
+loop_
+ _atom_site_type_symbol
+ _atom_site_label
+ _atom_site_symmetry_multiplicity
+ _atom_site_fract_x
+ _atom_site_fract_y
+ _atom_site_fract_z
+ _atom_site_occupancy
+  Er  Er0  1  0.47593084  0.95758486  0.82797664  1
+  Er  Er1  1  0.52270573  0.08407122  0.23888069  1
+  Re  Re2  1  0.15861222  0.31943178  0.97312498  1
+  Re  Re3  1  0.82921225  0.64226633  0.04425894  1
+  Re  Re4  1  0.83310336  0.64409411  0.42117047  1
+  Re  Re5  1  0.16149437  0.33247936  0.58090007  1
+  Si  Si6  1  0.75603890  0.45838594  0.77897108  1
+  Si  Si7  1  0.27461165  0.52040774  0.27061492  1
+  C  C8  1  -0.01490518  -0.06271844  0.06012907  1
+  C  C9  1  -0.03298855  -0.00739393  0.50307691  1

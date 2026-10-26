@@ -222,6 +222,8 @@ class DiT(nn.Module):
         class_dropout_prob=0.1,
         num_datasets=2,  # clf-free guidance input
         num_spacegroups=230,  # clf-free guidance input
+        composition_dim: int = 0,
+        composition_dropout_prob: float = 0.0,
     ):
         super().__init__()
         self.d_x = d_x
@@ -232,6 +234,15 @@ class DiT(nn.Module):
         self.t_embedder = TimestepEmbedder(d_model)
         self.dataset_embedder = LabelEmbedder(num_datasets, d_model, class_dropout_prob)
         self.spacegroup_embedder = LabelEmbedder(num_spacegroups, d_model, class_dropout_prob)
+        self.composition_dim = composition_dim
+        self.composition_dropout_prob = composition_dropout_prob
+        self.composition_embedder = None
+        if composition_dim > 0:
+            self.composition_embedder = nn.Sequential(
+                nn.Linear(composition_dim, d_model),
+                nn.SiLU(),
+                nn.Linear(d_model, d_model),
+            )
 
         self.blocks = nn.ModuleList(
             [DiTBlock(d_model, nhead, mlp_ratio=mlp_ratio) for _ in range(num_layers)]
@@ -252,6 +263,9 @@ class DiT(nn.Module):
         # Initialize label embedding table:
         nn.init.normal_(self.dataset_embedder.embedding_table.weight, std=0.02)
         nn.init.normal_(self.spacegroup_embedder.embedding_table.weight, std=0.02)
+        if self.composition_embedder is not None:
+            nn.init.normal_(self.composition_embedder[0].weight, std=0.02)
+            nn.init.normal_(self.composition_embedder[2].weight, std=0.02)
 
         # Initialize timestep embedding MLP:
         nn.init.normal_(self.t_embedder.mlp[0].weight, std=0.02)
@@ -268,7 +282,7 @@ class DiT(nn.Module):
         nn.init.constant_(self.final_layer.linear.weight, 0)
         nn.init.constant_(self.final_layer.linear.bias, 0)
 
-    def forward(self, x, t, dataset_idx, spacegroup, mask, x_sc=None):
+    def forward(self, x, t, dataset_idx, spacegroup, mask, x_sc=None, composition=None):
         """Forward pass of DiT.
 
         Args:
@@ -293,6 +307,19 @@ class DiT(nn.Module):
         d = self.dataset_embedder(dataset_idx, self.training)  # (B, d)
         s = self.spacegroup_embedder(spacegroup, self.training)  # (B, d)
         c = t + d + s  # (B, 1, d)
+        if self.composition_embedder is not None:
+            if composition is None:
+                composition = torch.zeros(
+                    x.size(0), self.composition_dim, device=x.device, dtype=x.dtype
+                )
+            composition = composition.to(device=x.device, dtype=x.dtype)
+            if self.training and self.composition_dropout_prob > 0.0:
+                drop = (
+                    torch.rand(composition.size(0), 1, device=composition.device)
+                    < self.composition_dropout_prob
+                )
+                composition = composition.masked_fill(drop, 0.0)
+            c = c + self.composition_embedder(composition)
 
         # Transformer blocks
         for block in self.blocks:
@@ -303,7 +330,17 @@ class DiT(nn.Module):
         x = x * mask[..., None]
         return x
 
-    def forward_with_cfg(self, x, t, dataset_idx, spacegroup, mask, cfg_scale, x_sc=None):
+    def forward_with_cfg(
+        self,
+        x,
+        t,
+        dataset_idx,
+        spacegroup,
+        mask,
+        cfg_scale,
+        x_sc=None,
+        composition=None,
+    ):
         """Forward pass of DiT, but also batches the unconditional forward pass for classifier-free
         guidance.
 
@@ -312,7 +349,15 @@ class DiT(nn.Module):
         """
         half_x = x[: len(x) // 2]
         combined_x = torch.cat([half_x, half_x], dim=0)
-        model_out = self.forward(combined_x, t, dataset_idx, spacegroup, mask, x_sc)
+        if (
+            self.composition_embedder is not None
+            and composition is not None
+            and composition.size(0) * 2 == x.size(0)
+        ):
+            composition = torch.cat([composition, torch.zeros_like(composition)], dim=0)
+        model_out = self.forward(
+            combined_x, t, dataset_idx, spacegroup, mask, x_sc, composition=composition
+        )
 
         cond_eps, uncond_eps = torch.split(model_out, len(model_out) // 2, dim=0)
         half_eps = uncond_eps + cfg_scale * (cond_eps - uncond_eps)

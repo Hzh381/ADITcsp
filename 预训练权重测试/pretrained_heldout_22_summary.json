@@ -1,0 +1,35 @@
+{
+  "num_structures_in_public_pretrained_test_range": 22,
+  "stage1_vae_reconstruction": {
+    "num_test_structures": 22,
+    "cartesian_rmse_angstrom": 5.71898711639237,
+    "cartesian_mae_angstrom": 4.842974912036549,
+    "fractional_rmse": 0.023187642766902824,
+    "fractional_mae": 0.018025927139784802,
+    "lattice_length_rmse_angstrom": 0.25586848062052464,
+    "lattice_length_mae_angstrom": 0.23626042584973303,
+    "lattice_angle_rmse_degrees": 3.925766241737871,
+    "lattice_angle_mae_degrees": 3.0810620195486327,
+    "atom_type_accuracy_percent": 100.0,
+    "composition_valid_rate_percent": 95.45454545454545,
+    "structure_valid_rate_percent": 100.0,
+    "total_valid_rate_percent": 95.45454545454545,
+    "match_rate_percent": 81.81818181818183,
+    "normalized_rms_matched_only": 0.07232087660326449,
+    "posterior_protocol": "deterministic posterior mean",
+    "metric_note": "Paired reconstruction metrics use predicted and ground-truth arrays in the original test coordinate frame. No rotation alignment is applied.",
+    "cartesian_metric_note": "The pretrained MP20 loss has loss_pos=0, so the raw Cartesian pos head is not directly supervised. Use fractional-coordinate and lattice errors, validity, and match rate for structural quality."
+  },
+  "stage2_ldm_generation": {
+    "num_generated_structures": 22,
+    "composition_valid_rate_percent": 77.27272727272727,
+    "structure_valid_rate_percent": 100.0,
+    "total_valid_rate_percent": 77.27272727272727,
+    "match_to_corresponding_test_reference_percent": 0.0,
+    "cartesian_rmse_angstrom": null,
+    "cartesian_mae_angstrom": null,
+    "fractional_rmse": null,
+    "fractional_mae": null,
+    "metric_note": "Stage 2 is unconditional generation conditioned only on atom count. Generated structures have no one-to-one ground-truth atom mapping, so paired RMSE/MAE are undefined. Match rate is a reference-hit rate against the corresponding test structure, not reconstruction accuracy."
+  }
+}

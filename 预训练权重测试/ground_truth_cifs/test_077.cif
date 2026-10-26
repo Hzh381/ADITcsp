@@ -1,0 +1,31 @@
+# generated using pymatgen
+data_CsSrCl3
+_symmetry_space_group_name_H-M   'P 1'
+_cell_length_a   5.72980356
+_cell_length_b   5.73028135
+_cell_length_c   5.73028135
+_cell_angle_alpha   89.84558868
+_cell_angle_beta   90.15806580
+_cell_angle_gamma   89.84193420
+_symmetry_Int_Tables_number   1
+_chemical_formula_structural   CsSrCl3
+_chemical_formula_sum   'Cs1 Sr1 Cl3'
+_cell_volume   188.14242343
+_cell_formula_units_Z   1
+loop_
+ _symmetry_equiv_pos_site_id
+ _symmetry_equiv_pos_as_xyz
+  1  'x, y, z'
+loop_
+ _atom_site_type_symbol
+ _atom_site_label
+ _atom_site_symmetry_multiplicity
+ _atom_site_fract_x
+ _atom_site_fract_y
+ _atom_site_fract_z
+ _atom_site_occupancy
+  Cs  Cs0  1  0.99582702  0.00198800  0.99801201  1
+  Sr  Sr1  1  0.48721901  0.50005299  0.49994701  1
+  Cl  Cl2  1  0.48280001  0.00011100  0.49576500  1
+  Cl  Cl3  1  0.98698300  0.49289301  0.50710702  1
+  Cl  Cl4  1  0.48280001  0.50423503  0.99988902  1

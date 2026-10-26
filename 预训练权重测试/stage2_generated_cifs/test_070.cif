@@ -1,0 +1,39 @@
+# generated using pymatgen
+data_Gd(InFe)6
+_symmetry_space_group_name_H-M   'P 1'
+_cell_length_a   5.51883364
+_cell_length_b   6.93364143
+_cell_length_c   6.96517086
+_cell_angle_alpha   81.43813324
+_cell_angle_beta   67.29498291
+_cell_angle_gamma   67.29181671
+_symmetry_Int_Tables_number   1
+_chemical_formula_structural   Gd(InFe)6
+_chemical_formula_sum   'Gd1 In6 Fe6'
+_cell_volume   226.81261273
+_cell_formula_units_Z   1
+loop_
+ _symmetry_equiv_pos_site_id
+ _symmetry_equiv_pos_as_xyz
+  1  'x, y, z'
+loop_
+ _atom_site_type_symbol
+ _atom_site_label
+ _atom_site_symmetry_multiplicity
+ _atom_site_fract_x
+ _atom_site_fract_y
+ _atom_site_fract_z
+ _atom_site_occupancy
+  Gd  Gd0  1  0.84405434  0.18414102  0.72821563  1
+  In  In1  1  0.46440107  0.54936314  0.29461434  1
+  In  In2  1  0.54427695  0.87357998  0.98474264  1
+  In  In3  1  0.88363338  0.53478050  0.31343973  1
+  In  In4  1  0.99569499  0.73813802  0.94526207  1
+  In  In5  1  0.20756757  0.36941105  0.50802624  1
+  In  In6  1  0.59359956  0.96678293  0.47878003  1
+  Fe  Fe7  1  0.90223390  0.19057088  0.13747387  1
+  Fe  Fe8  1  0.37447137  0.18145889  0.14153266  1
+  Fe  Fe9  1  0.42799404  0.70907485  0.69356167  1
+  Fe  Fe10  1  0.91203898  0.66839683  0.68160391  1
+  Fe  Fe11  1  0.44732660  0.46504059  0.93232578  1
+  Fe  Fe12  1  0.15996516  0.88068408  0.37220681  1

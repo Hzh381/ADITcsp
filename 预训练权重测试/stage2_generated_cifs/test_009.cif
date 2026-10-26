@@ -1,0 +1,36 @@
+# generated using pymatgen
+data_Ba2LiUO6
+_symmetry_space_group_name_H-M   'P 1'
+_cell_length_a   5.90871429
+_cell_length_b   5.91814518
+_cell_length_c   5.82853031
+_cell_angle_alpha   59.95487595
+_cell_angle_beta   60.07126236
+_cell_angle_gamma   60.29557037
+_symmetry_Int_Tables_number   1
+_chemical_formula_structural   Ba2LiUO6
+_chemical_formula_sum   'Ba2 Li1 U1 O6'
+_cell_volume   144.46700189
+_cell_formula_units_Z   1
+loop_
+ _symmetry_equiv_pos_site_id
+ _symmetry_equiv_pos_as_xyz
+  1  'x, y, z'
+loop_
+ _atom_site_type_symbol
+ _atom_site_label
+ _atom_site_symmetry_multiplicity
+ _atom_site_fract_x
+ _atom_site_fract_y
+ _atom_site_fract_z
+ _atom_site_occupancy
+  Ba  Ba0  1  0.35680732  0.75623417  0.28984201  1
+  Ba  Ba1  1  0.84480011  0.25771314  0.81646669  1
+  Li  Li2  1  0.08171405  0.50558436  0.03061593  1
+  U  U3  1  0.62933940  1.00155079  0.56777549  1
+  O  O4  1  0.35424420  0.75323194  0.78026092  1
+  O  O5  1  0.83311474  0.75549638  0.29227939  1
+  O  O6  1  0.34928036  0.25262150  0.78567767  1
+  O  O7  1  0.82250988  0.74905205  0.79022527  1
+  O  O8  1  0.83177400  0.25643075  0.29967380  1
+  O  O9  1  0.33246493  0.24853779  0.28888488  1

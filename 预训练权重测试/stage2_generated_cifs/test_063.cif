@@ -1,0 +1,40 @@
+# generated using pymatgen
+data_LiNd4HgO8
+_symmetry_space_group_name_H-M   'P 1'
+_cell_length_a   5.07117653
+_cell_length_b   5.97615623
+_cell_length_c   6.84353828
+_cell_angle_alpha   92.51023865
+_cell_angle_beta   110.82673645
+_cell_angle_gamma   90.20043945
+_symmetry_Int_Tables_number   1
+_chemical_formula_structural   LiNd4HgO8
+_chemical_formula_sum   'Li1 Nd4 Hg1 O8'
+_cell_volume   193.62321709
+_cell_formula_units_Z   1
+loop_
+ _symmetry_equiv_pos_site_id
+ _symmetry_equiv_pos_as_xyz
+  1  'x, y, z'
+loop_
+ _atom_site_type_symbol
+ _atom_site_label
+ _atom_site_symmetry_multiplicity
+ _atom_site_fract_x
+ _atom_site_fract_y
+ _atom_site_fract_z
+ _atom_site_occupancy
+  Li  Li0  1  0.80269051  0.39559969  0.14692231  1
+  Nd  Nd1  1  0.45598280  0.37976807  0.45321450  1
+  Nd  Nd2  1  0.25778258  0.36849433  0.91298592  1
+  Nd  Nd3  1  0.89375198  0.87693030  0.43400252  1
+  Nd  Nd4  1  0.73958635  0.84096855  0.91230804  1
+  Hg  Hg5  1  0.28857258  0.85596025  0.15796147  1
+  O  O6  1  0.59187376  0.55415499  0.78502649  1
+  O  O7  1  0.95331055  0.49127829  0.55303901  1
+  O  O8  1  0.49780336  0.95355964  0.59142923  1
+  O  O9  1  0.10970779  0.01898911  0.82725799  1
+  O  O10  1  0.00075847  0.64418924  0.15921043  1
+  O  O11  1  0.55815768  0.18235265  0.14763834  1
+  O  O12  1  0.55105644  0.63997519  0.20954885  1
+  O  O13  1  0.06368139  0.16762206  0.19147176  1

@@ -1,0 +1,334 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="1150" viewBox="0 0 1800 1150">
+<defs>
+<marker id="aBlue" viewBox="0 0 8 6" refX="7" refY="3" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L8,3 L0,6 z" fill="#5B84B1"/></marker>
+<marker id="aGreen" viewBox="0 0 8 6" refX="7" refY="3" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L8,3 L0,6 z" fill="#2F7D5C"/></marker>
+<marker id="aPink" viewBox="0 0 8 6" refX="7" refY="3" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L8,3 L0,6 z" fill="#B5486B"/></marker>
+<marker id="aPeach" viewBox="0 0 8 6" refX="7" refY="3" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L8,3 L0,6 z" fill="#B46A45"/></marker>
+<marker id="aRed" viewBox="0 0 8 6" refX="7" refY="3" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L8,3 L0,6 z" fill="#B23A48"/></marker>
+<marker id="aGray" viewBox="0 0 8 6" refX="7" refY="3" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L8,3 L0,6 z" fill="#8A7B73"/></marker>
+</defs>
+<rect x="0" y="0" width="1800" height="1150" rx="0" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="0"/>
+<text x="32" y="42" font-family="Times New Roman" font-size="28" fill="#3C3A39" font-weight="bold" text-anchor="start">ADiT: All-atom Diffusion Transformer</text>
+<text x="32" y="66" font-family="Times New Roman" font-size="11" fill="#6B5F5A" font-weight="normal" text-anchor="start">Stage 1 all-atom VAE  |  Stage 2 flow-matching DiT-B  |  module-level view</text>
+<line x1="1080" y1="38" x2="1114" y2="38" stroke="#3C3A39" stroke-width="1.8" stroke-linecap="round" marker-end="url(#aGray)"/>
+<text x="1122" y="42" font-family="Times New Roman" font-size="9" fill="#6B5F5A" font-weight="normal" text-anchor="start">forward</text>
+<line x1="1190" y1="38" x2="1224" y2="38" stroke="#B23A48" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="5 3" marker-end="url(#aRed)"/>
+<text x="1232" y="42" font-family="Times New Roman" font-size="9" fill="#6B5F5A" font-weight="normal" text-anchor="start">loss</text>
+<line x1="1290" y1="38" x2="1324" y2="38" stroke="#8A7B73" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="2 3"/>
+<text x="1332" y="42" font-family="Times New Roman" font-size="9" fill="#6B5F5A" font-weight="normal" text-anchor="start">frozen</text>
+<rect x="1410" y="31" width="14" height="14" rx="2" fill="#CCDFF2" stroke="#5B84B1" stroke-width="0.8"/>
+<text x="1430" y="42" font-family="Times New Roman" font-size="9" fill="#6B5F5A" font-weight="normal" text-anchor="start">VAE layer</text>
+<rect x="1530" y="31" width="14" height="14" rx="2" fill="#F7C9D9" stroke="#B5486B" stroke-width="0.8"/>
+<text x="1550" y="42" font-family="Times New Roman" font-size="9" fill="#6B5F5A" font-weight="normal" text-anchor="start">DiT block</text>
+<line x1="32" y1="80" x2="1768" y2="80" stroke="#E8DED8" stroke-width="0.8" stroke-linecap="round"/>
+<rect x="32" y="94" width="820" height="420" rx="10" fill="#F7FAFE" stroke="#BBD5F0" stroke-width="1.2"/>
+<text x="52" y="120" font-family="Times New Roman" font-size="17" fill="#3C3A39" font-weight="bold" text-anchor="start">Stage 1 · VAE</text>
+<text x="52" y="138" font-family="Times New Roman" font-size="8.5" fill="#6B5F5A" font-weight="normal" text-anchor="start">8+8 Transformer layers · enc 25.8M + dec 25.3M · latent 8</text>
+<rect x="52" y="154" width="150" height="104" rx="6" fill="#FFFFFF" stroke="#8FB3D9" stroke-width="1.0"/>
+<text x="64" y="172" font-family="Times New Roman" font-size="9" fill="#3C3A39" font-weight="bold" text-anchor="start">All-atom sample</text>
+<text x="64" y="188" font-family="Times New Roman" font-size="8" fill="#6B5F5A" font-weight="normal" text-anchor="start">atom_types [N]</text>
+<text x="64" y="202" font-family="Times New Roman" font-size="8" fill="#6B5F5A" font-weight="normal" text-anchor="start">pos [N,3]</text>
+<text x="64" y="216" font-family="Times New Roman" font-size="8" fill="#6B5F5A" font-weight="normal" text-anchor="start">frac [N,3]</text>
+<text x="64" y="230" font-family="Times New Roman" font-size="8" fill="#6B5F5A" font-weight="normal" text-anchor="start">cell [B,3,3]</text>
+<text x="64" y="242" font-family="Times New Roman" font-size="7" fill="#6B5F5A" font-weight="normal" text-anchor="start">lengths/angles [B,3]</text>
+<text x="64" y="254" font-family="Times New Roman" font-size="7" fill="#6B5F5A" font-weight="normal" text-anchor="start">dataset_idx [B]</text>
+<rect x="216" y="154" width="236" height="248" rx="6" fill="#E9F2FC" stroke="#8FB3D9" stroke-width="1.0"/>
+<text x="228" y="170" font-family="Times New Roman" font-size="10" fill="#3C3A39" font-weight="bold" text-anchor="start">Encoder</text>
+<rect x="228" y="180" width="212" height="26" rx="5" fill="#CCDFF2" stroke="#5B84B1" stroke-width="1.0"/>
+<text x="235" y="192" font-family="Times New Roman" font-size="8" fill="#3C3A39" font-weight="bold" text-anchor="start">Atom Emb</text>
+<text x="235" y="202" font-family="Times New Roman" font-size="7" fill="#6B5F5A" font-weight="normal" text-anchor="start">Embedding 100→512</text>
+<rect x="228" y="212" width="212" height="26" rx="5" fill="#CCDFF2" stroke="#5B84B1" stroke-width="1.0"/>
+<text x="235" y="224" font-family="Times New Roman" font-size="8" fill="#3C3A39" font-weight="bold" text-anchor="start">Pos MLP</text>
+<text x="235" y="234" font-family="Times New Roman" font-size="7" fill="#6B5F5A" font-weight="normal" text-anchor="start">Linear 3→512 · SiLU · Linear 512→512</text>
+<rect x="228" y="244" width="212" height="26" rx="5" fill="#CCDFF2" stroke="#5B84B1" stroke-width="1.0"/>
+<text x="235" y="256" font-family="Times New Roman" font-size="8" fill="#3C3A39" font-weight="bold" text-anchor="start">Frac MLP</text>
+<text x="235" y="266" font-family="Times New Roman" font-size="7" fill="#6B5F5A" font-weight="normal" text-anchor="start">Linear 3→512 · SiLU · Linear 512→512</text>
+<rect x="228" y="276" width="212" height="24" rx="5" fill="#FFFFFF" stroke="#D9CEC8" stroke-width="1.0"/>
+<text x="235" y="288" font-family="Times New Roman" font-size="8" fill="#3C3A39" font-weight="bold" text-anchor="start">Token pos</text>
+<text x="235" y="296" font-family="Times New Roman" font-size="7" fill="#6B5F5A" font-weight="normal" text-anchor="start">sinusoidal index encoding</text>
+<rect x="228" y="306" width="212" height="24" rx="5" fill="#FFFFFF" stroke="#D9CEC8" stroke-width="1.0"/>
+<text x="235" y="318" font-family="Times New Roman" font-size="8" fill="#3C3A39" font-weight="bold" text-anchor="start">Add</text>
+<text x="235" y="326" font-family="Times New Roman" font-size="7" fill="#6B5F5A" font-weight="normal" text-anchor="start">type + pos + frac + token</text>
+<rect x="228" y="336" width="212" height="34" rx="5" fill="#CCDFF2" stroke="#5B84B1" stroke-width="1.0"/>
+<text x="235" y="350" font-family="Times New Roman" font-size="9" fill="#3C3A39" font-weight="bold" text-anchor="start">Transformer ×8</text>
+<text x="235" y="366" font-family="Times New Roman" font-size="7" fill="#6B5F5A" font-weight="normal" text-anchor="start">MHSA 8 heads + FFN 512→2048→512</text>
+<rect x="228" y="376" width="212" height="22" rx="5" fill="#E3F4EC" stroke="#2F7D5C" stroke-width="1.0"/>
+<text x="235" y="388" font-family="Times New Roman" font-size="8" fill="#3C3A39" font-weight="bold" text-anchor="start">quant_conv</text>
+<text x="235" y="394" font-family="Times New Roman" font-size="7" fill="#6B5F5A" font-weight="normal" text-anchor="start">Linear 512→16</text>
+<rect x="466" y="228" width="100" height="98" rx="6" fill="#E3F4EC" stroke="#2F7D5C" stroke-width="1.0"/>
+<text x="480" y="248" font-family="Times New Roman" font-size="10" fill="#3C3A39" font-weight="bold" text-anchor="start">Latent z</text>
+<text x="480" y="266" font-family="Times New Roman" font-size="9" fill="#2F7D5C" font-weight="normal" text-anchor="start">z [B,N,8]</text>
+<text x="480" y="282" font-family="Times New Roman" font-size="8" fill="#6B5F5A" font-weight="normal" text-anchor="start">μ, logσ²</text>
+<text x="480" y="298" font-family="Times New Roman" font-size="8" fill="#6B5F5A" font-weight="normal" text-anchor="start">reparameterize</text>
+<text x="480" y="314" font-family="Times New Roman" font-size="8" fill="#6B5F5A" font-weight="normal" text-anchor="start">sample z</text>
+<rect x="590" y="154" width="236" height="248" rx="6" fill="#E9F2FC" stroke="#8FB3D9" stroke-width="1.0"/>
+<text x="602" y="170" font-family="Times New Roman" font-size="10" fill="#3C3A39" font-weight="bold" text-anchor="start">Decoder</text>
+<rect x="602" y="180" width="212" height="26" rx="5" fill="#E3F4EC" stroke="#2F7D5C" stroke-width="1.0"/>
+<text x="609" y="192" font-family="Times New Roman" font-size="8" fill="#3C3A39" font-weight="bold" text-anchor="start">post_quant + pos</text>
+<text x="609" y="202" font-family="Times New Roman" font-size="7" fill="#6B5F5A" font-weight="normal" text-anchor="start">Linear 8→512 · + token index</text>
+<rect x="602" y="212" width="212" height="34" rx="5" fill="#CCDFF2" stroke="#5B84B1" stroke-width="1.0"/>
+<text x="609" y="226" font-family="Times New Roman" font-size="9" fill="#3C3A39" font-weight="bold" text-anchor="start">Transformer ×8</text>
+<text x="609" y="242" font-family="Times New Roman" font-size="7" fill="#6B5F5A" font-weight="normal" text-anchor="start">MHSA 8 heads + FFN 512→2048→512</text>
+<text x="602" y="258" font-family="Times New Roman" font-size="6.5" fill="#8A7B73" font-weight="normal" text-anchor="start">per-token heads</text>
+<text x="710" y="258" font-family="Times New Roman" font-size="6.5" fill="#8A7B73" font-weight="normal" text-anchor="start">pooled</text>
+<path d="M 708 246 L 708 250 L 652 250 L 652 264" fill="none" stroke="#8A7B73" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#aGray)"/>
+<path d="M 708 250 L 762 250 L 762 264" fill="none" stroke="#8A7B73" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#aGray)"/>
+<rect x="602" y="264" width="100" height="22" rx="5" fill="#FFFFFF" stroke="#D9CEC8" stroke-width="1.0"/>
+<text x="609" y="276" font-family="Times New Roman" font-size="7" fill="#3C3A39" font-weight="bold" text-anchor="start">Atom</text>
+<text x="609" y="282" font-family="Times New Roman" font-size="6.5" fill="#6B5F5A" font-weight="normal" text-anchor="start">512→100</text>
+<rect x="602" y="290" width="100" height="22" rx="5" fill="#FFFFFF" stroke="#D9CEC8" stroke-width="1.0"/>
+<text x="609" y="302" font-family="Times New Roman" font-size="7" fill="#3C3A39" font-weight="bold" text-anchor="start">Pos</text>
+<text x="609" y="308" font-family="Times New Roman" font-size="6.5" fill="#6B5F5A" font-weight="normal" text-anchor="start">512→3</text>
+<rect x="602" y="316" width="100" height="22" rx="5" fill="#FFFFFF" stroke="#D9CEC8" stroke-width="1.0"/>
+<text x="609" y="328" font-family="Times New Roman" font-size="7" fill="#3C3A39" font-weight="bold" text-anchor="start">Frac</text>
+<text x="609" y="334" font-family="Times New Roman" font-size="6.5" fill="#6B5F5A" font-weight="normal" text-anchor="start">512→3</text>
+<rect x="710" y="264" width="104" height="22" rx="5" fill="#FFFFFF" stroke="#D9CEC8" stroke-width="1.0"/>
+<text x="717" y="276" font-family="Times New Roman" font-size="7" fill="#3C3A39" font-weight="bold" text-anchor="start">Mean pool</text>
+<text x="717" y="282" font-family="Times New Roman" font-size="6.5" fill="#6B5F5A" font-weight="normal" text-anchor="start">over atoms</text>
+<rect x="710" y="290" width="104" height="22" rx="5" fill="#FFFFFF" stroke="#D9CEC8" stroke-width="1.0"/>
+<text x="717" y="302" font-family="Times New Roman" font-size="7" fill="#3C3A39" font-weight="bold" text-anchor="start">Lattice</text>
+<text x="717" y="308" font-family="Times New Roman" font-size="6.5" fill="#6B5F5A" font-weight="normal" text-anchor="start">512→6</text>
+<rect x="710" y="316" width="104" height="22" rx="5" fill="#FFFFFF" stroke="#D9CEC8" stroke-width="1.0"/>
+<text x="717" y="328" font-family="Times New Roman" font-size="7" fill="#3C3A39" font-weight="bold" text-anchor="start">PDB / CIF</text>
+<text x="602" y="356" font-family="Times New Roman" font-size="6.5" fill="#8A7B73" font-weight="normal" text-anchor="start">atom/pos/frac are per-token;</text>
+<text x="602" y="368" font-family="Times New Roman" font-size="6.5" fill="#8A7B73" font-weight="normal" text-anchor="start">lattice reads the pooled vector</text>
+<text x="602" y="384" font-family="Times New Roman" font-size="6.2" fill="#8A7B73" font-weight="normal" text-anchor="start">shapes: [B,N,100] / [B,N,3] / [B,6]</text>
+<line x1="202" y1="200" x2="216" y2="200" stroke="#5B84B1" stroke-width="1.5" stroke-linecap="round" marker-end="url(#aBlue)"/>
+<line x1="452" y1="250" x2="466" y2="250" stroke="#5B84B1" stroke-width="1.5" stroke-linecap="round" marker-end="url(#aBlue)"/>
+<path d="M 566 250 L 580 250 L 580 193 L 590 193" fill="none" stroke="#2F7D5C" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#aGreen)"/>
+<text x="470" y="220" font-family="Times New Roman" font-size="7" fill="#8A7B73" font-weight="normal" text-anchor="start">z is the only bottleneck</text>
+<text x="52" y="424" font-family="Times New Roman" font-size="8" fill="#8A7B73" font-weight="normal" text-anchor="start">no skip connections; encoder and decoder are separate stacks</text>
+<rect x="52" y="434" width="768" height="44" rx="6" fill="#FDECEF" stroke="#B23A48" stroke-width="1.0" stroke-dasharray="5 3"/>
+<text x="64" y="451" font-family="Times New Roman" font-size="8" fill="#B23A48" font-weight="bold" text-anchor="start">L_VAE = CE(atom types) + MSE(lengths/angles/frac/pos) + 1e-5·KL</text>
+<text x="64" y="466" font-family="Times New Roman" font-size="7.5" fill="#B23A48" font-weight="normal" text-anchor="start">denoise: 10% atom-type mask + 10% coordinate noise</text>
+<rect x="884" y="94" width="884" height="420" rx="10" fill="#FDF7F9" stroke="#E8A9C0" stroke-width="1.2"/>
+<text x="904" y="120" font-family="Times New Roman" font-size="17" fill="#3C3A39" font-weight="bold" text-anchor="start">Stage 2 · DiT-B</text>
+<text x="904" y="138" font-family="Times New Roman" font-size="9" fill="#6B5F5A" font-weight="normal" text-anchor="start">12 DiT blocks · d_model 768 · 12 heads · 129.7M</text>
+<rect x="904" y="156" width="150" height="60" rx="5" fill="#E3F4EC" stroke="#2F7D5C" stroke-width="1.0"/>
+<text x="911" y="170" font-family="Times New Roman" font-size="9" fill="#3C3A39" font-weight="bold" text-anchor="start">Frozen encoder</text>
+<text x="911" y="202" font-family="Times New Roman" font-size="7.5" fill="#6B5F5A" font-weight="normal" text-anchor="start">z1 [B,N,8]</text>
+<text x="911" y="212" font-family="Times New Roman" font-size="7.5" fill="#6B5F5A" font-weight="normal" text-anchor="start">frozen weights</text>
+<rect x="1074" y="156" width="170" height="60" rx="5" fill="#F3D8C4" stroke="#B46A45" stroke-width="1.0"/>
+<text x="1081" y="170" font-family="Times New Roman" font-size="9" fill="#3C3A39" font-weight="bold" text-anchor="start">Flow corruption</text>
+<text x="1081" y="202" font-family="Times New Roman" font-size="7.5" fill="#6B5F5A" font-weight="normal" text-anchor="start">z_t=(1-t)z0+t·z1</text>
+<text x="1081" y="212" font-family="Times New Roman" font-size="7.5" fill="#6B5F5A" font-weight="normal" text-anchor="start">t ~ U(0.01,0.99)</text>
+<rect x="1264" y="156" width="180" height="60" rx="5" fill="#CCDFF2" stroke="#5B84B1" stroke-width="1.0"/>
+<text x="1271" y="170" font-family="Times New Roman" font-size="9" fill="#3C3A39" font-weight="bold" text-anchor="start">Token embed</text>
+<text x="1271" y="202" font-family="Times New Roman" font-size="7.5" fill="#6B5F5A" font-weight="normal" text-anchor="start">x_t⊕x_sc [B,N,16]</text>
+<text x="1271" y="212" font-family="Times New Roman" font-size="7.5" fill="#6B5F5A" font-weight="normal" text-anchor="start">Linear 16→768 + pos</text>
+<line x1="1054" y1="186" x2="1074" y2="186" stroke="#B46A45" stroke-width="1.5" stroke-linecap="round" marker-end="url(#aPeach)"/>
+<line x1="1244" y1="186" x2="1264" y2="186" stroke="#5B84B1" stroke-width="1.5" stroke-linecap="round" marker-end="url(#aBlue)"/>
+<rect x="1464" y="148" width="284" height="82" rx="6" fill="#FFFFFF" stroke="#D8B4C4" stroke-width="1.0"/>
+<text x="1476" y="164" font-family="Times New Roman" font-size="9" fill="#3C3A39" font-weight="bold" text-anchor="start">Conditioning</text>
+<rect x="1472" y="172" width="84" height="50" rx="5" fill="#FDF7F9" stroke="#B5486B" stroke-width="1.0"/>
+<text x="1479" y="186" font-family="Times New Roman" font-size="7.5" fill="#3C3A39" font-weight="bold" text-anchor="start">t [B,1]</text>
+<text x="1479" y="208" font-family="Times New Roman" font-size="6.5" fill="#6B5F5A" font-weight="normal" text-anchor="start">sinusoidal 256</text>
+<text x="1479" y="218" font-family="Times New Roman" font-size="6.5" fill="#6B5F5A" font-weight="normal" text-anchor="start">MLP 256→768→768</text>
+<rect x="1564" y="172" width="84" height="50" rx="5" fill="#FDF7F9" stroke="#B5486B" stroke-width="1.0"/>
+<text x="1571" y="186" font-family="Times New Roman" font-size="7.5" fill="#3C3A39" font-weight="bold" text-anchor="start">dataset</text>
+<text x="1571" y="218" font-family="Times New Roman" font-size="6.5" fill="#6B5F5A" font-weight="normal" text-anchor="start">Emb(3,768)</text>
+<rect x="1656" y="172" width="84" height="50" rx="5" fill="#FDF7F9" stroke="#B5486B" stroke-width="1.0"/>
+<text x="1663" y="186" font-family="Times New Roman" font-size="7.5" fill="#3C3A39" font-weight="bold" text-anchor="start">spacegroup</text>
+<text x="1663" y="208" font-family="Times New Roman" font-size="6.5" fill="#6B5F5A" font-weight="normal" text-anchor="start">Emb(231,768)</text>
+<text x="1663" y="218" font-family="Times New Roman" font-size="6.5" fill="#6B5F5A" font-weight="normal" text-anchor="start">off / null</text>
+<line x1="1514" y1="222" x2="1514" y2="230" stroke="#B5486B" stroke-width="1.2" stroke-linecap="round"/>
+<line x1="1606" y1="222" x2="1606" y2="230" stroke="#B5486B" stroke-width="1.2" stroke-linecap="round"/>
+<line x1="1698" y1="222" x2="1698" y2="230" stroke="#B5486B" stroke-width="1.2" stroke-linecap="round"/>
+<line x1="1514" y1="230" x2="1698" y2="230" stroke="#B5486B" stroke-width="1.3" stroke-linecap="round"/>
+<path d="M 1606 230 L 1606 236 L 1300 236 L 1300 240" fill="none" stroke="#B5486B" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#aPink)"/>
+<text x="1306" y="234" font-family="Times New Roman" font-size="7" fill="#B5486B" font-weight="normal" text-anchor="start">c [B,768]</text>
+<rect x="904" y="240" width="470" height="170" rx="7" fill="#FFFFFF" stroke="#D98CA8" stroke-width="1.0"/>
+<text x="916" y="258" font-family="Times New Roman" font-size="10" fill="#3C3A39" font-weight="bold" text-anchor="start">DiT-B × 12 blocks</text>
+<text x="916" y="272" font-family="Times New Roman" font-size="7" fill="#6B5F5A" font-weight="normal" text-anchor="start">d_x 8 · d_model 768 · FFN 3072</text>
+<text x="1150" y="258" font-family="Times New Roman" font-size="7" fill="#B5486B" font-weight="normal" text-anchor="start">S/B/L: 12/12/24</text>
+<rect x="1328" y="248" width="34" height="18" rx="5" fill="#FDF7F9" stroke="#B5486B" stroke-width="0.9"/>
+<text x="1345.0" y="260.0" font-family="Times New Roman" font-size="7" fill="#B5486B" font-weight="normal" text-anchor="middle">×12</text>
+<rect x="916" y="282" width="100" height="32" rx="4" fill="#F7C9D9" stroke="#B5486B" stroke-width="0.8"/>
+<text x="966" y="302" font-family="Times New Roman" font-size="7.5" fill="#3C3A39" font-weight="normal" text-anchor="middle">DiT</text>
+<rect x="1026" y="282" width="100" height="32" rx="4" fill="#F7C9D9" stroke="#B5486B" stroke-width="0.8"/>
+<text x="1076" y="302" font-family="Times New Roman" font-size="7.5" fill="#3C3A39" font-weight="normal" text-anchor="middle">DiT</text>
+<rect x="1136" y="282" width="100" height="32" rx="4" fill="#F7C9D9" stroke="#B5486B" stroke-width="0.8"/>
+<text x="1186" y="302" font-family="Times New Roman" font-size="7.5" fill="#3C3A39" font-weight="normal" text-anchor="middle">DiT</text>
+<rect x="1246" y="282" width="100" height="32" rx="4" fill="#F7C9D9" stroke="#B5486B" stroke-width="0.8"/>
+<text x="1296" y="302" font-family="Times New Roman" font-size="7.5" fill="#3C3A39" font-weight="normal" text-anchor="middle">DiT</text>
+<rect x="916" y="322" width="100" height="32" rx="4" fill="#F7C9D9" stroke="#B5486B" stroke-width="0.8"/>
+<text x="966" y="342" font-family="Times New Roman" font-size="7.5" fill="#3C3A39" font-weight="normal" text-anchor="middle">DiT</text>
+<rect x="1026" y="322" width="100" height="32" rx="4" fill="#F7C9D9" stroke="#B5486B" stroke-width="0.8"/>
+<text x="1076" y="342" font-family="Times New Roman" font-size="7.5" fill="#3C3A39" font-weight="normal" text-anchor="middle">DiT</text>
+<rect x="1136" y="322" width="100" height="32" rx="4" fill="#E89AB4" stroke="#8E2F4E" stroke-width="1.2"/>
+<text x="1186" y="342" font-family="Times New Roman" font-size="7.5" fill="#FFFFFF" font-weight="normal" text-anchor="middle">DiT</text>
+<text x="1186" y="351" font-family="Times New Roman" font-size="6" fill="#FFFFFF" font-weight="normal" text-anchor="middle">detail</text>
+<rect x="1246" y="322" width="100" height="32" rx="4" fill="#F7C9D9" stroke="#B5486B" stroke-width="0.8"/>
+<text x="1296" y="342" font-family="Times New Roman" font-size="7.5" fill="#3C3A39" font-weight="normal" text-anchor="middle">DiT</text>
+<rect x="916" y="362" width="100" height="32" rx="4" fill="#F7C9D9" stroke="#B5486B" stroke-width="0.8"/>
+<text x="966" y="382" font-family="Times New Roman" font-size="7.5" fill="#3C3A39" font-weight="normal" text-anchor="middle">DiT</text>
+<rect x="1026" y="362" width="100" height="32" rx="4" fill="#F7C9D9" stroke="#B5486B" stroke-width="0.8"/>
+<text x="1076" y="382" font-family="Times New Roman" font-size="7.5" fill="#3C3A39" font-weight="normal" text-anchor="middle">DiT</text>
+<rect x="1136" y="362" width="100" height="32" rx="4" fill="#F7C9D9" stroke="#B5486B" stroke-width="0.8"/>
+<text x="1186" y="382" font-family="Times New Roman" font-size="7.5" fill="#3C3A39" font-weight="normal" text-anchor="middle">DiT</text>
+<rect x="1246" y="362" width="100" height="32" rx="4" fill="#F7C9D9" stroke="#B5486B" stroke-width="0.8"/>
+<text x="1296" y="382" font-family="Times New Roman" font-size="7.5" fill="#3C3A39" font-weight="normal" text-anchor="middle">DiT</text>
+<rect x="1394" y="240" width="160" height="60" rx="5" fill="#E3F4EC" stroke="#2F7D5C" stroke-width="1.0"/>
+<text x="1401" y="254" font-family="Times New Roman" font-size="8" fill="#3C3A39" font-weight="bold" text-anchor="start">Final layer</text>
+<text x="1401" y="276" font-family="Times New Roman" font-size="6.5" fill="#6B5F5A" font-weight="normal" text-anchor="start">adaLN 768→1536</text>
+<text x="1401" y="286" font-family="Times New Roman" font-size="6.5" fill="#6B5F5A" font-weight="normal" text-anchor="start">Linear 768→8</text>
+<text x="1401" y="296" font-family="Times New Roman" font-size="6.5" fill="#6B5F5A" font-weight="normal" text-anchor="start">x1_hat [B,N,8]</text>
+<rect x="1394" y="320" width="160" height="80" rx="5" fill="#F3D8C4" stroke="#B46A45" stroke-width="1.0"/>
+<text x="1401" y="334" font-family="Times New Roman" font-size="8" fill="#3C3A39" font-weight="bold" text-anchor="start">Sampling</text>
+<text x="1401" y="376" font-family="Times New Roman" font-size="6.5" fill="#6B5F5A" font-weight="normal" text-anchor="start">Euler 250 · CFG 4.0</text>
+<text x="1401" y="386" font-family="Times New Roman" font-size="6.5" fill="#6B5F5A" font-weight="normal" text-anchor="start">loop over DiT + final</text>
+<text x="1401" y="396" font-family="Times New Roman" font-size="6.5" fill="#6B5F5A" font-weight="normal" text-anchor="start">cond + null batch</text>
+<rect x="1574" y="320" width="170" height="80" rx="5" fill="#E3F4EC" stroke="#2F7D5C" stroke-width="1.0"/>
+<text x="1581" y="334" font-family="Times New Roman" font-size="9" fill="#3C3A39" font-weight="bold" text-anchor="start">Frozen decoder</text>
+<text x="1581" y="386" font-family="Times New Roman" font-size="7.5" fill="#6B5F5A" font-weight="normal" text-anchor="start">z [B,N,8]→atoms</text>
+<text x="1581" y="396" font-family="Times New Roman" font-size="7.5" fill="#6B5F5A" font-weight="normal" text-anchor="start">PDB / CIF</text>
+<line x1="1354" y1="216" x2="1354" y2="240" stroke="#5B84B1" stroke-width="1.5" stroke-linecap="round" marker-end="url(#aBlue)"/>
+<line x1="1254" y1="410" x2="1254" y2="240" stroke="#8A7B73" stroke-width="1.2" stroke-linecap="round" stroke-dasharray="3 2" marker-end="url(#aGray)"/>
+<path d="M 1554 270 L 1564 270 L 1564 360 L 1574 360" fill="none" stroke="#8A7B73" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#aGray)"/>
+<rect x="904" y="434" width="844" height="44" rx="6" fill="#FDECEF" stroke="#B23A48" stroke-width="1.0" stroke-dasharray="5 3"/>
+<text x="916" y="451" font-family="Times New Roman" font-size="8" fill="#B23A48" font-weight="bold" text-anchor="start">L_FM = mean[mask · ((x1 - x1_hat)/(1-min(t,0.9)))²]</text>
+<text x="916" y="466" font-family="Times New Roman" font-size="7.5" fill="#B23A48" font-weight="normal" text-anchor="start">mask = valid tokens; VAE frozen, only DiT updates</text>
+<rect x="32" y="536" width="820" height="580" rx="10" fill="#F7FAFE" stroke="#BBD5F0" stroke-width="1.2"/>
+<text x="52" y="562" font-family="Times New Roman" font-size="17" fill="#3C3A39" font-weight="bold" text-anchor="start">VAE Transformer layer</text>
+<text x="52" y="580" font-family="Times New Roman" font-size="9" fill="#6B5F5A" font-weight="normal" text-anchor="start">shared by encoder and decoder · ×8 each · pre-norm residual</text>
+<rect x="52" y="600" width="170" height="44" rx="5" fill="#FFFFFF" stroke="#D9CEC8" stroke-width="1.0"/>
+<text x="59" y="614" font-family="Times New Roman" font-size="9" fill="#3C3A39" font-weight="bold" text-anchor="start">Input</text>
+<text x="59" y="640" font-family="Times New Roman" font-size="7.5" fill="#6B5F5A" font-weight="normal" text-anchor="start">x [B,N,512]</text>
+<rect x="52" y="660" width="170" height="30" rx="5" fill="#FFFFFF" stroke="#D9CEC8" stroke-width="1.0"/>
+<text x="59" y="674" font-family="Times New Roman" font-size="8" fill="#3C3A39" font-weight="bold" text-anchor="start">LayerNorm</text>
+<text x="59" y="686" font-family="Times New Roman" font-size="7" fill="#6B5F5A" font-weight="normal" text-anchor="start">512</text>
+<line x1="137" y1="644" x2="137" y2="660" stroke="#8A7B73" stroke-width="1.5" stroke-linecap="round" marker-end="url(#aGray)"/>
+<rect x="240" y="600" width="560" height="170" rx="6" fill="#FFFFFF" stroke="#8FB3D9" stroke-width="1.0"/>
+<text x="254" y="618" font-family="Times New Roman" font-size="9" fill="#3C3A39" font-weight="bold" text-anchor="start">Multi-head self-attention (8 heads, d=64)</text>
+<rect x="260" y="630" width="220" height="28" rx="5" fill="#CCDFF2" stroke="#5B84B1" stroke-width="1.0"/>
+<text x="267" y="642" font-family="Times New Roman" font-size="8" fill="#3C3A39" font-weight="bold" text-anchor="start">QKV</text>
+<text x="267" y="654" font-family="Times New Roman" font-size="7" fill="#6B5F5A" font-weight="normal" text-anchor="start">Linear 512→1536</text>
+<rect x="260" y="666" width="220" height="28" rx="5" fill="#CCDFF2" stroke="#5B84B1" stroke-width="1.0"/>
+<text x="267" y="678" font-family="Times New Roman" font-size="8" fill="#3C3A39" font-weight="bold" text-anchor="start">Split heads</text>
+<text x="267" y="690" font-family="Times New Roman" font-size="7" fill="#6B5F5A" font-weight="normal" text-anchor="start">8 heads × 64</text>
+<rect x="500" y="630" width="280" height="28" rx="5" fill="#FFFFFF" stroke="#D9CEC8" stroke-width="1.0"/>
+<text x="507" y="642" font-family="Times New Roman" font-size="8" fill="#3C3A39" font-weight="bold" text-anchor="start">softmax</text>
+<text x="507" y="654" font-family="Times New Roman" font-size="7" fill="#6B5F5A" font-weight="normal" text-anchor="start">QKᵀ / √64</text>
+<rect x="500" y="666" width="280" height="28" rx="5" fill="#FFFFFF" stroke="#D9CEC8" stroke-width="1.0"/>
+<text x="507" y="678" font-family="Times New Roman" font-size="8" fill="#3C3A39" font-weight="bold" text-anchor="start">Weighted V</text>
+<text x="507" y="690" font-family="Times New Roman" font-size="7" fill="#6B5F5A" font-weight="normal" text-anchor="start">·V → concat</text>
+<rect x="380" y="704" width="280" height="28" rx="5" fill="#CCDFF2" stroke="#5B84B1" stroke-width="1.0"/>
+<text x="387" y="716" font-family="Times New Roman" font-size="8" fill="#3C3A39" font-weight="bold" text-anchor="start">Output projection</text>
+<text x="387" y="728" font-family="Times New Roman" font-size="7" fill="#6B5F5A" font-weight="normal" text-anchor="start">Linear 512→512</text>
+<path d="M 470 644 L 500 644" fill="none" stroke="#8A7B73" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#aGray)"/>
+<path d="M 470 680 L 500 680" fill="none" stroke="#8A7B73" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#aGray)"/>
+<path d="M 640 694 L 640 704" fill="none" stroke="#8A7B73" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#aGray)"/>
+<path d="M 222 675 L 240 675" fill="none" stroke="#5B84B1" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#aBlue)"/>
+<rect x="52" y="790" width="170" height="30" rx="5" fill="#FFFFFF" stroke="#D9CEC8" stroke-width="1.0"/>
+<text x="59" y="804" font-family="Times New Roman" font-size="8" fill="#3C3A39" font-weight="bold" text-anchor="start">Add + residual</text>
+<text x="59" y="816" font-family="Times New Roman" font-size="7" fill="#6B5F5A" font-weight="normal" text-anchor="start">x + attn</text>
+<rect x="52" y="850" width="170" height="30" rx="5" fill="#FFFFFF" stroke="#D9CEC8" stroke-width="1.0"/>
+<text x="59" y="864" font-family="Times New Roman" font-size="8" fill="#3C3A39" font-weight="bold" text-anchor="start">LayerNorm</text>
+<text x="59" y="876" font-family="Times New Roman" font-size="7" fill="#6B5F5A" font-weight="normal" text-anchor="start">512</text>
+<line x1="660" y1="732" x2="660" y2="770" stroke="#8A7B73" stroke-width="1.5" stroke-linecap="round" marker-end="url(#aGray)"/>
+<path d="M 660 770 L 137 770 L 137 790" fill="none" stroke="#8A7B73" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#aGray)"/>
+<line x1="137" y1="820" x2="137" y2="850" stroke="#8A7B73" stroke-width="1.5" stroke-linecap="round" marker-end="url(#aGray)"/>
+<path d="M 222 865 L 240 865" fill="none" stroke="#8A7B73" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#aGray)"/>
+<rect x="240" y="810" width="560" height="100" rx="6" fill="#FFFFFF" stroke="#8FB3D9" stroke-width="1.0"/>
+<text x="254" y="828" font-family="Times New Roman" font-size="9" fill="#3C3A39" font-weight="bold" text-anchor="start">Feed-forward network</text>
+<rect x="260" y="840" width="160" height="26" rx="5" fill="#CCDFF2" stroke="#5B84B1" stroke-width="1.0"/>
+<text x="267" y="852" font-family="Times New Roman" font-size="8" fill="#3C3A39" font-weight="bold" text-anchor="start">Linear</text>
+<text x="267" y="862" font-family="Times New Roman" font-size="7" fill="#6B5F5A" font-weight="normal" text-anchor="start">512→2048</text>
+<rect x="430" y="840" width="90" height="26" rx="5" fill="#FFFFFF" stroke="#D9CEC8" stroke-width="1.0"/>
+<text x="437" y="852" font-family="Times New Roman" font-size="8" fill="#3C3A39" font-weight="bold" text-anchor="start">GELU</text>
+<rect x="530" y="840" width="160" height="26" rx="5" fill="#CCDFF2" stroke="#5B84B1" stroke-width="1.0"/>
+<text x="537" y="852" font-family="Times New Roman" font-size="8" fill="#3C3A39" font-weight="bold" text-anchor="start">Linear</text>
+<text x="537" y="862" font-family="Times New Roman" font-size="7" fill="#6B5F5A" font-weight="normal" text-anchor="start">2048→512</text>
+<path d="M 420 853 L 430 853" fill="none" stroke="#8A7B73" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#aGray)"/>
+<path d="M 520 853 L 530 853" fill="none" stroke="#8A7B73" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#aGray)"/>
+<rect x="52" y="930" width="170" height="30" rx="5" fill="#FFFFFF" stroke="#D9CEC8" stroke-width="1.0"/>
+<text x="59" y="944" font-family="Times New Roman" font-size="8" fill="#3C3A39" font-weight="bold" text-anchor="start">Add + residual</text>
+<text x="59" y="956" font-family="Times New Roman" font-size="7" fill="#6B5F5A" font-weight="normal" text-anchor="start">x + FFN</text>
+<rect x="52" y="990" width="170" height="44" rx="5" fill="#FFFFFF" stroke="#D9CEC8" stroke-width="1.0"/>
+<text x="59" y="1004" font-family="Times New Roman" font-size="9" fill="#3C3A39" font-weight="bold" text-anchor="start">Output</text>
+<text x="59" y="1030" font-family="Times New Roman" font-size="7.5" fill="#6B5F5A" font-weight="normal" text-anchor="start">x [B,N,512]</text>
+<path d="M 660 910 L 660 920 L 137 920 L 137 930" fill="none" stroke="#8A7B73" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#aGray)"/>
+<line x1="137" y1="960" x2="137" y2="990" stroke="#8A7B73" stroke-width="1.5" stroke-linecap="round" marker-end="url(#aGray)"/>
+<rect x="740" y="980" width="44" height="20" rx="5" fill="#F7FAFE" stroke="#5B84B1" stroke-width="0.9"/>
+<text x="762.0" y="993.0" font-family="Times New Roman" font-size="8" fill="#5B84B1" font-weight="normal" text-anchor="middle">×8</text>
+<text x="52" y="1060" font-family="Times New Roman" font-size="8" fill="#8A7B73" font-weight="normal" text-anchor="start">dropout = 0 · norm_first = True · residual per sublayer</text>
+<text x="52" y="1074" font-family="Times New Roman" font-size="7.5" fill="#8A7B73" font-weight="normal" text-anchor="start">decoder uses the same non-causal TransformerEncoder stack</text>
+<rect x="884" y="536" width="884" height="580" rx="10" fill="#FDF7F9" stroke="#E8A9C0" stroke-width="1.2"/>
+<text x="904" y="562" font-family="Times New Roman" font-size="17" fill="#3C3A39" font-weight="bold" text-anchor="start">DiT block</text>
+<text x="904" y="580" font-family="Times New Roman" font-size="8.5" fill="#6B5F5A" font-weight="normal" text-anchor="start">one of 12 blocks · ≈10.63M/block · adaLN conditioning · ×12</text>
+<rect x="904" y="600" width="180" height="50" rx="5" fill="#FFFFFF" stroke="#D9CEC8" stroke-width="1.0"/>
+<text x="911" y="614" font-family="Times New Roman" font-size="9" fill="#3C3A39" font-weight="bold" text-anchor="start">Input</text>
+<text x="911" y="636" font-family="Times New Roman" font-size="7.5" fill="#6B5F5A" font-weight="normal" text-anchor="start">x [B,N,768]</text>
+<text x="911" y="646" font-family="Times New Roman" font-size="7.5" fill="#6B5F5A" font-weight="normal" text-anchor="start">c [B,768]</text>
+<rect x="1100" y="600" width="300" height="70" rx="5" fill="#F3D8C4" stroke="#B46A45" stroke-width="1.0"/>
+<text x="1107" y="614" font-family="Times New Roman" font-size="9" fill="#3C3A39" font-weight="bold" text-anchor="start">adaLN</text>
+<text x="1107" y="646" font-family="Times New Roman" font-size="7" fill="#6B5F5A" font-weight="normal" text-anchor="start">SiLU → Linear 768→4608</text>
+<text x="1107" y="656" font-family="Times New Roman" font-size="7" fill="#6B5F5A" font-weight="normal" text-anchor="start">6×768: γ1,β1,α1,γ2,β2,α2</text>
+<text x="1107" y="666" font-family="Times New Roman" font-size="7" fill="#6B5F5A" font-weight="normal" text-anchor="start">zero-init gates</text>
+<rect x="904" y="680" width="180" height="30" rx="5" fill="#FFFFFF" stroke="#D9CEC8" stroke-width="1.0"/>
+<text x="911" y="694" font-family="Times New Roman" font-size="8" fill="#3C3A39" font-weight="bold" text-anchor="start">LayerNorm</text>
+<text x="911" y="706" font-family="Times New Roman" font-size="7" fill="#6B5F5A" font-weight="normal" text-anchor="start">768</text>
+<line x1="994" y1="650" x2="994" y2="680" stroke="#8A7B73" stroke-width="1.5" stroke-linecap="round" marker-end="url(#aGray)"/>
+<rect x="1100" y="680" width="620" height="150" rx="6" fill="#FFFFFF" stroke="#D98CA8" stroke-width="1.0"/>
+<text x="1114" y="698" font-family="Times New Roman" font-size="9" fill="#3C3A39" font-weight="bold" text-anchor="start">Multi-head self-attention (12 heads, d=64)</text>
+<rect x="1120" y="710" width="220" height="28" rx="5" fill="#F7C9D9" stroke="#B5486B" stroke-width="1.0"/>
+<text x="1127" y="722" font-family="Times New Roman" font-size="8" fill="#3C3A39" font-weight="bold" text-anchor="start">QKV</text>
+<text x="1127" y="734" font-family="Times New Roman" font-size="7" fill="#6B5F5A" font-weight="normal" text-anchor="start">Linear 768→2304</text>
+<rect x="1120" y="746" width="220" height="28" rx="5" fill="#F7C9D9" stroke="#B5486B" stroke-width="1.0"/>
+<text x="1127" y="758" font-family="Times New Roman" font-size="8" fill="#3C3A39" font-weight="bold" text-anchor="start">Split heads</text>
+<text x="1127" y="770" font-family="Times New Roman" font-size="7" fill="#6B5F5A" font-weight="normal" text-anchor="start">12 heads × 64</text>
+<rect x="1360" y="710" width="340" height="28" rx="5" fill="#FFFFFF" stroke="#D9CEC8" stroke-width="1.0"/>
+<text x="1367" y="722" font-family="Times New Roman" font-size="8" fill="#3C3A39" font-weight="bold" text-anchor="start">softmax</text>
+<text x="1367" y="734" font-family="Times New Roman" font-size="7" fill="#6B5F5A" font-weight="normal" text-anchor="start">QKᵀ / √64</text>
+<rect x="1360" y="746" width="340" height="28" rx="5" fill="#FFFFFF" stroke="#D9CEC8" stroke-width="1.0"/>
+<text x="1367" y="758" font-family="Times New Roman" font-size="8" fill="#3C3A39" font-weight="bold" text-anchor="start">Weighted V</text>
+<text x="1367" y="770" font-family="Times New Roman" font-size="7" fill="#6B5F5A" font-weight="normal" text-anchor="start">·V → concat</text>
+<rect x="1240" y="790" width="280" height="28" rx="5" fill="#F7C9D9" stroke="#B5486B" stroke-width="1.0"/>
+<text x="1247" y="802" font-family="Times New Roman" font-size="8" fill="#3C3A39" font-weight="bold" text-anchor="start">Output projection</text>
+<text x="1247" y="814" font-family="Times New Roman" font-size="7" fill="#6B5F5A" font-weight="normal" text-anchor="start">Linear 768→768</text>
+<path d="M 1340 724 L 1360 724" fill="none" stroke="#8A7B73" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#aGray)"/>
+<path d="M 1340 760 L 1360 760" fill="none" stroke="#8A7B73" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#aGray)"/>
+<path d="M 1530 774 L 1530 790" fill="none" stroke="#8A7B73" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#aGray)"/>
+<path d="M 1084 695 L 1100 695" fill="none" stroke="#B5486B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#aPink)"/>
+<rect x="904" y="850" width="180" height="30" rx="5" fill="#F3D8C4" stroke="#B46A45" stroke-width="1.0"/>
+<text x="911" y="864" font-family="Times New Roman" font-size="8" fill="#3C3A39" font-weight="bold" text-anchor="start">Gate + residual</text>
+<text x="911" y="876" font-family="Times New Roman" font-size="7" fill="#6B5F5A" font-weight="normal" text-anchor="start">α1 ⊙ + x</text>
+<rect x="904" y="910" width="180" height="30" rx="5" fill="#FFFFFF" stroke="#D9CEC8" stroke-width="1.0"/>
+<text x="911" y="924" font-family="Times New Roman" font-size="8" fill="#3C3A39" font-weight="bold" text-anchor="start">LayerNorm</text>
+<text x="911" y="936" font-family="Times New Roman" font-size="7" fill="#6B5F5A" font-weight="normal" text-anchor="start">768</text>
+<path d="M 1520 804 L 1540 804 L 1540 870 L 1084 870" fill="none" stroke="#8A7B73" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#aGray)"/>
+<line x1="994" y1="880" x2="994" y2="910" stroke="#8A7B73" stroke-width="1.5" stroke-linecap="round" marker-end="url(#aGray)"/>
+<rect x="1100" y="900" width="620" height="90" rx="6" fill="#FFFFFF" stroke="#D98CA8" stroke-width="1.0"/>
+<text x="1114" y="918" font-family="Times New Roman" font-size="9" fill="#3C3A39" font-weight="bold" text-anchor="start">Feed-forward network</text>
+<rect x="1120" y="930" width="180" height="26" rx="5" fill="#F7C9D9" stroke="#B5486B" stroke-width="1.0"/>
+<text x="1127" y="942" font-family="Times New Roman" font-size="8" fill="#3C3A39" font-weight="bold" text-anchor="start">Linear</text>
+<text x="1127" y="952" font-family="Times New Roman" font-size="7" fill="#6B5F5A" font-weight="normal" text-anchor="start">768→3072</text>
+<rect x="1320" y="930" width="90" height="26" rx="5" fill="#FFFFFF" stroke="#D9CEC8" stroke-width="1.0"/>
+<text x="1327" y="942" font-family="Times New Roman" font-size="8" fill="#3C3A39" font-weight="bold" text-anchor="start">GELU</text>
+<rect x="1430" y="930" width="180" height="26" rx="5" fill="#F7C9D9" stroke="#B5486B" stroke-width="1.0"/>
+<text x="1437" y="942" font-family="Times New Roman" font-size="8" fill="#3C3A39" font-weight="bold" text-anchor="start">Linear</text>
+<text x="1437" y="952" font-family="Times New Roman" font-size="7" fill="#6B5F5A" font-weight="normal" text-anchor="start">3072→768</text>
+<path d="M 1300 943 L 1320 943" fill="none" stroke="#8A7B73" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#aGray)"/>
+<path d="M 1410 943 L 1430 943" fill="none" stroke="#8A7B73" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#aGray)"/>
+<rect x="904" y="1010" width="180" height="30" rx="5" fill="#F3D8C4" stroke="#B46A45" stroke-width="1.0"/>
+<text x="911" y="1024" font-family="Times New Roman" font-size="8" fill="#3C3A39" font-weight="bold" text-anchor="start">Gate + residual</text>
+<text x="911" y="1036" font-family="Times New Roman" font-size="7" fill="#6B5F5A" font-weight="normal" text-anchor="start">α2 ⊙ + x</text>
+<rect x="904" y="1070" width="180" height="44" rx="5" fill="#FFFFFF" stroke="#D9CEC8" stroke-width="1.0"/>
+<text x="911" y="1084" font-family="Times New Roman" font-size="9" fill="#3C3A39" font-weight="bold" text-anchor="start">Output</text>
+<text x="911" y="1100" font-family="Times New Roman" font-size="7.5" fill="#6B5F5A" font-weight="normal" text-anchor="start">x [B,N,768]</text>
+<text x="911" y="1110" font-family="Times New Roman" font-size="7.5" fill="#6B5F5A" font-weight="normal" text-anchor="start">to next block</text>
+<line x1="994" y1="940" x2="994" y2="1010" stroke="#8A7B73" stroke-width="1.5" stroke-linecap="round" marker-end="url(#aGray)"/>
+<path d="M 1610 943 L 1630 943 L 1630 1030 L 1084 1030" fill="none" stroke="#8A7B73" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#aGray)"/>
+<line x1="994" y1="1040" x2="994" y2="1070" stroke="#8A7B73" stroke-width="1.5" stroke-linecap="round" marker-end="url(#aGray)"/>
+<path d="M 1100 650 L 1092 650 L 1092 870 L 1084 870" fill="none" stroke="#B46A45" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#aPeach)"/>
+<path d="M 1092 870 L 1092 1030 L 1084 1030" fill="none" stroke="#B46A45" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#aPeach)"/>
+<text x="1044" y="900" font-family="Times New Roman" font-size="7" fill="#B46A45" font-weight="normal" text-anchor="start">γ,β,α</text>
+<rect x="1320" y="1010" width="400" height="60" rx="5" fill="#FFFFFF" stroke="#D9CEC8" stroke-width="0.8"/>
+<text x="1332" y="1026" font-family="Times New Roman" font-size="7.5" fill="#3C3A39" font-weight="normal" text-anchor="start">x ← x + α1⊙MHA(LN(x)·(1+γ1)+β1)</text>
+<text x="1332" y="1042" font-family="Times New Roman" font-size="7.5" fill="#3C3A39" font-weight="normal" text-anchor="start">x ← x + α2⊙MLP(LN(x)·(1+γ2)+β2)</text>
+<text x="1332" y="1058" font-family="Times New Roman" font-size="7" fill="#8A7B73" font-weight="normal" text-anchor="start">c = t + d + s · mask padded tokens</text>
+<rect x="1600" y="1078" width="44" height="20" rx="5" fill="#FDF7F9" stroke="#B5486B" stroke-width="0.9"/>
+<text x="1622.0" y="1091.0" font-family="Times New Roman" font-size="8" fill="#B5486B" font-weight="normal" text-anchor="middle">×12</text>
+<text x="1320" y="1098" font-family="Times New Roman" font-size="6.5" fill="#8A7B73" font-weight="normal" text-anchor="start">2 dataset classes + null · 230 SG + null</text>
+<text x="1320" y="1110" font-family="Times New Roman" font-size="6.2" fill="#8A7B73" font-weight="normal" text-anchor="start">class dropout 0.1 · spacegroup off in released checkpoint</text>
+</svg>

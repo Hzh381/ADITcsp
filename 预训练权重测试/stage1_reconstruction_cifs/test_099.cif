@@ -1,0 +1,38 @@
+# generated using pymatgen
+data_NdAsO4
+_symmetry_space_group_name_H-M   'P 1'
+_cell_length_a   6.02519035
+_cell_length_b   6.00825644
+_cell_length_c   6.07704210
+_cell_angle_alpha   106.95806122
+_cell_angle_beta   107.28919983
+_cell_angle_gamma   114.33641052
+_symmetry_Int_Tables_number   1
+_chemical_formula_structural   NdAsO4
+_chemical_formula_sum   'Nd2 As2 O8'
+_cell_volume   168.31198747
+_cell_formula_units_Z   2
+loop_
+ _symmetry_equiv_pos_site_id
+ _symmetry_equiv_pos_as_xyz
+  1  'x, y, z'
+loop_
+ _atom_site_type_symbol
+ _atom_site_label
+ _atom_site_symmetry_multiplicity
+ _atom_site_fract_x
+ _atom_site_fract_y
+ _atom_site_fract_z
+ _atom_site_occupancy
+  Nd  Nd0  1  0.78270495  0.25438136  0.48958004  1
+  Nd  Nd1  1  0.01649767  0.00737180  0.02413383  1
+  As  As2  1  0.26721659  0.79093933  0.52171874  1
+  As  As3  1  0.51065779  0.53380257  0.02420124  1
+  O  O4  1  0.30390522  0.44919997  0.36604306  1
+  O  O5  1  0.06497282  0.96721208  0.37173128  1
+  O  O6  1  0.16676548  0.27755031  0.83962965  1
+  O  O7  1  0.70135206  0.56791198  0.84882963  1
+  O  O8  1  0.47025827  0.87419415  0.17877881  1
+  O  O9  1  0.73597562  0.35006359  0.16569686  1
+  O  O10  1  0.60370880  0.98157883  0.65807247  1
+  O  O11  1  0.07744360  0.69782627  0.66429627  1

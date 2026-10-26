@@ -1,0 +1,32 @@
+# generated using pymatgen
+data_GdSiAu
+_symmetry_space_group_name_H-M   'P 1'
+_cell_length_a   4.30198765
+_cell_length_b   4.28358936
+_cell_length_c   7.77859926
+_cell_angle_alpha   89.43067169
+_cell_angle_beta   89.62232971
+_cell_angle_gamma   120.07408142
+_symmetry_Int_Tables_number   1
+_chemical_formula_structural   GdSiAu
+_chemical_formula_sum   'Gd2 Si2 Au2'
+_cell_volume   124.02923584
+_cell_formula_units_Z   2
+loop_
+ _symmetry_equiv_pos_site_id
+ _symmetry_equiv_pos_as_xyz
+  1  'x, y, z'
+loop_
+ _atom_site_type_symbol
+ _atom_site_label
+ _atom_site_symmetry_multiplicity
+ _atom_site_fract_x
+ _atom_site_fract_y
+ _atom_site_fract_z
+ _atom_site_occupancy
+  Gd  Gd0  1  0.14317864  0.58461750  0.81403828  1
+  Gd  Gd1  1  0.11822607  0.59881175  0.31855345  1
+  Si  Si2  1  0.42123109  0.25089991  0.02228616  1
+  Si  Si3  1  0.78390157  0.97169685  0.55496413  1
+  Au  Au4  1  0.79251289  0.90633738  0.95401269  1
+  Au  Au5  1  0.43557233  0.27883145  0.51364344  1

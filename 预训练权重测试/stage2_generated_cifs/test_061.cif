@@ -1,0 +1,36 @@
+# generated using pymatgen
+data_K2EuCuCl6
+_symmetry_space_group_name_H-M   'P 1'
+_cell_length_a   7.28161716
+_cell_length_b   7.27817106
+_cell_length_c   7.19716263
+_cell_angle_alpha   60.02576447
+_cell_angle_beta   60.41090775
+_cell_angle_gamma   60.03987122
+_symmetry_Int_Tables_number   1
+_chemical_formula_structural   K2EuCuCl6
+_chemical_formula_sum   'K2 Eu1 Cu1 Cl6'
+_cell_volume   270.67213605
+_cell_formula_units_Z   1
+loop_
+ _symmetry_equiv_pos_site_id
+ _symmetry_equiv_pos_as_xyz
+  1  'x, y, z'
+loop_
+ _atom_site_type_symbol
+ _atom_site_label
+ _atom_site_symmetry_multiplicity
+ _atom_site_fract_x
+ _atom_site_fract_y
+ _atom_site_fract_z
+ _atom_site_occupancy
+  K  K0  1  0.64862102  0.25926346  0.79799449  1
+  K  K1  1  0.14238684  0.74610883  0.27934486  1
+  Eu  Eu2  1  0.86327899  0.53896821  0.03351526  1
+  Cu  Cu3  1  0.39111483  0.99900401  0.50736004  1
+  Cl  Cl4  1  0.62388349  0.74942219  0.75880605  1
+  Cl  Cl5  1  0.61078864  0.25229424  0.26809049  1
+  Cl  Cl6  1  0.15551782  0.24754874  0.28110898  1
+  Cl  Cl7  1  0.60704911  0.75779313  0.26277626  1
+  Cl  Cl8  1  0.16439652  0.24146223  0.76097149  1
+  Cl  Cl9  1  0.16048846  0.74396402  0.76418608  1

@@ -1,0 +1,44 @@
+# generated using pymatgen
+data_Rb2Ti(CuS2)2
+_symmetry_space_group_name_H-M   'P 1'
+_cell_length_a   4.63497066
+_cell_length_b   6.64646816
+_cell_length_c   14.10898876
+_cell_angle_alpha   89.89098358
+_cell_angle_beta   91.50410461
+_cell_angle_gamma   96.15427399
+_symmetry_Int_Tables_number   1
+_chemical_formula_structural   Rb2Ti(CuS2)2
+_chemical_formula_sum   'Rb4 Ti2 Cu4 S8'
+_cell_volume   431.99011669
+_cell_formula_units_Z   2
+loop_
+ _symmetry_equiv_pos_site_id
+ _symmetry_equiv_pos_as_xyz
+  1  'x, y, z'
+loop_
+ _atom_site_type_symbol
+ _atom_site_label
+ _atom_site_symmetry_multiplicity
+ _atom_site_fract_x
+ _atom_site_fract_y
+ _atom_site_fract_z
+ _atom_site_occupancy
+  Rb  Rb0  1  0.77299809  0.78851259  0.00326884  1
+  Rb  Rb1  1  0.24363858  0.77139395  0.51037502  1
+  Rb  Rb2  1  0.77319992  0.24783465  0.50412750  1
+  Rb  Rb3  1  0.22613755  0.26065642  0.01767904  1
+  Ti  Ti4  1  0.52782643  0.51577246  0.78444338  1
+  Ti  Ti5  1  0.52504015  0.52889502  0.27539051  1
+  Cu  Cu6  1  -0.00317075  0.50681245  0.78393447  1
+  Cu  Cu7  1  0.51374185  -0.01500865  0.76709914  1
+  Cu  Cu8  1  0.00528623  0.51092517  0.29421359  1
+  Cu  Cu9  1  0.51932025  -0.00231651  0.28073725  1
+  S  S10  1  0.74276918  0.75281912  0.67190933  1
+  S  S11  1  0.24860249  0.25861752  0.67837632  1
+  S  S12  1  0.74156582  0.76375335  0.36858425  1
+  S  S13  1  0.73900926  0.27674642  0.16909108  1
+  S  S14  1  0.25199795  0.74152863  0.86212933  1
+  S  S15  1  0.24466887  0.27513033  0.36524564  1
+  S  S16  1  0.26314971  0.75874293  0.17403543  1
+  S  S17  1  0.74894166  0.25962061  0.84789419  1
