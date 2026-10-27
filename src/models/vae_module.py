@@ -261,7 +261,13 @@ class VariationalAutoencoderLitModule(LightningModule):
         losses = self.criterion(batch, encoded, out)
         for name, value in losses.items():
             self.train_metrics[name](value)
-            self.log(f"train/{name}", self.train_metrics[name], on_step=True, on_epoch=False)
+            self.log(
+                f"train/{name}",
+                self.train_metrics[name],
+                on_step=True,
+                on_epoch=False,
+                prog_bar=(name == "loss"),
+            )
         return losses["loss"]
 
     def on_train_epoch_start(self):
@@ -295,7 +301,13 @@ class VariationalAutoencoderLitModule(LightningModule):
         losses = self.criterion(batch, encoded, out)
         for name, value in losses.items():
             metrics[name](value)
-            self.log(f"{stage}_mp20/{name}", metrics[name], on_epoch=True, sync_dist=True)
+            self.log(
+                f"{stage}_mp20/{name}",
+                metrics[name],
+                on_epoch=True,
+                sync_dist=True,
+                prog_bar=(name == "loss"),
+            )
         start = 0
         for idx, data in enumerate(batch.to_data_list()):
             end = start + int(data.num_atoms)
@@ -335,7 +347,13 @@ class VariationalAutoencoderLitModule(LightningModule):
         metrics = self.val_metrics["mp20"] if stage == "val" else self.test_metrics["mp20"]
         for name, value in evaluator.get_metrics().items():
             metrics[name](value)
-            self.log(f"{stage}_mp20/{name}", metrics[name], on_epoch=True, sync_dist=True)
+            self.log(
+                f"{stage}_mp20/{name}",
+                metrics[name],
+                on_epoch=True,
+                sync_dist=True,
+                prog_bar=(name == "match_rate"),
+            )
 
     def configure_optimizers(self):
         optimizer = self.hparams.optimizer(params=self.parameters())

@@ -102,6 +102,7 @@ class LatentDiffusionLitModule(LightningModule):
                 metrics[name],
                 on_epoch=True,
                 sync_dist=True,
+                prog_bar=(name == "loss"),
             )
 
     def training_step(self, batch, batch_idx):
@@ -109,7 +110,13 @@ class LatentDiffusionLitModule(LightningModule):
         losses = self.criterion(noisy, pred)
         for name, value in losses.items():
             self.train_metrics[name](value)
-            self.log(f"train/{name}", self.train_metrics[name], on_step=True, on_epoch=False)
+            self.log(
+                f"train/{name}",
+                self.train_metrics[name],
+                on_step=True,
+                on_epoch=False,
+                prog_bar=(name == "loss"),
+            )
         return losses["loss"]
 
     def on_train_epoch_start(self):

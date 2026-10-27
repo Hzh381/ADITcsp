@@ -79,6 +79,24 @@ $env:PYTHONIOENCODING = "utf-8"
 
 完整环境说明见 [SETUP.md](SETUP.md)。
 
+## 训练控制台输出
+
+训练时控制台会显示 batch 进度条和 `train/loss`。此外，每个 epoch 的首个
+step，以及每隔 10 个 step，会输出一行训练信息：
+
+```text
+[训练] epoch 1/300 step 1 loss=42.388859 lr=1.00e-04
+```
+
+验证固定每 10 个 epoch 执行一次，结束后会显示验证 loss、结构匹配率和
+RMSD：
+
+```text
+[验证] epoch 10/300 loss=3.715295 match_rate=0.000000 rms_dist=10.000000
+```
+
+完整训练指标仍会同时写入 `--output-dir` 下的 CSV 日志。
+
 ## 第一阶段：训练 VAE
 
 ```powershell

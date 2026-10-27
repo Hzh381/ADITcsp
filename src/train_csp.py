@@ -14,7 +14,7 @@ import numpy as np
 import rootutils
 import torch
 from lightning import Trainer
-from lightning.pytorch.callbacks import ModelCheckpoint
+from lightning.pytorch.callbacks import Callback, ModelCheckpoint
 from lightning.pytorch.loggers import CSVLogger
 from omegaconf import OmegaConf
 
@@ -34,6 +34,50 @@ DIT_SIZES = {
     "b": (768, 12, 12),
     "l": (1024, 16, 24),
 }
+
+CONSOLE_LOG_INTERVAL = 10
+
+
+class ConsoleTrainingCallback(Callback):
+    """Print compact training and validation information to the console."""
+
+    @staticmethod
+    def _scalar(trainer, key):
+        value = trainer.callback_metrics.get(key)
+        return None if value is None else float(value.detach().cpu())
+
+    def on_train_batch_end(self, trainer, pl_module, outputs, batch, batch_idx):
+        step = batch_idx + 1
+        if step != 1 and step % CONSOLE_LOG_INTERVAL != 0:
+            return
+        loss = self._scalar(trainer, "train/loss")
+        if loss is None and torch.is_tensor(outputs):
+            loss = float(outputs.detach().cpu())
+        if loss is None:
+            return
+        learning_rate = trainer.optimizers[0].param_groups[0]["lr"]
+        print(
+            f"[训练] epoch {trainer.current_epoch + 1}/{trainer.max_epochs} "
+            f"step {trainer.global_step} loss={loss:.6f} lr={learning_rate:.2e}",
+            flush=True,
+        )
+
+    def on_validation_end(self, trainer, pl_module):
+        metrics = []
+        for key, label in (
+            ("val_mp20/loss", "loss"),
+            ("val_mp20/match_rate", "match_rate"),
+            ("val_mp20/rms_dist", "rms_dist"),
+        ):
+            value = self._scalar(trainer, key)
+            if value is not None:
+                metrics.append(f"{label}={value:.6f}")
+        if metrics:
+            print(
+                f"[验证] epoch {trainer.current_epoch + 1}/{trainer.max_epochs} "
+                + " ".join(metrics),
+                flush=True,
+            )
 
 
 def parse_args():
@@ -161,10 +205,10 @@ def main():
         limit_val_batches=args.limit_batches or 1.0,
         check_val_every_n_epoch=10,
         num_sanity_val_steps=0,
-        enable_progress_bar=False,
-        log_every_n_steps=20,
+        enable_progress_bar=True,
+        log_every_n_steps=CONSOLE_LOG_INTERVAL,
         logger=CSVLogger(str(output_dir / "logs"), name=args.stage),
-        callbacks=[checkpoint],
+        callbacks=[checkpoint, ConsoleTrainingCallback()],
     )
     trainer.fit(model, datamodule=datamodule)
     print(f"best checkpoint: {checkpoint.best_model_path}")
