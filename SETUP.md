@@ -113,6 +113,41 @@ python src/test_csp.py `
 
 这些验证只说明环境与数据流程可用，不代表模型已经收敛或具备有效生成能力。
 
+## Loss 曲线
+
+训练完成或触发提前停止后，程序会使用 matplotlib 的无界面后端自动保存：
+
+```text
+<output-dir>/loss_curve.png
+<output-dir>/loss_history.csv
+```
+
+图中蓝线是每个 epoch 的训练 loss 平均值，红线和圆点表示验证 loss。验证
+固定每 10 个 epoch 执行一次，因此验证 loss 的点数会少于训练 loss。续训时
+程序会读取已有 `loss_history.csv`，保留当前 epoch 之前的曲线数据。
+
+## 提前停止
+
+训练默认监控 `val_mp20/loss`，并使用 `min_delta=1e-4`。当前每 10 个
+epoch 验证一次，默认 `--patience 5`，即连续 5 次验证没有改善后停止，约
+等于连续 50 个 epoch 没有改善。
+
+`--epochs` 是最大训练轮数，不是固定执行轮数。若希望更早停止，可以减小
+patience；若验证指标仍有明显改善，可以增大 patience 或最大 epoch 数。
+
+## 动态学习率
+
+VAE 和 DiT 都使用 `ReduceLROnPlateau`，监控 `val_mp20/loss`：
+
+- 初始学习率为 `1e-4`。
+- 允许连续 2 次验证没有相对改善；如果下一次仍无改善，学习率乘以 `0.5`。
+- 最低学习率固定为 `1e-6`。
+- 调度器只在验证发生的 epoch 更新，避免在没有新验证指标的 epoch 重复
+  读取旧值而误降学习率。
+
+学习率变化会直接显示在控制台。Early stopping 的 patience 为 5 次验证，
+因此学习率通常会先下降 1–2 次，之后才触发停止。
+
 ## 正式训练
 
 完整的 VAE、DiT 和 CSP 测试命令见 [README.md](README.md)。正式训练前应

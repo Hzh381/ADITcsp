@@ -97,6 +97,32 @@ RMSD：
 
 完整训练指标仍会同时写入 `--output-dir` 下的 CSV 日志。
 
+训练默认启用提前停止（early stopping），监控 `val_mp20/loss`。连续 5 次
+验证没有改善时会自动停止；每 10 个 epoch 验证一次，因此 patience 为 5
+约等于连续 50 个 epoch 没有改善。`--epochs` 仅表示最大训练轮数。
+
+学习率使用 `ReduceLROnPlateau` 动态调整，同样监控 `val_mp20/loss`。
+允许连续 2 次验证没有改善；如果下一次仍无改善，学习率乘以 0.5，最低降至
+`1e-6`。学习率发生变化时会输出：
+
+```text
+[学习率] 1.00e-04 -> 5.00e-05
+```
+
+每个 epoch 的学习率也会写入 CSV 日志，字段名由 Lightning 生成，通常为
+`lr-AdamW`，可用于绘制学习率曲线。
+
+训练完成后会自动绘制训练 loss 与验证 loss 随 epoch 变化的曲线。提前停止
+时也会在停止后生成图表：
+
+```text
+<output-dir>/loss_curve.png
+<output-dir>/loss_history.csv
+```
+
+`loss_history.csv` 保存每个 epoch 的平均训练 loss，以及发生验证的 epoch 的
+验证 loss。控制台会输出图表保存路径。
+
 ## 第一阶段：训练 VAE
 
 ```powershell
@@ -143,6 +169,13 @@ DiT 训练期间 VAE 保持冻结。`--dit-size` 可设为 `s`、`b` 或 `l`。
 ```text
 runs/carbon24_vae/checkpoints/last.ckpt
 runs/carbon24_dit/checkpoints/last.ckpt
+```
+
+每次训练还会在对应 `--output-dir` 下生成：
+
+```text
+loss_curve.png
+loss_history.csv
 ```
 
 ## 测试 CSP
@@ -195,6 +228,7 @@ StructureMatcher 固定使用 `ltol=0.3`、`stol=0.5` 和 `angle_tol=10°`。
 --device auto|cpu|cuda
 --output-dir
 --limit-batches     仅用于快速验证，0 表示使用全部 batch
+--patience          连续未改善的验证次数，默认 5
 ```
 
 其余训练设置固定在脚本中，以保持命令行简洁：
@@ -207,6 +241,12 @@ StructureMatcher 固定使用 `ltol=0.3`、`stol=0.5` 和 `angle_tol=10°`。
 | 采样步数 | `100` |
 | CFG scale | `2.0` |
 | 验证间隔 | 每 10 个 epoch |
+| Early stopping patience | `5` 次验证 |
+| Early stopping min_delta | `1e-4` |
+| 学习率调度器 | `ReduceLROnPlateau` |
+| 学习率下降倍数 | `0.5` |
+| 学习率下降 patience | `2` 次验证 |
+| 最低学习率 | `1e-6` |
 | DataLoader workers | `0` |
 | 随机种子 | `0` |
 

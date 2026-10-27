@@ -182,4 +182,12 @@ class LatentDiffusionLitModule(LightningModule):
         if self.hparams.scheduler is None:
             return {"optimizer": optimizer}
         scheduler = self.hparams.scheduler(optimizer=optimizer)
-        return {"optimizer": optimizer, "lr_scheduler": {"scheduler": scheduler, "interval": "epoch"}}
+        return {
+            "optimizer": optimizer,
+            "lr_scheduler": {
+                "scheduler": scheduler,
+                "monitor": "val_mp20/loss",
+                "interval": "epoch",
+                "frequency": self.hparams.scheduler_frequency,
+            },
+        }
