@@ -1,4 +1,4 @@
-"""Evaluate composition-conditioned Carbon-24 CSP checkpoints."""
+"""Evaluate composition-conditioned crystal structure prediction checkpoints."""
 
 import argparse
 import json
@@ -13,26 +13,30 @@ from tqdm import tqdm
 
 ROOT = rootutils.setup_root(__file__, indicator=".project-root", pythonpath=True)
 
-from src.data.components.carbon24_dataset import Carbon24Dataset  # noqa: E402
+from src.data.crystal_datamodule import (  # noqa: E402
+    SUPPORTED_DATASETS,
+    build_crystal_dataset,
+)
 from src.eval.crystal import structure_validity  # noqa: E402
 from src.models.ldm_module import LatentDiffusionLitModule  # noqa: E402
 
 
 def parse_args():
     parser = argparse.ArgumentParser()
+    parser.add_argument("--dataset", choices=SUPPORTED_DATASETS, default="carbon_24")
     parser.add_argument("--ckpt", required=True)
     parser.add_argument("--vae-ckpt", default=None)
     parser.add_argument("--candidates", type=int, default=4)
     parser.add_argument("--limit", type=int, default=50)
     parser.add_argument("--device", choices=["cpu", "cuda"], default="cpu")
-    parser.add_argument("--output", default=str(ROOT / "runs/carbon24_test"))
+    parser.add_argument("--output", default=None)
     return parser.parse_args()
 
 
 def main():
     args = parse_args()
     device = torch.device(args.device)
-    output = Path(args.output)
+    output = Path(args.output or ROOT / f"runs/{args.dataset}_test")
     cifs = output / "generated"
     cifs.mkdir(parents=True, exist_ok=True)
 
@@ -46,7 +50,11 @@ def main():
     model._device = device
     model.interpolant.num_timesteps = 100
 
-    dataset = Carbon24Dataset(ROOT / "data/carbon_24", "test")
+    dataset = build_crystal_dataset(
+        ROOT / "data" / args.dataset,
+        args.dataset,
+        "test",
+    )
     total = len(dataset) if args.limit <= 0 else min(args.limit, len(dataset))
     matcher = StructureMatcher(stol=0.5, angle_tol=10, ltol=0.3)
     rows = []
@@ -143,6 +151,7 @@ def main():
 
     finite = [x for x in rms_values if np.isfinite(x)]
     summary = {
+        "dataset": args.dataset,
         "num_targets": total,
         "candidates_per_target": args.candidates,
         "composition_match_rate": comp_candidates / max(total * args.candidates, 1),

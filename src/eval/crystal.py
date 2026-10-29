@@ -72,8 +72,8 @@ def smact_validity(comp, count, use_pauling_test=True, include_alloys=True):
     if len(set(symbols)) == 1:
         return True
 
-    # Carbon-24 never reaches this branch. Keep the general SMACT check for
-    # the existing multicomponent HiLo experiments.
+    # Carbon-only datasets skip SMACT. Multicomponent datasets use the
+    # general oxidation-state validity check below.
     import smact
     from smact.screening import pauling_test
 

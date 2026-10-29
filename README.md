@@ -1,16 +1,24 @@
-# 基于 ADiT 的 Carbon-24 晶体结构预测
+# 基于 ADiT 的晶体结构预测
 
-本项目已精简为面向 Carbon-24 数据集的晶体结构预测（CSP）实验。模型接收
-目标成分，在潜空间中生成候选结构，再由 VAE 解码器输出原子类型、分数坐标
-和晶格参数。
+本项目支持 Carbon-24、MP-20、MPTS-52 和 Perov-5 四套晶体结构数据。模型
+接收目标成分，在潜空间中生成候选结构，再由 VAE 解码器输出原子类型、
+分数坐标和晶格参数。每次实验只使用一套数据，不进行跨数据集联合训练。
 
 ## 项目范围
 
-- 数据集：Carbon-24，每个晶胞包含 6–24 个碳原子。
-- 数据划分：训练集 6,091 条、验证集 2,032 条、测试集 2,030 条。
+- 数据集：`carbon_24`、`mp_20`、`mpts_52`、`perov_5`。
 - 模型：成分条件 VAE + 潜空间流匹配 DiT。
-- 输入：100 维元素计数向量。Carbon-24 中仅碳元素计数 `C_n` 非零。
+- 输入：100 维元素计数向量。
 - 输出：候选晶体结构、有效候选的 CIF 文件和 CSP 评价指标。
+
+| 数据集参数 | 数据目录 | 训练集 | 验证集 | 测试集 | 原子数 |
+| --- | --- | ---: | ---: | ---: | --- |
+| `carbon_24` | `data/carbon_24` | 6,091 | 2,032 | 2,030 | 6–24 |
+| `mp_20` | `data/mp_20` | 27,136 | 9,047 | 9,046 | 1–20 |
+| `mpts_52` | `data/mpts_52` | 27,380 | 5,000 | 8,096 | 1–52 |
+| `perov_5` | `data/perov_5` | 11,356 | 3,787 | 3,785 | 5 |
+
+四套数据均直接使用各自已有的 train/val/test 划分，不重新划分。
 
 原先的 QM9/MP20/QMOF 联合训练、Hydra 配置和旧评估入口已从当前支持范围
 中移除。
@@ -28,7 +36,7 @@
 
 | 规模 | `d_model` | `nhead` | `num_layers` |
 | --- | ---: | ---: | ---: |
-| `s` | 384 | 6 | 12 |
+| `s` | 384 | 6 | 6 |
 | `b` | 768 | 12 | 12 |
 | `l` | 1024 | 16 | 24 |
 
@@ -36,19 +44,20 @@
 `num_layers` 才是堆叠的 DiT block 数量。
 
 当前模型从编码器到解码器均支持成分条件。原项目在 QM9/MP20 上训练的联合
-模型权重与本版本的输入词表和条件结构不兼容，不能直接用于 Carbon-24 CSP。
+模型权重与本版本的输入和条件结构不兼容，不能直接用于这些 CSP 实验。
 
 ## 目录结构
 
 ```text
-data/carbon_24/                 train.csv、val.csv、test.csv、train_ori.pt、val_ori.pt
+data/<dataset>/                 train.csv、val.csv、test.csv、processed/*.pt
 src/
   train_csp.py                  VAE 或 DiT 训练入口
   test_csp.py                   候选结构采样、CIF 输出和 CSP 评价
   eval_cka.py                   独立计算已训练 DiT 的层间 CKA
   data/
-    carbon24_datamodule.py
+    crystal_datamodule.py       数据集选择与 DataModule
     components/carbon24_dataset.py
+    components/crystal_csv_dataset.py
     components/cif.py
     components/composition_utils.py
   models/
@@ -63,15 +72,11 @@ src/
     crystal_reconstruction.py
 ```
 
-以下目录被保留，因为其中包含已有实验、预训练权重测试结果或论文图件：
+以下目录被保留，因为其中包含已有测试结果或论文图件：
 
-- `experiment/`
 - `experiment2/`
 - `预训练权重测试/`
 - `ccfa-workfiles/`
-
-其中 `experiment/hilo_signal/` 是保留的 HiLo 对比实验，仍使用 MP20 兼容
-数据读取与预处理代码。
 
 ## 环境激活
 
@@ -82,6 +87,19 @@ $env:PYTHONIOENCODING = "utf-8"
 ```
 
 完整环境说明见 [SETUP.md](SETUP.md)。
+
+## 选择数据集
+
+四个入口都通过 `--dataset` 独立选择数据：
+
+```powershell
+$DATASET = "perov_5"
+```
+
+可选值为 `carbon_24`、`mp_20`、`mpts_52`、`perov_5`。默认值为
+`carbon_24`。新加入的三套数据首次加载时会解析 CSV 中的 CIF，并缓存到
+`data/<dataset>/processed/train.pt、val.pt、test.pt`。当前缓存已经生成，
+后续启动可直接加载。
 
 ## 训练控制台输出
 
@@ -104,6 +122,8 @@ RMSD：
 训练默认启用提前停止（early stopping），监控 `val_mp20/loss`。连续 5 次
 验证没有改善时会自动停止；每 10 个 epoch 验证一次，因此 patience 为 5
 约等于连续 50 个 epoch 没有改善。`--epochs` 仅表示最大训练轮数。
+指标名中的 `mp20` 是兼容旧 checkpoint 的遗留前缀，不代表当前数据一定
+是 MP-20。
 
 学习率使用 `ReduceLROnPlateau` 动态调整，同样监控 `val_mp20/loss`。
 允许连续 2 次验证没有改善；如果下一次仍无改善，学习率乘以 0.5，最低降至
@@ -131,10 +151,11 @@ RMSD：
 
 ```powershell
 python src/train_csp.py `
+  --dataset $DATASET `
   --stage vae `
   --epochs 300 `
   --batch-size 32 `
-  --output-dir runs/carbon24_vae
+  --output-dir "runs/${DATASET}_vae"
 ```
 
 在 NVIDIA GPU 机器上增加 `--device cuda`。本机默认使用 CPU。
@@ -143,6 +164,7 @@ CPU 快速检查：
 
 ```powershell
 python src/train_csp.py `
+  --dataset carbon_24 `
   --stage vae `
   --epochs 10 `
   --limit-batches 1 `
@@ -158,12 +180,13 @@ epoch 执行一次，因此上述命令会执行 10 次训练更新、1 个验�
 
 ```powershell
 python src/train_csp.py `
+  --dataset $DATASET `
   --stage dit `
-  --vae-ckpt runs/carbon24_vae/checkpoints/last.ckpt `
+  --vae-ckpt "runs/${DATASET}_vae/checkpoints/last.ckpt" `
   --epochs 500 `
   --batch-size 32 `
   --dit-size s `
-  --output-dir runs/carbon24_dit
+  --output-dir "runs/${DATASET}_dit"
 ```
 
 DiT 训练期间 VAE 保持冻结。`--dit-size` 可设为 `s`、`b` 或 `l`。
@@ -171,8 +194,8 @@ DiT 训练期间 VAE 保持冻结。`--dit-size` 可设为 `s`、`b` 或 `l`。
 主要 checkpoint：
 
 ```text
-runs/carbon24_vae/checkpoints/last.ckpt
-runs/carbon24_dit/checkpoints/last.ckpt
+runs/<dataset>_vae/checkpoints/last.ckpt
+runs/<dataset>_dit/checkpoints/last.ckpt
 ```
 
 每次训练还会在对应 `--output-dir` 下生成：
@@ -187,7 +210,7 @@ loss_history.csv
 DiT 训练使用 PyTorch forward hook 捕获以下层的输出：
 
 - 输入嵌入 `embedding`
-- 每个 Transformer block，例如 `block_01` 至 `block_12`
+- 每个 Transformer block，例如 `block_01` 至 `block_06`
 - 输出层 `output`
 
 每次验证时，程序从最多 4 个验证 batch 中收集有效原子 token 的表示，并最多
@@ -210,21 +233,22 @@ CKA 不依赖训练过程。训练完成后可以直接运行：
 
 ```powershell
 python src/eval_cka.py `
-  --ckpt runs/carbon24_dit/checkpoints/last.ckpt `
-  --vae-ckpt runs/carbon24_vae/checkpoints/last.ckpt `
+  --dataset $DATASET `
+  --ckpt "runs/${DATASET}_dit/checkpoints/last.ckpt" `
+  --vae-ckpt "runs/${DATASET}_vae/checkpoints/last.ckpt" `
   --device cpu `
   --split val `
   --batches 4 `
-  --output runs/carbon24_cka
+  --output "runs/${DATASET}_cka"
 ```
 
 该脚本只执行模型前向传播，不更新权重、不写入 checkpoint，也不会启动训练。
 输出包括：
 
 ```text
-runs/carbon24_cka/cka_heatmap.png
-runs/carbon24_cka/cka_matrix.csv
-runs/carbon24_cka/cka_metadata.json
+runs/<dataset>_cka/cka_heatmap.png
+runs/<dataset>_cka/cka_matrix.csv
+runs/<dataset>_cka/cka_metadata.json
 ```
 
 `cka_metadata.json` 记录 checkpoint、数据划分、batch 数、随机种子、模型维度
@@ -234,20 +258,21 @@ runs/carbon24_cka/cka_metadata.json
 
 ```powershell
 python src/test_csp.py `
-  --ckpt runs/carbon24_dit/checkpoints/last.ckpt `
-  --vae-ckpt runs/carbon24_vae/checkpoints/last.ckpt `
+  --dataset $DATASET `
+  --ckpt "runs/${DATASET}_dit/checkpoints/last.ckpt" `
+  --vae-ckpt "runs/${DATASET}_vae/checkpoints/last.ckpt" `
   --candidates 4 `
   --limit 50 `
   --device cpu `
-  --output runs/carbon24_test
+  --output "runs/${DATASET}_test"
 ```
 
-`--limit 0` 表示评价完整的 2,030 条测试结构。输出文件为：
+`--limit 0` 表示评价所选数据集的完整测试集。输出文件为：
 
 ```text
-runs/carbon24_test/summary.json
-runs/carbon24_test/per_target.json
-runs/carbon24_test/generated/*.cif
+runs/<dataset>_test/summary.json
+runs/<dataset>_test/per_target.json
+runs/<dataset>_test/generated/*.cif
 ```
 
 ### 评价指标
@@ -272,6 +297,7 @@ StructureMatcher 固定使用 `ltol=0.3`、`stol=0.5` 和 `angle_tol=10°`。
 `src/train_csp.py` 已移除大部分低频参数，常用参数如下：
 
 ```text
+--dataset carbon_24|mp_20|mpts_52|perov_5
 --stage vae|dit
 --epochs
 --batch-size
@@ -307,10 +333,11 @@ StructureMatcher 固定使用 `ltol=0.3`、`stol=0.5` 和 `angle_tol=10°`。
 ## 测试命令参数
 
 ```text
+--dataset carbon_24|mp_20|mpts_52|perov_5
 --ckpt
 --vae-ckpt
 --candidates
---limit             0 表示评价全部 2,030 条测试结构
+--limit             0 表示评价所选数据集的全部测试结构
 --device cpu|cuda
 --output
 ```

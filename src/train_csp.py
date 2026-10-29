@@ -1,8 +1,8 @@
 """Minimal Carbon-24 CSP training entry point.
 
 Examples:
-    python src/train_csp.py --stage vae
-    python src/train_csp.py --stage dit --vae-ckpt runs/carbon24_vae/checkpoints/last.ckpt
+    python src/train_csp.py --dataset perov_5 --stage vae
+    python src/train_csp.py --dataset perov_5 --stage dit --vae-ckpt runs/perov_5_vae/checkpoints/last.ckpt
 """
 
 import argparse
@@ -32,7 +32,10 @@ import matplotlib.pyplot as plt  # noqa: E402
 
 ROOT = rootutils.setup_root(__file__, indicator=".project-root", pythonpath=True)
 
-from src.data.carbon24_datamodule import Carbon24DataModule  # noqa: E402
+from src.data.crystal_datamodule import (  # noqa: E402
+    SUPPORTED_DATASETS,
+    CrystalDataModule,
+)
 from src.models.decoders.transformer import TransformerDecoder  # noqa: E402
 from src.models.denoisers.dit import DiT  # noqa: E402
 from src.models.encoders.transformer import TransformerEncoder  # noqa: E402
@@ -43,7 +46,7 @@ from src.models.vae_module import VariationalAutoencoderLitModule  # noqa: E402
 
 
 DIT_SIZES = {
-    "s": {"d_model": 384, "nhead": 6, "num_layers": 6},
+    "s": {"d_model": 384, "nhead": 6, "num_layers": 4},
     "b": {"d_model": 768, "nhead": 12, "num_layers": 12},
     "l": {"d_model": 1024, "nhead": 16, "num_layers": 24},
 }
@@ -280,6 +283,12 @@ class ConsoleTrainingCallback(Callback):
 
 def parse_args():
     parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--dataset",
+        choices=SUPPORTED_DATASETS,
+        default="carbon_24",
+        help="crystal dataset under data/",
+    )
     parser.add_argument("--stage", choices=["vae", "dit"], default="vae")
     parser.add_argument("--output-dir", default=None)
     parser.add_argument("--vae-ckpt", default=None)
@@ -311,7 +320,7 @@ def build_vae(args, output_dir):
         dropout=0.0,
         norm_first=True,
         bias=True,
-        num_layers=4,
+        num_layers=2,
     )
     encoder = TransformerEncoder(**common)
     decoder = TransformerDecoder(**common)
@@ -380,15 +389,15 @@ def main():
     np.random.seed(0)
     torch.manual_seed(0)
 
-    output_dir = Path(
-        args.output_dir or ROOT / f"runs/carbon24_{args.stage}"
-    )
+    output_dir = Path(args.output_dir or ROOT / f"runs/{args.dataset}_{args.stage}")
     output_dir.mkdir(parents=True, exist_ok=True)
-    datamodule = Carbon24DataModule(
-        root=str(ROOT / "data/carbon_24"),
+    datamodule = CrystalDataModule(
+        root=str(ROOT / "data" / args.dataset),
+        dataset_name=args.dataset,
         batch_size={"train": args.batch_size, "val": args.batch_size, "test": args.batch_size},
         num_workers={"train": 0, "val": 0, "test": 0},
     )
+    print(f"[数据] dataset={args.dataset} root={ROOT / 'data' / args.dataset}")
     model = build_vae(args, output_dir) if args.stage == "vae" else build_ldm(args, output_dir)
 
     accelerator = "gpu" if args.device == "cuda" or (

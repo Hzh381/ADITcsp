@@ -1,4 +1,4 @@
-"""Compute layer-wise CKA for a trained Carbon-24 DiT checkpoint."""
+"""Compute layer-wise CKA for a trained crystal DiT checkpoint."""
 
 import argparse
 import csv
@@ -14,7 +14,10 @@ from torch_geometric.loader import DataLoader
 
 ROOT = rootutils.setup_root(__file__, indicator=".project-root", pythonpath=True)
 
-from src.data.components.carbon24_dataset import Carbon24Dataset  # noqa: E402
+from src.data.crystal_datamodule import (  # noqa: E402
+    SUPPORTED_DATASETS,
+    build_crystal_dataset,
+)
 from src.models.components.cka import CKAVisualizationCallback  # noqa: E402
 from src.models.ldm_module import LatentDiffusionLitModule  # noqa: E402
 
@@ -27,6 +30,7 @@ def parse_args():
     parser = argparse.ArgumentParser(
         description="Use forward hooks to compute layer-wise CKA for a trained DiT."
     )
+    parser.add_argument("--dataset", choices=SUPPORTED_DATASETS, default="carbon_24")
     parser.add_argument("--ckpt", required=True, help="DiT checkpoint")
     parser.add_argument("--vae-ckpt", required=True, help="matching VAE checkpoint")
     parser.add_argument(
@@ -41,7 +45,7 @@ def parse_args():
     )
     parser.add_argument(
         "--output",
-        default=str(ROOT / "runs/carbon24_cka"),
+        default=None,
         help="directory for heatmap, matrix, and metadata",
     )
     args = parser.parse_args()
@@ -75,14 +79,18 @@ def main():
     model.autoencoder.eval()
     model.interpolant.num_timesteps = 100
 
-    dataset = Carbon24Dataset(ROOT / "data/carbon_24", args.split)
+    dataset = build_crystal_dataset(
+        ROOT / "data" / args.dataset,
+        args.dataset,
+        args.split,
+    )
     loader = DataLoader(
         dataset,
         batch_size=CKA_BATCH_SIZE,
         shuffle=False,
         num_workers=0,
     )
-    output_dir = Path(args.output)
+    output_dir = Path(args.output or ROOT / f"runs/{args.dataset}_cka")
     output_dir.mkdir(parents=True, exist_ok=True)
 
     callback = CKAVisualizationCallback(
@@ -111,6 +119,7 @@ def main():
     with matrix_path.open("r", encoding="utf-8", newline="") as handle:
         layer_names = next(csv.reader(handle))[1:]
     metadata = {
+        "dataset": args.dataset,
         "dit_checkpoint": str(dit_checkpoint.resolve()),
         "vae_checkpoint": str(vae_checkpoint.resolve()),
         "split": args.split,

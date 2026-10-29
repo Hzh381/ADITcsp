@@ -65,7 +65,8 @@ class CrystalReconstructionEvaluator:
 
 
 def array_dict_to_crystal(x, save=False, save_dir_name=""):
-    if np.all(50 < x["angles"]) and np.all(x["angles"] < 130):
+    angles = np.asarray(x["angles"])
+    if np.isfinite(angles).all() and np.all(angles > 0.0) and np.all(angles < 180.0):
         crystal = Crystal(x)
         if crystal.valid and save:
             os.makedirs(save_dir_name, exist_ok=True)

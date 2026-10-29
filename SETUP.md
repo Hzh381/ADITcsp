@@ -21,8 +21,7 @@ $env:PYTHONIOENCODING = "utf-8"
 ```
 
 在 Windows 上设置 UTF-8 很重要。部分化学依赖会用进程默认编码读取数据
-文件；Carbon-24 的纯碳有效性检查已不依赖 SMACT 数据表，但保留的多元
-HiLo 实验仍会使用 SMACT。
+文件；MP-20、MPTS-52 和 Perov-5 的成分有效性评价会使用 SMACT。
 
 运行实验前，建议先确认实际使用的解释器：
 
@@ -36,20 +35,25 @@ python -c "import torch, lightning, torch_geometric; print(torch.__version__, to
 
 ## 数据
 
-Carbon-24 数据已位于：
+当前支持四套独立数据：
 
 ```text
-data/carbon_24/
-  train.csv
-  val.csv
-  test.csv
-  train_ori.pt
-  val_ori.pt
-  processed/test.pt    首次加载测试集时自动生成
+data/carbon_24/     train.csv、val.csv、test.csv、已有 *_ori.pt
+data/mp_20/         train.csv、val.csv、test.csv
+data/mpts_52/       train.csv、val.csv、test.csv
+data/perov_5/       train.csv、val.csv、test.csv
 ```
 
-当前不需要额外下载数据或运行预处理脚本。测试集缓存由 `test.csv` 解析得到；
-除非源 CSV 发生变化，否则不需要删除 `processed/test.pt`。
+| 数据集 | 训练集 | 验证集 | 测试集 |
+| --- | ---: | ---: | ---: |
+| `carbon_24` | 6,091 | 2,032 | 2,030 |
+| `mp_20` | 27,136 | 9,047 | 9,046 |
+| `mpts_52` | 27,380 | 5,000 | 8,096 |
+| `perov_5` | 11,356 | 3,787 | 3,785 |
+
+新加入的三套数据都已从 CSV 中的 CIF 完整解析并缓存到各自
+`processed/train.pt、val.pt、test.pt`，没有跳过记录。CSV 文件大小或修改
+时间发生变化时，缓存会自动重建。
 
 ## 冒烟测试（Smoke Test）
 
@@ -58,6 +62,7 @@ data/carbon_24/
 
 ```powershell
 python src/train_csp.py `
+  --dataset carbon_24 `
   --stage vae `
   --epochs 10 `
   --limit-batches 1 `
@@ -70,6 +75,7 @@ python src/train_csp.py `
 
 ```powershell
 python src/train_csp.py `
+  --dataset carbon_24 `
   --stage dit `
   --vae-ckpt runs/smoke_vae/checkpoints/last.ckpt `
   --epochs 10 `
@@ -82,6 +88,7 @@ python src/train_csp.py `
 
 ```powershell
 python src/test_csp.py `
+  --dataset carbon_24 `
   --ckpt runs/smoke_dit/checkpoints/last.ckpt `
   --vae-ckpt runs/smoke_vae/checkpoints/last.ckpt `
   --candidates 1 `
@@ -94,8 +101,8 @@ python src/test_csp.py `
 
 完整冒烟测试会构建：
 
-- 51.4M 参数的 VAE；
-- 32.7M 参数的 DiT-S；
+- 26.2M 参数的 VAE；
+- 16.8M 参数的 DiT-S；
 - 一个测试目标的候选结构。
 
 如果随机模型生成非法晶格，测试程序会记录该候选为结构无效，而不会中断整个
@@ -105,10 +112,10 @@ python src/test_csp.py `
 
 当前 Windows CPU 环境已完成以下验证：
 
-- VAE：单 batch 训练 10 个 epoch，并执行验证。
-- DiT：加载冻结 VAE，单 batch 训练 10 个 epoch，并执行验证。
-- CSP：一个测试目标、一个候选、100 步采样，并生成汇总指标。
-- `experiment/hilo_signal`：5 个原有测试全部通过。
+- `mp_20`、`mpts_52`、`perov_5` 的 train/val/test CIF 全部解析成功。
+- 三套新数据的 VAE 单 batch 前向全部通过。
+- Perov-5：单 batch VAE 训练 10 个 epoch，并执行多元素验证。
+- Perov-5：一个测试目标、一个候选、100 步采样的 CSP 流程通过。
 - 全部 `src` Python 文件通过语法检查。
 
 这些验证只说明环境与数据流程可用，不代表模型已经收敛或具备有效生成能力。
@@ -128,7 +135,8 @@ python src/test_csp.py `
 
 ## 提前停止
 
-训练默认监控 `val_mp20/loss`，并使用 `min_delta=1e-4`。当前每 10 个
+训练默认监控 `val_mp20/loss`，并使用 `min_delta=1e-4`。指标名称中的
+`mp20` 是兼容旧 checkpoint 的遗留前缀，不代表当前一定使用 MP-20。当前每 10 个
 epoch 验证一次，默认 `--patience 5`，即连续 5 次验证没有改善后停止，约
 等于连续 50 个 epoch 没有改善。
 
@@ -166,12 +174,13 @@ DiT 通过 forward hook 捕获输入嵌入、全部 Transformer block 和输出�
 
 ```powershell
 python src/eval_cka.py `
-  --ckpt runs/carbon24_dit/checkpoints/last.ckpt `
-  --vae-ckpt runs/carbon24_vae/checkpoints/last.ckpt `
+  --dataset perov_5 `
+  --ckpt runs/perov_5_dit/checkpoints/last.ckpt `
+  --vae-ckpt runs/perov_5_vae/checkpoints/last.ckpt `
   --device cpu `
   --split val `
   --batches 4 `
-  --output runs/carbon24_cka
+  --output runs/perov_5_cka
 ```
 
 脚本固定随机种子为 0，只执行验证或测试集前向传播，并生成
