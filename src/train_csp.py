@@ -43,10 +43,11 @@ from src.models.interpolants.flow_matching import FlowMatchingInterpolant  # noq
 from src.models.ldm_module import LatentDiffusionLitModule  # noqa: E402
 from src.models.components.cka import CKAVisualizationCallback  # noqa: E402
 from src.models.vae_module import VariationalAutoencoderLitModule  # noqa: E402
+from src.utils.optim import build_optimizer  # noqa: E402
 
 
 DIT_SIZES = {
-    "s": {"d_model": 384, "nhead": 6, "num_layers": 4},
+    "s": {"d_model": 384, "nhead": 6, "num_layers": 6},
     "b": {"d_model": 768, "nhead": 12, "num_layers": 12},
     "l": {"d_model": 1024, "nhead": 16, "num_layers": 24},
 }
@@ -54,6 +55,8 @@ DIT_SIZES = {
 CONSOLE_LOG_INTERVAL = 10
 VALIDATION_INTERVAL = 10
 EARLY_STOPPING_MIN_DELTA = 1e-4
+DEFAULT_DROPOUT = 0.05
+DEFAULT_WEIGHT_DECAY = 1e-4
 LR_SCHEDULER_FACTOR = 0.5
 LR_SCHEDULER_PATIENCE = 2
 LR_SCHEDULER_THRESHOLD = 1e-4
@@ -294,6 +297,18 @@ def parse_args():
     parser.add_argument("--vae-ckpt", default=None)
     parser.add_argument("--epochs", type=int, default=300)
     parser.add_argument("--batch-size", type=int, default=32)
+    parser.add_argument(
+        "--dropout",
+        type=float,
+        default=DEFAULT_DROPOUT,
+        help="dropout used by VAE and DiT attention/MLP",
+    )
+    parser.add_argument(
+        "--weight-decay",
+        type=float,
+        default=DEFAULT_WEIGHT_DECAY,
+        help="AdamW weight decay for matrix parameters",
+    )
     parser.add_argument("--device", choices=["auto", "cpu", "cuda"], default="auto")
     parser.add_argument("--dit-size", choices=["s", "b", "l"], default="s")
     parser.add_argument("--limit-batches", type=int, default=0, help="0 = all batches")
@@ -307,6 +322,10 @@ def parse_args():
     args = parser.parse_args()
     if args.patience < 0:
         parser.error("--patience must be non-negative")
+    if not 0.0 <= args.dropout < 1.0:
+        parser.error("--dropout must be in [0, 1)")
+    if args.weight_decay < 0.0:
+        parser.error("--weight-decay must be non-negative")
     return args
 
 
@@ -317,10 +336,10 @@ def build_vae(args, output_dir):
         nhead=8,
         dim_feedforward=2048,
         activation="gelu",
-        dropout=0.0,
+        dropout=args.dropout,
         norm_first=True,
         bias=True,
-        num_layers=2,
+        num_layers=4,
     )
     encoder = TransformerEncoder(**common)
     decoder = TransformerDecoder(**common)
@@ -336,7 +355,11 @@ def build_vae(args, output_dir):
         encoder=encoder,
         decoder=decoder,
         latent_dim=8,
-        optimizer=partial(torch.optim.AdamW, lr=1e-4, weight_decay=0.0),
+        optimizer=partial(
+            build_optimizer,
+            learning_rate=1e-4,
+            weight_decay=args.weight_decay,
+        ),
         scheduler=build_lr_scheduler(),
         scheduler_frequency=VALIDATION_INTERVAL,
         loss_weights=loss_weights,
@@ -362,6 +385,7 @@ def build_ldm(args, output_dir):
         num_datasets=2,
         composition_dim=100,
         composition_dropout_prob=0.1,
+        dropout=args.dropout,
     )
     interpolant = FlowMatchingInterpolant(
         min_t=1e-2,
@@ -374,7 +398,11 @@ def build_ldm(args, output_dir):
         autoencoder_ckpt=args.vae_ckpt,
         denoiser=denoiser,
         interpolant=interpolant,
-        optimizer=partial(torch.optim.AdamW, lr=1e-4, weight_decay=0.0),
+        optimizer=partial(
+            build_optimizer,
+            learning_rate=1e-4,
+            weight_decay=args.weight_decay,
+        ),
         scheduler=build_lr_scheduler(),
         scheduler_frequency=VALIDATION_INTERVAL,
         compile=False,
@@ -398,6 +426,10 @@ def main():
         num_workers={"train": 0, "val": 0, "test": 0},
     )
     print(f"[数据] dataset={args.dataset} root={ROOT / 'data' / args.dataset}")
+    print(
+        f"[配置] dropout={args.dropout:g} "
+        f"weight_decay={args.weight_decay:g}"
+    )
     model = build_vae(args, output_dir) if args.stage == "vae" else build_ldm(args, output_dir)
 
     accelerator = "gpu" if args.device == "cuda" or (

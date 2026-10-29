@@ -152,17 +152,30 @@ def modulate(x, shift, scale):
 class DiTBlock(nn.Module):
     """A DiT block with adaptive layer norm zero (adaLN-Zero) conditioning."""
 
-    def __init__(self, hidden_dim, num_heads, mlp_ratio=4.0, **block_kwargs):
+    def __init__(
+        self,
+        hidden_dim,
+        num_heads,
+        mlp_ratio=4.0,
+        dropout: float = 0.0,
+    ):
         super().__init__()
         self.norm1 = nn.LayerNorm(hidden_dim, elementwise_affine=False, eps=1e-6)
         self.attn = nn.MultiheadAttention(
-            hidden_dim, num_heads=num_heads, dropout=0, bias=True, batch_first=True
+            hidden_dim,
+            num_heads=num_heads,
+            dropout=dropout,
+            bias=True,
+            batch_first=True,
         )
         self.norm2 = nn.LayerNorm(hidden_dim, elementwise_affine=False, eps=1e-6)
         mlp_hidden_dim = int(hidden_dim * mlp_ratio)
         approx_gelu = lambda: nn.GELU(approximate="tanh")
         self.mlp = Mlp(
-            in_features=hidden_dim, hidden_features=mlp_hidden_dim, act_layer=approx_gelu, drop=0
+            in_features=hidden_dim,
+            hidden_features=mlp_hidden_dim,
+            act_layer=approx_gelu,
+            drop=dropout,
         )
         self.adaLN_modulation = nn.Sequential(
             nn.SiLU(), nn.Linear(hidden_dim, 6 * hidden_dim, bias=True)
@@ -226,6 +239,7 @@ class DiT(nn.Module):
         num_spacegroups=230,  # clf-free guidance input
         composition_dim: int = 0,
         composition_dropout_prob: float = 0.0,
+        dropout: float = 0.0,
     ):
         super().__init__()
         self.d_x = d_x
@@ -247,7 +261,15 @@ class DiT(nn.Module):
             )
 
         self.blocks = nn.ModuleList(
-            [DiTBlock(d_model, nhead, mlp_ratio=mlp_ratio) for _ in range(num_layers)]
+            [
+                DiTBlock(
+                    d_model,
+                    nhead,
+                    mlp_ratio=mlp_ratio,
+                    dropout=dropout,
+                )
+                for _ in range(num_layers)
+            ]
         )
         self.final_layer = FinalLayer(d_model, d_x)
         self.initialize_weights()

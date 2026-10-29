@@ -116,6 +116,7 @@ python src/test_csp.py `
 - 三套新数据的 VAE 单 batch 前向全部通过。
 - Perov-5：单 batch VAE 训练 10 个 epoch，并执行多元素验证。
 - Perov-5：一个测试目标、一个候选、100 步采样的 CSP 流程通过。
+- VAE/DiT 的 dropout、AdamW 权重衰减分组和 checkpoint 往返加载通过。
 - 全部 `src` Python 文件通过语法检查。
 
 这些验证只说明环境与数据流程可用，不代表模型已经收敛或具备有效生成能力。
@@ -155,6 +156,27 @@ VAE 和 DiT 都使用 `ReduceLROnPlateau`，监控 `val_mp20/loss`：
 
 学习率变化会直接显示在控制台。Early stopping 的 patience 为 5 次验证，
 因此学习率通常会先下降 1–2 次，之后才触发停止。
+
+## Dropout 与权重衰减
+
+VAE 和 DiT 默认使用：
+
+```text
+dropout = 0.05
+AdamW weight_decay = 1e-4
+```
+
+dropout 应用于 VAE Transformer layer 和 DiT 的 Attention/MLP。权重衰减
+只应用于二维及以上的矩阵参数，bias、LayerNorm 和 embedding 不衰减。
+训练开始时会输出实际配置，也可以分别运行消融：
+
+```powershell
+python src/train_csp.py --dataset carbon_24 --stage vae --dropout 0 --weight-decay 1e-4
+python src/train_csp.py --dataset carbon_24 --stage vae --dropout 0.05 --weight-decay 0
+python src/train_csp.py --dataset carbon_24 --stage vae --dropout 0.05 --weight-decay 1e-4
+```
+
+建议不要只凭训练 loss 选择配置，应比较验证 loss、重建匹配率和测试结果。
 
 ## 层间 CKA 分析
 

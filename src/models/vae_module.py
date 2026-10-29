@@ -356,7 +356,11 @@ class VariationalAutoencoderLitModule(LightningModule):
             )
 
     def configure_optimizers(self):
-        optimizer = self.hparams.optimizer(params=self.parameters())
+        optimizer_factory = self.hparams.optimizer
+        if getattr(optimizer_factory, "func", None) is torch.optim.AdamW:
+            optimizer = optimizer_factory(params=self.parameters())
+        else:
+            optimizer = optimizer_factory(params=self.named_parameters())
         if self.hparams.scheduler is None:
             return {"optimizer": optimizer}
         scheduler = self.hparams.scheduler(optimizer=optimizer)

@@ -301,6 +301,8 @@ StructureMatcher 固定使用 `ltol=0.3`、`stol=0.5` 和 `angle_tol=10°`。
 --stage vae|dit
 --epochs
 --batch-size
+--dropout              默认 0.05，作用于 VAE 和 DiT 的 Attention/MLP
+--weight-decay         AdamW 权重衰减，默认 1e-4
 --vae-ckpt          仅 DiT 阶段需要
 --dit-size s|b|l
 --device auto|cpu|cuda
@@ -315,6 +317,8 @@ StructureMatcher 固定使用 `ltol=0.3`、`stol=0.5` 和 `angle_tol=10°`。
 | --- | --- |
 | VAE 学习率 | `1e-4` |
 | DiT 学习率 | `1e-4` |
+| Dropout | `0.05` |
+| AdamW weight decay | `1e-4` |
 | 潜变量维度 | `8` |
 | 采样步数 | `100` |
 | CFG scale | `2.0` |
@@ -329,6 +333,18 @@ StructureMatcher 固定使用 `ltol=0.3`、`stol=0.5` 和 `angle_tol=10°`。
 | CKA 最多 token 数 | `512` |
 | DataLoader workers | `0` |
 | 随机种子 | `0` |
+
+权重衰减只作用于二维及以上的矩阵参数；bias、LayerNorm 和 embedding
+使用 `weight_decay=0`。VAE 和 DiT 的 Attention 与 MLP 均使用 `0.05`
+dropout。可以通过命令行调整这两个值，例如：
+
+```powershell
+python src/train_csp.py `
+  --dataset carbon_24 `
+  --stage vae `
+  --dropout 0.05 `
+  --weight-decay 1e-4
+```
 
 ## 测试命令参数
 
