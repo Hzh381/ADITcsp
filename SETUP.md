@@ -148,6 +148,35 @@ VAE 和 DiT 都使用 `ReduceLROnPlateau`，监控 `val_mp20/loss`：
 学习率变化会直接显示在控制台。Early stopping 的 patience 为 5 次验证，
 因此学习率通常会先下降 1–2 次，之后才触发停止。
 
+## 层间 CKA 分析
+
+DiT 通过 forward hook 捕获输入嵌入、全部 Transformer block 和输出层的内部
+表示。每次验证完成后会计算这些层之间的线性 CKA，并保存：
+
+```text
+<output-dir>/cka_heatmap.png
+<output-dir>/cka_matrix.csv
+```
+
+为控制计算量，每次只使用前 4 个验证 batch，并最多均匀抽取 512 个有效
+原子 token。热力图对角线为 1；非对角值越接近 1，表示两层保留的表示几何
+结构越相似。该指标只用于分析内部表示，不直接评价晶体结构是否有效。
+
+已训练模型无需重新训练，可以直接执行独立分析脚本：
+
+```powershell
+python src/eval_cka.py `
+  --ckpt runs/carbon24_dit/checkpoints/last.ckpt `
+  --vae-ckpt runs/carbon24_vae/checkpoints/last.ckpt `
+  --device cpu `
+  --split val `
+  --batches 4 `
+  --output runs/carbon24_cka
+```
+
+脚本固定随机种子为 0，只执行验证或测试集前向传播，并生成
+`cka_heatmap.png`、`cka_matrix.csv` 和 `cka_metadata.json`。
+
 ## 正式训练
 
 完整的 VAE、DiT 和 CSP 测试命令见 [README.md](README.md)。正式训练前应

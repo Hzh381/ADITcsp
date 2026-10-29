@@ -38,13 +38,14 @@ from src.models.denoisers.dit import DiT  # noqa: E402
 from src.models.encoders.transformer import TransformerEncoder  # noqa: E402
 from src.models.interpolants.flow_matching import FlowMatchingInterpolant  # noqa: E402
 from src.models.ldm_module import LatentDiffusionLitModule  # noqa: E402
+from src.models.components.cka import CKAVisualizationCallback  # noqa: E402
 from src.models.vae_module import VariationalAutoencoderLitModule  # noqa: E402
 
 
 DIT_SIZES = {
-    "s": (384, 6, 12),
-    "b": (768, 12, 12),
-    "l": (1024, 16, 24),
+    "s": {"d_model": 384, "nhead": 6, "num_layers": 12},
+    "b": {"d_model": 768, "nhead": 12, "num_layers": 12},
+    "l": {"d_model": 1024, "nhead": 16, "num_layers": 24},
 }
 
 CONSOLE_LOG_INTERVAL = 10
@@ -343,12 +344,12 @@ def build_vae(args, output_dir):
 
 
 def build_ldm(args, output_dir):
-    d_model, nhead, num_layers = DIT_SIZES[args.dit_size]
+    size = DIT_SIZES[args.dit_size]
     denoiser = DiT(
         d_x=8,
-        d_model=d_model,
-        nhead=nhead,
-        num_layers=num_layers,
+        d_model=size["d_model"],
+        nhead=size["nhead"],
+        num_layers=size["num_layers"],
         num_datasets=2,
         composition_dim=100,
         composition_dropout_prob=0.1,
@@ -411,6 +412,14 @@ def main():
         check_finite=True,
     )
     learning_rate_monitor = LearningRateMonitor(logging_interval="epoch")
+    callbacks = [
+        checkpoint,
+        early_stopping,
+        learning_rate_monitor,
+        ConsoleTrainingCallback(args.patience, output_dir, args.stage),
+    ]
+    if args.stage == "dit":
+        callbacks.append(CKAVisualizationCallback(output_dir))
     trainer = Trainer(
         accelerator=accelerator,
         devices=1,
@@ -424,12 +433,7 @@ def main():
         enable_progress_bar=True,
         log_every_n_steps=CONSOLE_LOG_INTERVAL,
         logger=CSVLogger(str(output_dir / "logs"), name=args.stage),
-        callbacks=[
-            checkpoint,
-            early_stopping,
-            learning_rate_monitor,
-            ConsoleTrainingCallback(args.patience, output_dir, args.stage),
-        ],
+        callbacks=callbacks,
         plugins=[AtomicCheckpointIO()],
     )
     trainer.fit(model, datamodule=datamodule, ckpt_path=args.resume)

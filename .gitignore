@@ -1,0 +1,6 @@
+# 训练输出与大型 checkpoint，不提交到仓库
+/runs/
+
+# 根目录下的模型权重
+/dit-epoch=219.ckpt
+/vae-epoch=249-v1.ckpt

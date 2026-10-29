@@ -10,6 +10,8 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+from src.models.components.cka import CKAFeatureCollector
+
 #################################################################################
 #               Embedding Layers for Timesteps and Class Labels                 #
 #################################################################################
@@ -281,6 +283,18 @@ class DiT(nn.Module):
         nn.init.constant_(self.final_layer.adaLN_modulation[-1].bias, 0)
         nn.init.constant_(self.final_layer.linear.weight, 0)
         nn.init.constant_(self.final_layer.linear.bias, 0)
+
+    def register_cka_hooks(self):
+        """Capture input, DiT-block, and output representations via hooks."""
+        modules = {"embedding": self.x_embedder}
+        modules.update(
+            {
+                f"block_{index + 1:02d}": block
+                for index, block in enumerate(self.blocks)
+            }
+        )
+        modules["output"] = self.final_layer
+        return CKAFeatureCollector(modules)
 
     def forward(self, x, t, dataset_idx, spacegroup, mask, x_sc=None, composition=None):
         """Forward pass of DiT.

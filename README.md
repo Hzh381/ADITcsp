@@ -26,11 +26,14 @@
 条件，并通过无分类器引导（classifier-free guidance）控制条件强度。当前固定
 支持三种规模：
 
-| 规模 | `d_model` | DiT 块数 | Attention 头数 |
+| 规模 | `d_model` | `nhead` | `num_layers` |
 | --- | ---: | ---: | ---: |
 | `s` | 384 | 6 | 12 |
 | `b` | 768 | 12 | 12 |
 | `l` | 1024 | 16 | 24 |
+
+`nhead` 是每个 DiT block 内部的注意力头数，不增加 block 数量。
+`num_layers` 才是堆叠的 DiT block 数量。
 
 当前模型从编码器到解码器均支持成分条件。原项目在 QM9/MP20 上训练的联合
 模型权重与本版本的输入词表和条件结构不兼容，不能直接用于 Carbon-24 CSP。
@@ -42,6 +45,7 @@ data/carbon_24/                 train.csv、val.csv、test.csv、train_ori.pt、
 src/
   train_csp.py                  VAE 或 DiT 训练入口
   test_csp.py                   候选结构采样、CIF 输出和 CSP 评价
+  eval_cka.py                   独立计算已训练 DiT 的层间 CKA
   data/
     carbon24_datamodule.py
     components/carbon24_dataset.py
@@ -178,6 +182,54 @@ loss_curve.png
 loss_history.csv
 ```
 
+## DiT 层间 CKA 热力图
+
+DiT 训练使用 PyTorch forward hook 捕获以下层的输出：
+
+- 输入嵌入 `embedding`
+- 每个 Transformer block，例如 `block_01` 至 `block_12`
+- 输出层 `output`
+
+每次验证时，程序从最多 4 个验证 batch 中收集有效原子 token 的表示，并最多
+均匀抽取 512 个 token 计算线性 CKA 矩阵。验证结束后保存：
+
+```text
+<output-dir>/cka_heatmap.png
+<output-dir>/cka_matrix.csv
+```
+
+热力图颜色范围为 0–1。CKA 越接近 1，表示两层内部表示的几何结构越相似；
+对角线固定为 1。CKA 只描述表示之间的相似性，不代表生成质量或结构有效性。
+
+核心函数 `linear_cka` 也可用于两个模型：只要两边的特征矩阵使用完全相同的
+样本顺序，就可以直接计算跨模型 CKA。
+
+### 对已训练模型单独运行 CKA
+
+CKA 不依赖训练过程。训练完成后可以直接运行：
+
+```powershell
+python src/eval_cka.py `
+  --ckpt runs/carbon24_dit/checkpoints/last.ckpt `
+  --vae-ckpt runs/carbon24_vae/checkpoints/last.ckpt `
+  --device cpu `
+  --split val `
+  --batches 4 `
+  --output runs/carbon24_cka
+```
+
+该脚本只执行模型前向传播，不更新权重、不写入 checkpoint，也不会启动训练。
+输出包括：
+
+```text
+runs/carbon24_cka/cka_heatmap.png
+runs/carbon24_cka/cka_matrix.csv
+runs/carbon24_cka/cka_metadata.json
+```
+
+`cka_metadata.json` 记录 checkpoint、数据划分、batch 数、随机种子、模型维度
+和参与计算的层名，便于复现实验。
+
 ## 测试 CSP
 
 ```powershell
@@ -247,6 +299,8 @@ StructureMatcher 固定使用 `ltol=0.3`、`stol=0.5` 和 `angle_tol=10°`。
 | 学习率下降倍数 | `0.5` |
 | 学习率下降 patience | `2` 次验证 |
 | 最低学习率 | `1e-6` |
+| CKA 最多验证 batch 数 | `4` |
+| CKA 最多 token 数 | `512` |
 | DataLoader workers | `0` |
 | 随机种子 | `0` |
 
