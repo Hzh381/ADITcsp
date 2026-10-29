@@ -43,7 +43,7 @@ from src.models.vae_module import VariationalAutoencoderLitModule  # noqa: E402
 
 
 DIT_SIZES = {
-    "s": {"d_model": 384, "nhead": 6, "num_layers": 12},
+    "s": {"d_model": 384, "nhead": 6, "num_layers": 6},
     "b": {"d_model": 768, "nhead": 12, "num_layers": 12},
     "l": {"d_model": 1024, "nhead": 16, "num_layers": 24},
 }
@@ -311,7 +311,7 @@ def build_vae(args, output_dir):
         dropout=0.0,
         norm_first=True,
         bias=True,
-        num_layers=8,
+        num_layers=4,
     )
     encoder = TransformerEncoder(**common)
     decoder = TransformerDecoder(**common)
