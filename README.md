@@ -103,19 +103,21 @@ $DATASET = "perov_5"
 
 ## 训练控制台输出
 
-默认关闭 Lightning 的 TQDM 指标显示，避免进度条和自定义日志互相覆盖。
-每个 epoch 的首个 batch，以及每隔 10 个 batch，会输出：
+训练使用自定义 TQDM 进度条，不使用 Lightning 默认进度条，避免旧验证指标
+停留在训练条中。训练条持续显示当前 batch loss、epoch 平均 loss 和学习率：
 
 ```text
-[训练] epoch 1/300 batch 1/191 global_step 1 batch_loss=42.388859 epoch_avg_loss=42.388859 lr=1.00e-04
+Train 10/3000: 100%|...| 190/190 [.., batch_loss=0.2935, epoch_avg=0.4040, lr=1.0e-04]
 ```
 
 `batch_loss` 是当前 batch 的原始 loss，`epoch_avg_loss` 是当前 epoch 到
-目前为止的平均 loss。验证固定每 10 个 epoch 执行一次，结束后会显示验证
-loss、结构匹配率和 RMSD：
+目前为止的平均 loss。每个 epoch 结束会先输出训练汇总，再切换为 Validation
+进度条。验证固定每 10 个 epoch 执行一次，结束后会显示验证 loss、结构
+匹配率和 RMSD：
 
 ```text
-[验证] epoch 10/300 loss=3.715295 match_rate=0.000000 rms_dist=10.000000
+[训练完成] epoch 10/3000 train_loss=0.404000 lr=1.00e-04
+[验证] epoch 10/3000 loss=3.715295 match_rate=0.000000 rms_dist=10.000000
 ```
 
 每个 epoch 结束后，还会写入一份完整的训练指标：

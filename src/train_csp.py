@@ -26,6 +26,7 @@ from lightning.pytorch.callbacks import (
 )
 from lightning.pytorch.loggers import CSVLogger
 from omegaconf import OmegaConf
+from tqdm import tqdm
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
@@ -107,6 +108,9 @@ class ConsoleTrainingCallback(Callback):
         self.epoch_loss_count = 0
         self.train_records = []
         self.validation_records = []
+        self.train_bar = None
+        self.validation_bar = None
+        self.train_epoch_finalized = False
 
     @staticmethod
     def _scalar(trainer, key):
@@ -146,6 +150,7 @@ class ConsoleTrainingCallback(Callback):
         self.epoch_loss_count = 0
         self.train_records = []
         self.validation_records = []
+        self.train_epoch_finalized = False
         if trainer.current_epoch > 0:
             self.train_records = self._load_records_until(
                 self.output_dir / "train_metrics.csv",
@@ -171,6 +176,15 @@ class ConsoleTrainingCallback(Callback):
             flush=True,
         )
 
+    def on_train_epoch_start(self, trainer, pl_module):
+        self.train_epoch_finalized = False
+        self.train_bar = tqdm(
+            total=int(trainer.num_training_batches),
+            desc=f"Train {trainer.current_epoch + 1}/{trainer.max_epochs}",
+            dynamic_ncols=True,
+            leave=False,
+        )
+
     def on_train_batch_end(self, trainer, pl_module, outputs, batch, batch_idx):
         loss = self._output_loss(outputs)
         if loss is None:
@@ -180,18 +194,13 @@ class ConsoleTrainingCallback(Callback):
             self.epoch_loss_count += 1
 
         step = batch_idx + 1
-        if step != 1 and step % CONSOLE_LOG_INTERVAL != 0:
-            return
-        if loss is None:
-            return
         learning_rate = trainer.optimizers[0].param_groups[0]["lr"]
         if (
             self.last_learning_rate is not None
             and learning_rate != self.last_learning_rate
         ):
-            print(
+            tqdm.write(
                 f"[学习率] {self.last_learning_rate:.2e} -> {learning_rate:.2e}",
-                flush=True,
             )
         self.last_learning_rate = learning_rate
         train_metrics = getattr(pl_module, "train_metrics", {})
@@ -200,22 +209,26 @@ class ConsoleTrainingCallback(Callback):
             if "loss" in train_metrics
             else None
         )
-        running_text = (
-            f" epoch_avg_loss={running_loss:.6f}"
-            if running_loss is not None
-            else ""
-        )
-        print(
-            f"[训练] epoch {trainer.current_epoch + 1}/{trainer.max_epochs} "
-            f"batch {step}/{trainer.num_training_batches} "
-            f"global_step {trainer.global_step} batch_loss={loss:.6f}"
-            f"{running_text} lr={learning_rate:.2e}",
-            flush=True,
-        )
+        if self.train_bar is not None:
+            postfix = {"lr": f"{learning_rate:.1e}"}
+            if loss is not None:
+                postfix["batch_loss"] = f"{loss:.4f}"
+            if running_loss is not None:
+                postfix["epoch_avg"] = f"{running_loss:.4f}"
+            self.train_bar.set_postfix(postfix, refresh=False)
+            self.train_bar.update(1)
+        if step >= int(trainer.num_training_batches):
+            self._finish_train_epoch(trainer, pl_module)
 
     def on_train_epoch_end(self, trainer, pl_module):
+        self._finish_train_epoch(trainer, pl_module)
+
+    def _finish_train_epoch(self, trainer, pl_module):
+        if self.train_epoch_finalized:
+            return
         if self.epoch_loss_count == 0:
             return
+        self.train_epoch_finalized = True
         epoch = trainer.current_epoch + 1
         record = {"epoch": epoch, "step": trainer.global_step}
         record.update(self._metrics_dict(pl_module.train_metrics))
@@ -236,8 +249,50 @@ class ConsoleTrainingCallback(Callback):
             preferred_fields=["epoch", "step"],
         )
         self._save_loss_history()
+        if self.train_bar is not None:
+            self.train_bar.close()
+            self.train_bar = None
+        learning_rate = trainer.optimizers[0].param_groups[0]["lr"]
+        tqdm.write(
+            f"[训练完成] epoch {epoch}/{trainer.max_epochs} "
+            f"train_loss={epoch_loss:.6f} lr={learning_rate:.2e}"
+        )
+
+    def on_validation_start(self, trainer, pl_module):
+        total = trainer.num_val_batches
+        if isinstance(total, (list, tuple)):
+            total = sum(total)
+        self.validation_bar = tqdm(
+            total=int(total),
+            desc=f"Validation {trainer.current_epoch + 1}/{trainer.max_epochs}",
+            dynamic_ncols=True,
+            leave=False,
+        )
+
+    def on_validation_batch_end(
+        self,
+        trainer,
+        pl_module,
+        outputs,
+        batch,
+        batch_idx,
+        dataloader_idx=0,
+    ):
+        validation_metrics = getattr(pl_module, "val_metrics", {})
+        if self.validation_bar is not None and validation_metrics:
+            metrics = next(iter(validation_metrics.values()))
+            val_loss = self._metric_value(metrics["loss"])
+            if val_loss is not None:
+                self.validation_bar.set_postfix(
+                    {"loss": f"{val_loss:.4f}"},
+                    refresh=False,
+                )
+            self.validation_bar.update(1)
 
     def on_validation_end(self, trainer, pl_module):
+        if self.validation_bar is not None:
+            self.validation_bar.close()
+            self.validation_bar = None
         epoch = trainer.current_epoch + 1
         validation_metrics = getattr(pl_module, "val_metrics", {})
         metrics_dict = (
@@ -273,10 +328,9 @@ class ConsoleTrainingCallback(Callback):
             if value is not None:
                 metrics.append(f"{label}={value:.6f}")
         if metrics:
-            print(
+            tqdm.write(
                 f"[验证] epoch {trainer.current_epoch + 1}/{trainer.max_epochs} "
-                + " ".join(metrics),
-                flush=True,
+                + " ".join(metrics)
             )
         self._save_metric_records(
             self.output_dir / "validation_metrics.csv",
@@ -286,6 +340,11 @@ class ConsoleTrainingCallback(Callback):
         self._save_loss_history()
 
     def on_train_end(self, trainer, pl_module):
+        for bar in (self.train_bar, self.validation_bar):
+            if bar is not None:
+                bar.close()
+        self.train_bar = None
+        self.validation_bar = None
         self._save_metric_records(
             self.output_dir / "train_metrics.csv",
             self.train_records,
@@ -298,6 +357,13 @@ class ConsoleTrainingCallback(Callback):
         )
         self._save_loss_history()
         self._plot_loss_curve()
+
+    def on_exception(self, trainer, pl_module, exception):
+        for bar in (self.train_bar, self.validation_bar):
+            if bar is not None:
+                bar.close()
+        self.train_bar = None
+        self.validation_bar = None
 
     @staticmethod
     def _load_records_until(path, epoch):
@@ -575,11 +641,12 @@ def main():
         check_finite=True,
     )
     learning_rate_monitor = LearningRateMonitor(logging_interval="epoch")
+    console_callback = ConsoleTrainingCallback(args.patience, output_dir, args.stage)
     callbacks = [
+        console_callback,
         checkpoint,
         early_stopping,
         learning_rate_monitor,
-        ConsoleTrainingCallback(args.patience, output_dir, args.stage),
     ]
     if args.stage == "dit":
         callbacks.append(CKAVisualizationCallback(output_dir))
