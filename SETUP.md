@@ -136,17 +136,16 @@ python src/test_csp.py `
 
 ## 提前停止
 
-训练默认监控 `val_mp20/loss`，并使用 `min_delta=1e-4`。指标名称中的
-`mp20` 是兼容旧 checkpoint 的遗留前缀，不代表当前一定使用 MP-20。当前每 10 个
-epoch 验证一次，默认 `--patience 5`，即连续 5 次验证没有改善后停止，约
-等于连续 50 个 epoch 没有改善。
+训练默认监控 `val/loss`，并使用 `min_delta=1e-4`。当前每 10 个 epoch
+验证一次，默认 `--patience 5`，即连续 5 次验证没有改善后停止，约等于
+连续 50 个 epoch 没有改善。
 
 `--epochs` 是最大训练轮数，不是固定执行轮数。若希望更早停止，可以减小
 patience；若验证指标仍有明显改善，可以增大 patience 或最大 epoch 数。
 
 ## 动态学习率
 
-VAE 和 DiT 都使用 `ReduceLROnPlateau`，监控 `val_mp20/loss`：
+VAE 和 DiT 都使用 `ReduceLROnPlateau`，监控 `val/loss`：
 
 - 初始学习率为 `1e-4`。
 - 允许连续 2 次验证没有相对改善；如果下一次仍无改善，学习率乘以 `0.5`。

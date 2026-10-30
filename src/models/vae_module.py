@@ -266,7 +266,7 @@ class VariationalAutoencoderLitModule(LightningModule):
                 self.train_metrics[name],
                 on_step=True,
                 on_epoch=False,
-                prog_bar=(name == "loss"),
+                prog_bar=False,
             )
         return losses["loss"]
 
@@ -302,11 +302,11 @@ class VariationalAutoencoderLitModule(LightningModule):
         for name, value in losses.items():
             metrics[name](value)
             self.log(
-                f"{stage}_mp20/{name}",
+                f"{stage}/{name}",
                 metrics[name],
                 on_epoch=True,
                 sync_dist=True,
-                prog_bar=(name == "loss"),
+                prog_bar=False,
             )
         start = 0
         for idx, data in enumerate(batch.to_data_list()):
@@ -348,11 +348,11 @@ class VariationalAutoencoderLitModule(LightningModule):
         for name, value in evaluator.get_metrics().items():
             metrics[name](value)
             self.log(
-                f"{stage}_mp20/{name}",
+                f"{stage}/{name}",
                 metrics[name],
                 on_epoch=True,
                 sync_dist=True,
-                prog_bar=(name == "match_rate"),
+                prog_bar=False,
             )
 
     def configure_optimizers(self):
@@ -368,7 +368,7 @@ class VariationalAutoencoderLitModule(LightningModule):
             "optimizer": optimizer,
             "lr_scheduler": {
                 "scheduler": scheduler,
-                "monitor": "val_mp20/loss",
+                "monitor": "val/loss",
                 "interval": "epoch",
                 "frequency": self.hparams.scheduler_frequency,
             },

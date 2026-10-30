@@ -98,11 +98,11 @@ class LatentDiffusionLitModule(LightningModule):
         for name, value in losses.items():
             metrics[name](value)
             self.log(
-                f"{stage}_mp20/{name}",
+                f"{stage}/{name}",
                 metrics[name],
                 on_epoch=True,
                 sync_dist=True,
-                prog_bar=(name == "loss"),
+                prog_bar=False,
             )
 
     def training_step(self, batch, batch_idx):
@@ -115,7 +115,7 @@ class LatentDiffusionLitModule(LightningModule):
                 self.train_metrics[name],
                 on_step=True,
                 on_epoch=False,
-                prog_bar=(name == "loss"),
+                prog_bar=False,
             )
         return losses["loss"]
 
@@ -190,7 +190,7 @@ class LatentDiffusionLitModule(LightningModule):
             "optimizer": optimizer,
             "lr_scheduler": {
                 "scheduler": scheduler,
-                "monitor": "val_mp20/loss",
+                "monitor": "val/loss",
                 "interval": "epoch",
                 "frequency": self.hparams.scheduler_frequency,
             },

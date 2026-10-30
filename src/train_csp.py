@@ -105,6 +105,8 @@ class ConsoleTrainingCallback(Callback):
         self.val_losses = []
         self.epoch_loss_sum = 0.0
         self.epoch_loss_count = 0
+        self.train_records = []
+        self.validation_records = []
 
     @staticmethod
     def _scalar(trainer, key):
@@ -118,6 +120,22 @@ class ConsoleTrainingCallback(Callback):
             return float(value.detach().cpu())
         return None
 
+    @staticmethod
+    def _metric_value(metric):
+        try:
+            value = metric.compute()
+        except (AttributeError, RuntimeError):
+            return None
+        return float(value.detach().cpu()) if torch.is_tensor(value) else float(value)
+
+    @classmethod
+    def _metrics_dict(cls, metrics):
+        return {
+            name: value
+            for name, metric in metrics.items()
+            if (value := cls._metric_value(metric)) is not None
+        }
+
     def on_train_start(self, trainer, pl_module):
         self.last_learning_rate = trainer.optimizers[0].param_groups[0]["lr"]
         self.train_epochs = []
@@ -126,17 +144,27 @@ class ConsoleTrainingCallback(Callback):
         self.val_losses = []
         self.epoch_loss_sum = 0.0
         self.epoch_loss_count = 0
+        self.train_records = []
+        self.validation_records = []
         if trainer.current_epoch > 0:
+            self.train_records = self._load_records_until(
+                self.output_dir / "train_metrics.csv",
+                trainer.current_epoch,
+            )
+            self.validation_records = self._load_records_until(
+                self.output_dir / "validation_metrics.csv",
+                trainer.current_epoch,
+            )
             self._load_history_until(trainer.current_epoch)
         print(
-            "[配置] 提前停止监控 val_mp20/loss；"
+            "[配置] 提前停止监控 val/loss；"
             f"连续 {self.early_stopping_patience} 次验证未改善后停止 "
             f"(约 {self.early_stopping_patience * VALIDATION_INTERVAL} 个 epoch)，"
             f"min_delta={EARLY_STOPPING_MIN_DELTA}",
             flush=True,
         )
         print(
-            "[配置] 学习率动态调整监控 val_mp20/loss；"
+            "[配置] 学习率动态调整监控 val/loss；"
             f"允许连续 {LR_SCHEDULER_PATIENCE} 次验证未改善，"
             "再次未改善时乘以 "
             f"{LR_SCHEDULER_FACTOR}，最低学习率 {MIN_LEARNING_RATE:.1e}",
@@ -166,23 +194,68 @@ class ConsoleTrainingCallback(Callback):
                 flush=True,
             )
         self.last_learning_rate = learning_rate
+        train_metrics = getattr(pl_module, "train_metrics", {})
+        running_loss = (
+            self._metric_value(train_metrics["loss"])
+            if "loss" in train_metrics
+            else None
+        )
+        running_text = (
+            f" epoch_avg_loss={running_loss:.6f}"
+            if running_loss is not None
+            else ""
+        )
         print(
             f"[训练] epoch {trainer.current_epoch + 1}/{trainer.max_epochs} "
-            f"step {trainer.global_step} loss={loss:.6f} lr={learning_rate:.2e}",
+            f"batch {step}/{trainer.num_training_batches} "
+            f"global_step {trainer.global_step} batch_loss={loss:.6f}"
+            f"{running_text} lr={learning_rate:.2e}",
             flush=True,
         )
 
     def on_train_epoch_end(self, trainer, pl_module):
         if self.epoch_loss_count == 0:
             return
-        self.train_epochs.append(trainer.current_epoch + 1)
-        self.train_losses.append(self.epoch_loss_sum / self.epoch_loss_count)
+        epoch = trainer.current_epoch + 1
+        record = {"epoch": epoch, "step": trainer.global_step}
+        record.update(self._metrics_dict(pl_module.train_metrics))
+        for index, group in enumerate(trainer.optimizers[0].param_groups, start=1):
+            record[f"lr_pg{index}"] = group["lr"]
+            record[f"weight_decay_pg{index}"] = group["weight_decay"]
+        self.train_records.append(record)
+        epoch_loss = record.get(
+            "loss", self.epoch_loss_sum / self.epoch_loss_count
+        )
+        self.train_epochs.append(epoch)
+        self.train_losses.append(epoch_loss)
         self.epoch_loss_sum = 0.0
         self.epoch_loss_count = 0
+        self._save_metric_records(
+            self.output_dir / "train_metrics.csv",
+            self.train_records,
+            preferred_fields=["epoch", "step"],
+        )
+        self._save_loss_history()
 
     def on_validation_end(self, trainer, pl_module):
         epoch = trainer.current_epoch + 1
-        val_loss = self._scalar(trainer, "val_mp20/loss")
+        validation_metrics = getattr(pl_module, "val_metrics", {})
+        metrics_dict = (
+            self._metrics_dict(next(iter(validation_metrics.values())))
+            if validation_metrics
+            else {}
+        )
+        if metrics_dict:
+            record = {"epoch": epoch, "step": trainer.global_step, **metrics_dict}
+            if (
+                self.validation_records
+                and int(self.validation_records[-1].get("epoch", -1)) == epoch
+            ):
+                self.validation_records[-1] = record
+            else:
+                self.validation_records.append(record)
+
+        val_loss = metrics_dict.get("loss")
         if val_loss is not None:
             if self.val_epochs and self.val_epochs[-1] == epoch:
                 self.val_losses[-1] = val_loss
@@ -192,11 +265,11 @@ class ConsoleTrainingCallback(Callback):
 
         metrics = []
         for key, label in (
-            ("val_mp20/loss", "loss"),
-            ("val_mp20/match_rate", "match_rate"),
-            ("val_mp20/rms_dist", "rms_dist"),
+            ("loss", "loss"),
+            ("match_rate", "match_rate"),
+            ("rms_dist", "rms_dist"),
         ):
-            value = self._scalar(trainer, key)
+            value = metrics_dict.get(key)
             if value is not None:
                 metrics.append(f"{label}={value:.6f}")
         if metrics:
@@ -205,29 +278,78 @@ class ConsoleTrainingCallback(Callback):
                 + " ".join(metrics),
                 flush=True,
             )
+        self._save_metric_records(
+            self.output_dir / "validation_metrics.csv",
+            self.validation_records,
+            preferred_fields=["epoch", "step"],
+        )
+        self._save_loss_history()
 
     def on_train_end(self, trainer, pl_module):
+        self._save_metric_records(
+            self.output_dir / "train_metrics.csv",
+            self.train_records,
+            preferred_fields=["epoch", "step"],
+        )
+        self._save_metric_records(
+            self.output_dir / "validation_metrics.csv",
+            self.validation_records,
+            preferred_fields=["epoch", "step"],
+        )
         self._save_loss_history()
         self._plot_loss_curve()
 
-    def _load_history_until(self, epoch):
-        history_path = self.output_dir / "loss_history.csv"
-        if not history_path.exists():
-            return
-        with history_path.open("r", encoding="utf-8", newline="") as handle:
+    @staticmethod
+    def _load_records_until(path, epoch):
+        if not path.exists():
+            return []
+        records = []
+        with path.open("r", encoding="utf-8", newline="") as handle:
             for row in csv.DictReader(handle):
                 try:
-                    row_epoch = int(row["epoch"])
+                    if int(row["epoch"]) <= epoch:
+                        records.append(row)
                 except (KeyError, TypeError, ValueError):
                     continue
-                if row_epoch > epoch:
-                    continue
-                if row.get("train_loss"):
-                    self.train_epochs.append(row_epoch)
-                    self.train_losses.append(float(row["train_loss"]))
-                if row.get("val_loss"):
-                    self.val_epochs.append(row_epoch)
-                    self.val_losses.append(float(row["val_loss"]))
+        return records
+
+    @staticmethod
+    def _save_metric_records(path, records, preferred_fields):
+        if not records:
+            return
+        all_fields = set().union(*(record.keys() for record in records))
+        fieldnames = preferred_fields + sorted(all_fields - set(preferred_fields))
+        with path.open("w", encoding="utf-8", newline="") as handle:
+            writer = csv.DictWriter(handle, fieldnames=fieldnames)
+            writer.writeheader()
+            writer.writerows(records)
+
+    def _load_history_until(self, epoch):
+        history_path = self.output_dir / "loss_history.csv"
+        if history_path.exists():
+            with history_path.open("r", encoding="utf-8", newline="") as handle:
+                for row in csv.DictReader(handle):
+                    try:
+                        row_epoch = int(row["epoch"])
+                    except (KeyError, TypeError, ValueError):
+                        continue
+                    if row_epoch > epoch:
+                        continue
+                    if row.get("train_loss"):
+                        self.train_epochs.append(row_epoch)
+                        self.train_losses.append(float(row["train_loss"]))
+                    if row.get("val_loss"):
+                        self.val_epochs.append(row_epoch)
+                        self.val_losses.append(float(row["val_loss"]))
+            return
+        for row in self.train_records:
+            if row.get("loss"):
+                self.train_epochs.append(int(row["epoch"]))
+                self.train_losses.append(float(row["loss"]))
+        for row in self.validation_records:
+            if row.get("loss"):
+                self.val_epochs.append(int(row["epoch"]))
+                self.val_losses.append(float(row["loss"]))
 
     def _save_loss_history(self):
         epochs = sorted(set(self.train_epochs) | set(self.val_epochs))
@@ -435,7 +557,7 @@ def main():
     accelerator = "gpu" if args.device == "cuda" or (
         args.device == "auto" and torch.cuda.is_available()
     ) else "cpu"
-    monitor = "val_mp20/match_rate" if args.stage == "vae" else "val_mp20/loss"
+    monitor = "val/match_rate" if args.stage == "vae" else "val/loss"
     checkpoint = ModelCheckpoint(
         dirpath=output_dir / "checkpoints",
         filename=f"{args.stage}-{{epoch:03d}}",
@@ -445,7 +567,7 @@ def main():
         save_top_k=1,
     )
     early_stopping = EarlyStopping(
-        monitor="val_mp20/loss",
+        monitor="val/loss",
         mode="min",
         patience=args.patience,
         min_delta=EARLY_STOPPING_MIN_DELTA,
@@ -471,7 +593,7 @@ def main():
         limit_val_batches=args.limit_batches or 1.0,
         check_val_every_n_epoch=VALIDATION_INTERVAL,
         num_sanity_val_steps=0,
-        enable_progress_bar=True,
+        enable_progress_bar=False,
         log_every_n_steps=CONSOLE_LOG_INTERVAL,
         logger=CSVLogger(str(output_dir / "logs"), name=args.stage),
         callbacks=callbacks,

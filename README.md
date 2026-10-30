@@ -103,29 +103,37 @@ $DATASET = "perov_5"
 
 ## 训练控制台输出
 
-训练时控制台会显示 batch 进度条和 `train/loss`。此外，每个 epoch 的首个
-step，以及每隔 10 个 step，会输出一行训练信息：
+默认关闭 Lightning 的 TQDM 指标显示，避免进度条和自定义日志互相覆盖。
+每个 epoch 的首个 batch，以及每隔 10 个 batch，会输出：
 
 ```text
-[训练] epoch 1/300 step 1 loss=42.388859 lr=1.00e-04
+[训练] epoch 1/300 batch 1/191 global_step 1 batch_loss=42.388859 epoch_avg_loss=42.388859 lr=1.00e-04
 ```
 
-验证固定每 10 个 epoch 执行一次，结束后会显示验证 loss、结构匹配率和
-RMSD：
+`batch_loss` 是当前 batch 的原始 loss，`epoch_avg_loss` 是当前 epoch 到
+目前为止的平均 loss。验证固定每 10 个 epoch 执行一次，结束后会显示验证
+loss、结构匹配率和 RMSD：
 
 ```text
 [验证] epoch 10/300 loss=3.715295 match_rate=0.000000 rms_dist=10.000000
 ```
 
-完整训练指标仍会同时写入 `--output-dir` 下的 CSV 日志。
+每个 epoch 结束后，还会写入一份完整的训练指标：
 
-训练默认启用提前停止（early stopping），监控 `val_mp20/loss`。连续 5 次
+```text
+<output-dir>/train_metrics.csv
+<output-dir>/validation_metrics.csv
+```
+
+`train_metrics.csv` 每行对应一个 epoch，包含所有训练分项 loss、学习率和
+权重衰减。`validation_metrics.csv` 每行对应一次验证，包含验证分项 loss、
+匹配率和 RMSD。Lightning 原生的 `logs/.../metrics.csv` 仍会保留用于调试，
+但它是稀疏宽表：训练行中的验证列为空是正常现象，应优先使用上述两个文件。
+
+训练默认启用提前停止（early stopping），监控 `val/loss`。连续 5 次
 验证没有改善时会自动停止；每 10 个 epoch 验证一次，因此 patience 为 5
 约等于连续 50 个 epoch 没有改善。`--epochs` 仅表示最大训练轮数。
-指标名中的 `mp20` 是兼容旧 checkpoint 的遗留前缀，不代表当前数据一定
-是 MP-20。
-
-学习率使用 `ReduceLROnPlateau` 动态调整，同样监控 `val_mp20/loss`。
+学习率使用 `ReduceLROnPlateau` 动态调整，同样监控 `val/loss`。
 允许连续 2 次验证没有改善；如果下一次仍无改善，学习率乘以 0.5，最低降至
 `1e-6`。学习率发生变化时会输出：
 
