@@ -729,7 +729,7 @@ def main():
         root=str(ROOT / "data" / args.dataset),
         dataset_name=args.dataset,
         batch_size={"train": args.batch_size, "val": args.batch_size, "test": args.batch_size},
-        num_workers={"train": 0, "val": 0, "test": 0},
+        num_workers={"train": 2, "val": 2, "test": 2},
     )
     print(f"[数据] dataset={args.dataset} root={ROOT / 'data' / args.dataset}")
     print(
