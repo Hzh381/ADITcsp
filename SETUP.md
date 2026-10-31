@@ -9,8 +9,8 @@
 - torch_scatter：2.1.2+pt23cpu
 - GPU：Intel Arc 130T；当前 PyTorch 环境不支持 CUDA
 
-该 CPU 环境适合数据加载、冒烟测试（smoke test）、采样和小规模推理。完整 VAE/DiT
-训练建议在支持 CUDA 的 NVIDIA GPU 机器上运行。
+该 CPU 环境适合数据加载、冒烟测试（smoke test）、采样和小规模推理。完整
+HiLo VAE / CoDeMDT 训练建议在支持 CUDA 的 NVIDIA GPU 机器上运行。
 
 ## 激活环境
 
@@ -64,24 +64,26 @@ data/perov_5/       train.csv、val.csv、test.csv
 python src/train_csp.py `
   --dataset carbon_24 `
   --stage vae `
+  --vae-attention hi_lo `
   --epochs 10 `
   --limit-batches 1 `
   --batch-size 2 `
   --output-dir runs/smoke_vae
 ```
 
-使用刚生成的 VAE 检查点（checkpoint）运行一个 DiT 训练 batch 和一个
+使用刚生成的 VAE 检查点（checkpoint）运行一个 CoDeMDT 训练 batch 和一个
 验证 batch：
 
 ```powershell
 python src/train_csp.py `
   --dataset carbon_24 `
   --stage dit `
+  --denoiser code_mdt `
   --vae-ckpt runs/smoke_vae/checkpoints/last.ckpt `
   --epochs 10 `
   --limit-batches 1 `
   --batch-size 2 `
-  --output-dir runs/smoke_dit
+  --output-dir runs/smoke_codemdt
 ```
 
 运行一个测试目标和一次候选采样：
@@ -89,7 +91,7 @@ python src/train_csp.py `
 ```powershell
 python src/test_csp.py `
   --dataset carbon_24 `
-  --ckpt runs/smoke_dit/checkpoints/last.ckpt `
+  --ckpt runs/smoke_codemdt/checkpoints/last.ckpt `
   --vae-ckpt runs/smoke_vae/checkpoints/last.ckpt `
   --candidates 1 `
   --limit 1 `
@@ -99,11 +101,8 @@ python src/test_csp.py `
 
 这些命令默认在 `adit` 环境中运行。本机 `--device auto` 会解析为 CPU。
 
-完整冒烟测试会构建：
-
-- 26.2M 参数的 VAE；
-- 16.8M 参数的 DiT-S；
-- 一个测试目标的候选结构。
+完整冒烟测试会构建 HiLo VAE、CoDeMDT-S，并生成一个测试目标的候选结构。
+CoDeMDT 的掩码路径只在训练时运行，采样不计算多样性损失。
 
 如果随机模型生成非法晶格，测试程序会记录该候选为结构无效，而不会中断整个
 评价流程。
@@ -117,9 +116,29 @@ python src/test_csp.py `
 - Perov-5：单 batch VAE 训练 10 个 epoch，并执行多元素验证。
 - Perov-5：一个测试目标、一个候选、100 步采样的 CSP 流程通过。
 - VAE/DiT 的 dropout、AdamW 权重衰减分组和 checkpoint 往返加载通过。
+- HiLo 编码器与 CoDeMDT 的 CPU 集成测试通过，包括两路损失、多样性反传
+  和两步 CFG 采样。
 - 全部 `src` Python 文件通过语法检查。
 
 这些验证只说明环境与数据流程可用，不代表模型已经收敛或具备有效生成能力。
+
+集成模型的快速自检：
+
+```powershell
+python -m py_compile `
+  src/train_csp.py `
+  src/models/ldm_module.py `
+  src/models/encoders/transformer.py `
+  src/models/decoders/transformer.py `
+  src/models/components/hiloattention.py `
+  src/models/denoisers/code_mdt.py
+
+python -B -c "import runpy; ns=runpy.run_path('tests/test_integrated_models.py'); [ns[n]() for n in sorted(ns) if n.startswith('test_')]"
+
+python -B CoDeMDT/test_code_mdt.py
+```
+
+`adit` 环境未安装 pytest，因此集成测试文件也支持上述 `runpy` 直接执行。
 
 ## Loss 曲线
 
@@ -145,7 +164,7 @@ patience；若验证指标仍有明显改善，可以增大 patience 或最大 e
 
 ## 动态学习率
 
-VAE 和 DiT 都使用 `ReduceLROnPlateau`，监控 `val/loss`：
+VAE 和 CoDeMDT 都使用 `ReduceLROnPlateau`，监控 `val/loss`：
 
 - 初始学习率为 `1e-4`。
 - 允许连续 2 次验证没有相对改善；如果下一次仍无改善，学习率乘以 `0.5`。
@@ -158,14 +177,14 @@ VAE 和 DiT 都使用 `ReduceLROnPlateau`，监控 `val/loss`：
 
 ## Dropout 与权重衰减
 
-VAE 和 DiT 默认使用：
+VAE 和 CoDeMDT 默认使用：
 
 ```text
 dropout = 0.05
 AdamW weight_decay = 1e-4
 ```
 
-dropout 应用于 VAE Transformer layer 和 DiT 的 Attention/MLP。权重衰减
+dropout 应用于 VAE Transformer layer 和 CoDeMDT 的 Attention/MLP。权重衰减
 只应用于二维及以上的矩阵参数，bias、LayerNorm 和 embedding 不衰减。
 训练开始时会输出实际配置，也可以分别运行消融：
 
@@ -179,7 +198,7 @@ python src/train_csp.py --dataset carbon_24 --stage vae --dropout 0.05 --weight-
 
 ## 层间 CKA 分析
 
-DiT 通过 forward hook 捕获输入嵌入、全部 Transformer block 和输出层的内部
+去噪器通过 forward hook 捕获输入嵌入、全部 Transformer block 和输出层的内部
 表示。每次验证完成后会计算这些层之间的线性 CKA，并保存：
 
 ```text
@@ -196,7 +215,7 @@ DiT 通过 forward hook 捕获输入嵌入、全部 Transformer block 和输出�
 ```powershell
 python src/eval_cka.py `
   --dataset perov_5 `
-  --ckpt runs/perov_5_dit/checkpoints/last.ckpt `
+  --ckpt runs/perov_5_codemdt/checkpoints/last.ckpt `
   --vae-ckpt runs/perov_5_vae/checkpoints/last.ckpt `
   --device cpu `
   --split val `
@@ -209,7 +228,7 @@ python src/eval_cka.py `
 
 ## 正式训练
 
-完整的 VAE、DiT 和 CSP 测试命令见 [README.md](README.md)。正式训练前应
+完整的 VAE、CoDeMDT 和 CSP 测试命令见 [README.md](README.md)。正式训练前应
 确认 checkpoint 输出目录有足够磁盘空间，并在 NVIDIA GPU 环境中使用
 `--device cuda`。
 

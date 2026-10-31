@@ -7,7 +7,7 @@
 ## 项目范围
 
 - 数据集：`carbon_24`、`mp_20`、`mpts_52`、`perov_5`。
-- 模型：成分条件 VAE + 潜空间流匹配 DiT。
+- 模型：HiLo 注意力编码的成分条件 VAE + CoDeMDT 潜空间流匹配。
 - 输入：100 维元素计数向量。
 - 输出：候选晶体结构、有效候选的 CIF 文件和 CSP 评价指标。
 
@@ -26,22 +26,39 @@
 ## 模型流程
 
 第一阶段训练 Transformer VAE。编码器接收原子类型、笛卡尔坐标、分数坐标
-和 token 位置，将其压缩为 8 维潜变量。解码器同时接收潜变量和目标成分，
-预测原子类型、分数坐标以及晶格长度和晶格角。训练损失包含原子类型损失、
-成分约束损失、几何重建损失和 KL 正则项。
+和 token 位置，将其压缩为 8 维潜变量。编码器默认使用 HiLo 双频注意力：
+Hi-Fi 头在周期性最小镜像邻域内建模局部原子相互作用，Lo-Fi 头在池化 token
+和晶格描述符上建模全局上下文。解码器预测原子类型、分数坐标以及晶格长度
+和晶格角；它保留标准自注意力，因为生成阶段尚未获得目标分数坐标和晶胞，
+若使用 HiLo 会引入训练时可见、推理时不可见的信息。
 
-第二阶段冻结 VAE，在 8 维潜空间中训练流匹配 DiT。DiT 使用目标成分作为
-条件，并通过无分类器引导（classifier-free guidance）控制条件强度。当前固定
-支持三种规模：
+第二阶段冻结 VAE，在 8 维潜空间中训练流匹配去噪器。默认去噪器为
+CoDeMDT，使用 MDTv2 式的非对称掩码编码器、U-Net 长跳连、Side Interpolator
+（SI）和带噪声潜变量跳连的解码器。训练同时执行普通路径与随机掩码路径，
+并在掩码编码器上加入正交、互信息相似度和维度分散三项多样性约束。推理只走
+普通路径，并继续使用无分类器引导（classifier-free guidance）。当前固定支持
+三种去噪器规模：
 
 | 规模 | `d_model` | `nhead` | `num_layers` |
 | --- | ---: | ---: | ---: |
-| `s` | 384 | 6 | 6 |
+| `s` | 384 | 6 | 12 |
 | `b` | 768 | 12 | 12 |
 | `l` | 1024 | 16 | 24 |
 
-`nhead` 是每个 DiT block 内部的注意力头数，不增加 block 数量。
-`num_layers` 才是堆叠的 DiT block 数量。
+`nhead` 是每个 block 内部的注意力头数，不增加 block 数量。
+`num_layers` 是编码器、SI 和解码器合计的 block 预算。默认
+`decode_layer=2`，其余 block 均分给编码器两半，SI 另占一个 block。
+
+原始 `DiT` 与标准 VAE 注意力仍保留为消融基线：
+
+```powershell
+python src/train_csp.py --stage vae --vae-attention standard ...
+python src/train_csp.py --stage dit --denoiser dit ...
+```
+
+默认配置与旧 checkpoint 的模型结构不兼容。旧 VAE 可直接作为新 CoDeMDT
+的阶段二输入；若要恢复完整的旧训练路径，应同时显式指定
+`--vae-attention standard` 和 `--denoiser dit`。
 
 当前模型从编码器到解码器均支持成分条件。原项目在 QM9/MP20 上训练的联合
 模型权重与本版本的输入和条件结构不兼容，不能直接用于这些 CSP 实验。
@@ -51,9 +68,9 @@
 ```text
 data/<dataset>/                 train.csv、val.csv、test.csv、processed/*.pt
 src/
-  train_csp.py                  VAE 或 DiT 训练入口
+  train_csp.py                  VAE 或潜空间去噪器训练入口
   test_csp.py                   候选结构采样、CIF 输出和 CSP 评价
-  eval_cka.py                   独立计算已训练 DiT 的层间 CKA
+  eval_cka.py                   独立计算已训练去噪器的层间 CKA
   data/
     crystal_datamodule.py       数据集选择与 DataModule
     components/carbon24_dataset.py
@@ -63,13 +80,17 @@ src/
   models/
     vae_module.py               成分条件 VAE
     ldm_module.py               潜空间采样与流匹配模块
+    components/hiloattention.py HiLo 周期晶体注意力
     encoders/transformer.py
     decoders/transformer.py
     denoisers/dit.py
+    denoisers/code_mdt.py       CoDeMDT、多样性损失和有界权重
     interpolants/flow_matching.py
   eval/
     crystal.py
     crystal_reconstruction.py
+tests/
+  test_integrated_models.py      HiLo + CoDeMDT 的 CPU 集成测试
 ```
 
 以下目录被保留，因为其中包含已有测试结果或论文图件：
@@ -186,7 +207,7 @@ python src/train_csp.py `
 epoch 执行一次，因此上述命令会执行 10 次训练更新、1 个验证 batch，并生成
 按验证指标选择的 checkpoint。
 
-## 第二阶段：训练 DiT
+## 第二阶段：训练 CoDeMDT
 
 ```powershell
 python src/train_csp.py `
@@ -196,16 +217,34 @@ python src/train_csp.py `
   --epochs 500 `
   --batch-size 32 `
   --dit-size s `
-  --output-dir "runs/${DATASET}_dit"
+  --denoiser code_mdt `
+  --mask-ratio 0.3 `
+  --mask-ratio-range 0.2 `
+  --decode-layer 2 `
+  --output-dir "runs/${DATASET}_codemdt"
 ```
 
-DiT 训练期间 VAE 保持冻结。`--dit-size` 可设为 `s`、`b` 或 `l`。
+CoDeMDT 训练期间 VAE 保持冻结。`--dit-size` 可设为 `s`、`b` 或 `l`。
+使用 `--denoiser dit` 可训练原始 DiT 基线。
+
+CoDeMDT 的总损失为：
+
+$$
+\mathcal L =
+\mathcal L_{\mathrm{diff}}
++ w_{\mathrm{mask}}\mathcal L_{\mathrm{masked}}
++ w_{\mathrm{div}}\mathcal L_{\mathrm{div}}.
+$$
+
+默认 `w_mask=1.0`。多样性权重默认按扩散损失与多样性损失的比率自适应，
+并限制在 `[0.1, 0.5]`；使用 `--div-fixed` 可改为固定权重。逐项消融可设置
+`--lambda-orth 0`、`--lambda-mi 0` 或 `--lambda-disp 0`。
 
 主要 checkpoint：
 
 ```text
 runs/<dataset>_vae/checkpoints/last.ckpt
-runs/<dataset>_dit/checkpoints/last.ckpt
+runs/<dataset>_codemdt/checkpoints/last.ckpt
 ```
 
 每次训练还会在对应 `--output-dir` 下生成：
@@ -215,9 +254,9 @@ loss_curve.png
 loss_history.csv
 ```
 
-## DiT 层间 CKA 热力图
+## 潜空间模型层间 CKA 热力图
 
-DiT 训练使用 PyTorch forward hook 捕获以下层的输出：
+潜空间去噪器训练使用 PyTorch forward hook 捕获以下层的输出：
 
 - 输入嵌入 `embedding`
 - 每个 Transformer block，例如 `block_01` 至 `block_06`
@@ -244,7 +283,7 @@ CKA 不依赖训练过程。训练完成后可以直接运行：
 ```powershell
 python src/eval_cka.py `
   --dataset $DATASET `
-  --ckpt "runs/${DATASET}_dit/checkpoints/last.ckpt" `
+  --ckpt "runs/${DATASET}_codemdt/checkpoints/last.ckpt" `
   --vae-ckpt "runs/${DATASET}_vae/checkpoints/last.ckpt" `
   --device cpu `
   --split val `
@@ -269,7 +308,7 @@ runs/<dataset>_cka/cka_metadata.json
 ```powershell
 python src/test_csp.py `
   --dataset $DATASET `
-  --ckpt "runs/${DATASET}_dit/checkpoints/last.ckpt" `
+  --ckpt "runs/${DATASET}_codemdt/checkpoints/last.ckpt" `
   --vae-ckpt "runs/${DATASET}_vae/checkpoints/last.ckpt" `
   --candidates 4 `
   --limit 50 `
@@ -311,10 +350,23 @@ StructureMatcher 固定使用 `ltol=0.3`、`stol=0.5` 和 `angle_tol=10°`。
 --stage vae|dit
 --epochs
 --batch-size
---dropout              默认 0.05，作用于 VAE 和 DiT 的 Attention/MLP
+--dropout              默认 0.05，作用于 VAE 和去噪器的 Attention/MLP
 --weight-decay         AdamW 权重衰减，默认 1e-4
---vae-ckpt          仅 DiT 阶段需要
+--vae-ckpt          仅阶段二需要
 --dit-size s|b|l
+--denoiser code_mdt|dit         默认 code_mdt
+--vae-attention hi_lo|standard 默认 hi_lo
+--hilo-low-freq-heads           默认 2
+--hilo-cutoff                   默认 5.0 Å
+--hilo-pool-type grid|chunk|none
+--mask-ratio                    默认 0.3
+--mask-ratio-range              默认 0.2
+--mask-loss-weight              默认 1.0
+--decode-layer                  CoDeMDT 解码器 block 数，默认 2
+--rel-pos-bias 1d|none          默认 1d
+--div-weight / --div-weight-min / --div-weight-max
+--div-warmup / --div-fixed
+--lambda-orth / --lambda-mi / --lambda-disp
 --device auto|cpu|cuda
 --output-dir
 --limit-batches     仅用于快速验证，0 表示使用全部 batch
@@ -326,7 +378,7 @@ StructureMatcher 固定使用 `ltol=0.3`、`stol=0.5` 和 `angle_tol=10°`。
 | 设置 | 固定值 |
 | --- | --- |
 | VAE 学习率 | `1e-4` |
-| DiT 学习率 | `1e-4` |
+| 去噪器学习率 | `1e-4` |
 | Dropout | `0.05` |
 | AdamW weight decay | `1e-4` |
 | 潜变量维度 | `8` |
@@ -345,7 +397,7 @@ StructureMatcher 固定使用 `ltol=0.3`、`stol=0.5` 和 `angle_tol=10°`。
 | 随机种子 | `0` |
 
 权重衰减只作用于二维及以上的矩阵参数；bias、LayerNorm 和 embedding
-使用 `weight_decay=0`。VAE 和 DiT 的 Attention 与 MLP 均使用 `0.05`
+使用 `weight_decay=0`。VAE 和去噪器的 Attention 与 MLP 均使用 `0.05`
 dropout。可以通过命令行调整这两个值，例如：
 
 ```powershell

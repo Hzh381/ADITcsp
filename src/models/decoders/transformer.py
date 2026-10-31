@@ -1,12 +1,18 @@
 """Copyright (c) Meta Platforms, Inc. and affiliates."""
 
 import math
-from typing import Any, Dict, Tuple
+from typing import Dict
 
 import torch
 from torch import nn
 from torch_geometric.utils import to_dense_batch
 from torch_scatter import scatter
+
+from src.models.components.hiloattention import (
+    HiLoTransformerEncoder,
+    HiLoTransformerEncoderLayer,
+)
+from src.models.components.crystal_batching import to_dense_periodic_inputs
 
 
 def get_index_embedding(indices, emb_dim, max_len=2048):
@@ -48,31 +54,73 @@ class TransformerDecoder(nn.Module):
         norm_first: bool = True,
         bias: bool = True,
         num_layers: int = 6,
+        attention_type: str = "standard",
+        low_freq_heads: int = 2,
+        hilo_cutoff: float = 5.0,
+        hilo_max_shifts: int = 1,
+        hilo_num_freqs: int = 4,
+        hilo_edge_hidden: int = 64,
+        hilo_global_hidden: int = 64,
+        hilo_pool_type: str = "grid",
+        hilo_pool_grid_size: int = 3,
+        hilo_pool_chunk_size: int = 4,
     ):
         super().__init__()
 
         self.max_num_elements = max_num_elements
         self.d_model = d_model
         self.num_layers = num_layers
+        self.attention_type = attention_type
 
-        activation = {
+        activation_name = activation
+        activation_module = {
             "gelu": nn.GELU(approximate="tanh"),
             "relu": nn.ReLU(),
         }[activation]
-        self.transformer = nn.TransformerEncoder(
-            nn.TransformerEncoderLayer(
+        if attention_type == "standard":
+            self.transformer = nn.TransformerEncoder(
+                nn.TransformerEncoderLayer(
+                    d_model=d_model,
+                    nhead=nhead,
+                    dim_feedforward=dim_feedforward,
+                    activation=activation_module,
+                    dropout=dropout,
+                    batch_first=True,
+                    norm_first=norm_first,
+                    bias=bias,
+                ),
+                norm=nn.LayerNorm(d_model),
+                num_layers=num_layers,
+            )
+        elif attention_type == "hi_lo":
+            encoder_layer = HiLoTransformerEncoderLayer(
                 d_model=d_model,
                 nhead=nhead,
                 dim_feedforward=dim_feedforward,
-                activation=activation,
+                activation=activation_name,
                 dropout=dropout,
-                batch_first=True,
                 norm_first=norm_first,
                 bias=bias,
-            ),
-            norm=nn.LayerNorm(d_model),
-            num_layers=num_layers,
-        )
+                low_freq_heads=low_freq_heads,
+                cutoff=hilo_cutoff,
+                max_shifts=hilo_max_shifts,
+                num_freqs=hilo_num_freqs,
+                edge_hidden=hilo_edge_hidden,
+                global_hidden=hilo_global_hidden,
+                pool_type=hilo_pool_type,
+                pool_grid_size=hilo_pool_grid_size,
+                pool_chunk_size=hilo_pool_chunk_size,
+            )
+            self.transformer = HiLoTransformerEncoder(
+                encoder_layer,
+                num_layers=num_layers,
+                norm=nn.LayerNorm(d_model),
+            )
+        else:
+            raise ValueError(
+                "attention_type must be 'standard' or 'hi_lo', "
+                f"got {attention_type!r}"
+            )
 
         self.atom_types_head = nn.Linear(d_model, max_num_elements, bias=True)
         self.pos_head = nn.Linear(d_model, 3, bias=False)
@@ -101,7 +149,15 @@ class TransformerDecoder(nn.Module):
         x, token_mask = to_dense_batch(x, encoded_batch["batch"])
 
         # Transformer forward pass
-        x = self.transformer.forward(x, src_key_padding_mask=(~token_mask))
+        if getattr(self, "attention_type", "standard") == "hi_lo":
+            frac_coords, cell, token_mask = to_dense_periodic_inputs(
+                encoded_batch["frac_coords"],
+                encoded_batch["cell"],
+                encoded_batch["batch"],
+            )
+            x = self.transformer(x, frac_coords, cell, token_mask)
+        else:
+            x = self.transformer.forward(x, src_key_padding_mask=(~token_mask))
         x = x[token_mask]
 
         # Global pooling: (n, d) -> (bsz, d)

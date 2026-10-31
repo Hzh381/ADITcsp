@@ -28,6 +28,7 @@ class LatentDiffusionLitModule(LightningModule):
         scheduler: torch.optim.lr_scheduler.LRScheduler,
         scheduler_frequency: int,
         compile: bool = False,
+        mask_loss_weight: float = 1.0,
     ) -> None:
         super().__init__()
         self.save_hyperparameters(logger=False)
@@ -40,16 +41,37 @@ class LatentDiffusionLitModule(LightningModule):
             raise ValueError("The VAE checkpoint must be composition-conditioned.")
         self.denoiser = denoiser
         self.interpolant = interpolant
+        self.masking_enabled = bool(getattr(denoiser, "supports_masking", False))
+        self.has_diversity = bool(getattr(denoiser, "has_diversity", False))
         names = ["loss", "x_loss"]
+        if self.masking_enabled:
+            names += ["plain_loss", "m_loss", "m_x_loss"]
+        if self.has_diversity:
+            names += [
+                "div_loss",
+                "loss_orth",
+                "loss_mi",
+                "loss_disp",
+                "div_weight",
+            ]
         self.train_metrics = torch.nn.ModuleDict({k: MeanMetric() for k in names})
         self.val_metrics = torch.nn.ModuleDict(
-            {"mp20": torch.nn.ModuleDict({k: MeanMetric() for k in names})}
+            {
+                "mp20": torch.nn.ModuleDict(
+                    {k: MeanMetric() for k in ["loss", "x_loss"]}
+                )
+            }
         )
         self.test_metrics = torch.nn.ModuleDict(
-            {"mp20": torch.nn.ModuleDict({k: MeanMetric() for k in names})}
+            {
+                "mp20": torch.nn.ModuleDict(
+                    {k: MeanMetric() for k in ["loss", "x_loss"]}
+                )
+            }
         )
 
-    def forward(self, batch: Data):
+    def _prepare_batch(self, batch: Data):
+        """Encode one crystal batch and prepare the latent flow-matching inputs."""
         with torch.no_grad():
             encoded = self.autoencoder.encode(batch)
             x_1 = encoded["posterior"].sample()
@@ -61,28 +83,45 @@ class LatentDiffusionLitModule(LightningModule):
         dataset_idx = batch.dataset_idx + 1
         composition = composition_from_batch(batch, self.denoiser.composition_dim)
         spacegroup = torch.zeros_like(batch.spacegroup)
+        return noisy, {
+            "dataset_idx": dataset_idx,
+            "spacegroup": spacegroup,
+            "mask": mask,
+            "composition": composition,
+        }
+
+    def _denoise(self, noisy, conditioning, enable_mask: bool = False):
+        """Run one denoiser pass, including optional learned self-conditioning."""
         x_sc = None
         if self.interpolant.self_condition and random.random() < self.interpolant.self_condition_prob:
             with torch.no_grad():
                 x_sc = self.denoiser(
                     x=noisy["x_t"],
                     t=noisy["t"],
-                    dataset_idx=dataset_idx,
-                    spacegroup=spacegroup,
-                    mask=mask,
+                    dataset_idx=conditioning["dataset_idx"],
+                    spacegroup=conditioning["spacegroup"],
+                    mask=conditioning["mask"],
                     x_sc=None,
-                    composition=composition,
+                    composition=conditioning["composition"],
                 )
-        pred = self.denoiser(
-            x=noisy["x_t"],
-            t=noisy["t"],
-            dataset_idx=dataset_idx,
-            spacegroup=spacegroup,
-            mask=mask,
-            x_sc=x_sc,
-            composition=composition,
-        )
-        return pred, noisy
+        model_kwargs = {
+            "x": noisy["x_t"],
+            "t": noisy["t"],
+            "dataset_idx": conditioning["dataset_idx"],
+            "spacegroup": conditioning["spacegroup"],
+            "mask": conditioning["mask"],
+            "x_sc": x_sc,
+            "composition": conditioning["composition"],
+        }
+        if enable_mask:
+            if not self.masking_enabled:
+                raise ValueError("This denoiser does not support masked training.")
+            model_kwargs["enable_mask"] = True
+        return self.denoiser(**model_kwargs)
+
+    def forward(self, batch: Data):
+        noisy, conditioning = self._prepare_batch(batch)
+        return self._denoise(noisy, conditioning), noisy
 
     def criterion(self, noisy, pred):
         target = noisy["x_1"]
@@ -106,9 +145,46 @@ class LatentDiffusionLitModule(LightningModule):
             )
 
     def training_step(self, batch, batch_idx):
-        pred, noisy = self.forward(batch)
-        losses = self.criterion(noisy, pred)
-        for name, value in losses.items():
+        noisy, conditioning = self._prepare_batch(batch)
+        plain = self.criterion(noisy, self._denoise(noisy, conditioning))
+        logs = {
+            "loss": plain["loss"],
+            "x_loss": plain["x_loss"],
+        }
+        total = plain["loss"]
+
+        if self.masking_enabled:
+            logs["plain_loss"] = plain["loss"]
+            masked = self.criterion(
+                noisy,
+                self._denoise(noisy, conditioning, enable_mask=True),
+            )
+            total = total + self.hparams.mask_loss_weight * masked["loss"]
+            logs["m_loss"] = masked["loss"]
+            logs["m_x_loss"] = masked["x_loss"]
+
+            diversity_term = getattr(self.denoiser, "diversity_term", None)
+            if diversity_term is not None:
+                term = diversity_term(self.global_step, plain["loss"].detach())
+                if term is not None:
+                    total = total + term
+                    logs["div_loss"] = term.detach()
+                    components = self.denoiser.diversity_components()
+                    for name in ("loss_orth", "loss_mi", "loss_disp"):
+                        if name in components:
+                            logs[name] = torch.as_tensor(
+                                components[name],
+                                device=total.device,
+                                dtype=total.dtype,
+                            )
+                    logs["div_weight"] = torch.as_tensor(
+                        self.denoiser.diversity_weight(),
+                        device=total.device,
+                        dtype=total.dtype,
+                    )
+
+        logs["loss"] = total
+        for name, value in logs.items():
             self.train_metrics[name](value)
             self.log(
                 f"train/{name}",
@@ -117,7 +193,7 @@ class LatentDiffusionLitModule(LightningModule):
                 on_epoch=False,
                 prog_bar=False,
             )
-        return losses["loss"]
+        return total
 
     def on_train_epoch_start(self):
         for metric in self.train_metrics.values():

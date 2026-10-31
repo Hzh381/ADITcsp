@@ -38,6 +38,7 @@ from src.data.crystal_datamodule import (  # noqa: E402
     CrystalDataModule,
 )
 from src.models.decoders.transformer import TransformerDecoder  # noqa: E402
+from src.models.denoisers.code_mdt import CoDeMDT  # noqa: E402
 from src.models.denoisers.dit import DiT  # noqa: E402
 from src.models.encoders.transformer import TransformerEncoder  # noqa: E402
 from src.models.interpolants.flow_matching import FlowMatchingInterpolant  # noqa: E402
@@ -62,6 +63,7 @@ LR_SCHEDULER_FACTOR = 0.5
 LR_SCHEDULER_PATIENCE = 2
 LR_SCHEDULER_THRESHOLD = 1e-4
 MIN_LEARNING_RATE = 1e-6
+DEFAULT_MASK_RATIO = 0.3
 
 
 def build_lr_scheduler():
@@ -489,7 +491,7 @@ def parse_args():
         "--dropout",
         type=float,
         default=DEFAULT_DROPOUT,
-        help="dropout used by VAE and DiT attention/MLP",
+        help="dropout used by VAE and latent denoiser attention/MLP",
     )
     parser.add_argument(
         "--weight-decay",
@@ -499,6 +501,56 @@ def parse_args():
     )
     parser.add_argument("--device", choices=["auto", "cpu", "cuda"], default="auto")
     parser.add_argument("--dit-size", choices=["s", "b", "l"], default="s")
+    parser.add_argument(
+        "--denoiser",
+        choices=["code_mdt", "dit"],
+        default="code_mdt",
+        help="latent denoiser; dit is the original baseline",
+    )
+    parser.add_argument(
+        "--vae-attention",
+        choices=["hi_lo", "standard"],
+        default="hi_lo",
+        help="VAE encoder attention; decoder remains standard for CSP generation",
+    )
+    parser.add_argument(
+        "--hilo-low-freq-heads",
+        type=int,
+        default=2,
+        help="number of the VAE attention heads routed to the global Lo-Fi branch",
+    )
+    parser.add_argument("--hilo-cutoff", type=float, default=5.0)
+    parser.add_argument("--hilo-max-shifts", type=int, default=1)
+    parser.add_argument("--hilo-num-freqs", type=int, default=4)
+    parser.add_argument("--hilo-edge-hidden", type=int, default=64)
+    parser.add_argument("--hilo-global-hidden", type=int, default=64)
+    parser.add_argument(
+        "--hilo-pool-type",
+        choices=["grid", "chunk", "none"],
+        default="grid",
+        help="coarse-token construction for the Lo-Fi branch",
+    )
+    parser.add_argument("--hilo-pool-grid-size", type=int, default=3)
+    parser.add_argument("--hilo-pool-chunk-size", type=int, default=4)
+    parser.add_argument("--mask-ratio", type=float, default=DEFAULT_MASK_RATIO)
+    parser.add_argument("--mask-ratio-range", type=float, default=0.2)
+    parser.add_argument("--mask-loss-weight", type=float, default=1.0)
+    parser.add_argument("--decode-layer", type=int, default=2)
+    parser.add_argument("--rel-pos-bias", choices=["1d", "none"], default="1d")
+    parser.add_argument("--div-weight", type=float, default=0.2)
+    parser.add_argument("--div-weight-min", type=float, default=0.1)
+    parser.add_argument("--div-weight-max", type=float, default=0.5)
+    parser.add_argument("--div-warmup", type=int, default=0)
+    parser.add_argument("--div-target-ratio", type=float, default=0.02)
+    parser.add_argument(
+        "--div-fixed",
+        action="store_true",
+        help="use a fixed diversity weight instead of loss-ratio adaptation",
+    )
+    parser.add_argument("--div-on-plain", action="store_true")
+    parser.add_argument("--lambda-orth", type=float, default=1.0)
+    parser.add_argument("--lambda-mi", type=float, default=1.0)
+    parser.add_argument("--lambda-disp", type=float, default=0.1)
     parser.add_argument("--limit-batches", type=int, default=0, help="0 = all batches")
     parser.add_argument(
         "--patience",
@@ -514,6 +566,30 @@ def parse_args():
         parser.error("--dropout must be in [0, 1)")
     if args.weight_decay < 0.0:
         parser.error("--weight-decay must be non-negative")
+    if not 0.0 < args.mask_ratio < 1.0:
+        parser.error("--mask-ratio must be in (0, 1)")
+    if args.mask_ratio_range < 0.0:
+        parser.error("--mask-ratio-range must be non-negative")
+    if args.mask_loss_weight < 0.0:
+        parser.error("--mask-loss-weight must be non-negative")
+    if args.decode_layer < 1:
+        parser.error("--decode-layer must be positive")
+    if not 0 <= args.hilo_low_freq_heads <= 8:
+        parser.error("--hilo-low-freq-heads must be in [0, 8]")
+    if args.hilo_cutoff <= 0.0:
+        parser.error("--hilo-cutoff must be positive")
+    if args.hilo_max_shifts < 0:
+        parser.error("--hilo-max-shifts must be non-negative")
+    if args.hilo_num_freqs < 1:
+        parser.error("--hilo-num-freqs must be positive")
+    if args.hilo_pool_grid_size < 1:
+        parser.error("--hilo-pool-grid-size must be positive")
+    if args.hilo_pool_chunk_size < 1:
+        parser.error("--hilo-pool-chunk-size must be positive")
+    if not 0.0 <= args.div_weight_min <= args.div_weight_max:
+        parser.error("--div-weight-min/max must satisfy 0 <= min <= max")
+    if args.div_warmup < 0:
+        parser.error("--div-warmup must be non-negative")
     return args
 
 
@@ -529,8 +605,22 @@ def build_vae(args, output_dir):
         bias=True,
         num_layers=8,
     )
-    encoder = TransformerEncoder(**common)
-    decoder = TransformerDecoder(**common)
+    encoder = TransformerEncoder(
+        **common,
+        attention_type=args.vae_attention,
+        low_freq_heads=args.hilo_low_freq_heads,
+        hilo_cutoff=args.hilo_cutoff,
+        hilo_max_shifts=args.hilo_max_shifts,
+        hilo_num_freqs=args.hilo_num_freqs,
+        hilo_edge_hidden=args.hilo_edge_hidden,
+        hilo_global_hidden=args.hilo_global_hidden,
+        hilo_pool_type=args.hilo_pool_type,
+        hilo_pool_grid_size=args.hilo_pool_grid_size,
+        hilo_pool_chunk_size=args.hilo_pool_chunk_size,
+    )
+    # The decoder cannot observe target geometry during generation, so its
+    # default standard attention avoids a train/inference input leak.
+    decoder = TransformerDecoder(**common, attention_type="standard")
     loss_weights = {
         "loss_atom_types": {"mp20": 1.0},
         "loss_lengths": {"mp20": 1.0},
@@ -565,7 +655,7 @@ def build_vae(args, output_dir):
 
 def build_ldm(args, output_dir):
     size = DIT_SIZES[args.dit_size]
-    denoiser = DiT(
+    common = dict(
         d_x=8,
         d_model=size["d_model"],
         nhead=size["nhead"],
@@ -575,6 +665,33 @@ def build_ldm(args, output_dir):
         composition_dropout_prob=0.1,
         dropout=args.dropout,
     )
+    if args.denoiser == "code_mdt":
+        denoiser = CoDeMDT(
+            **common,
+            mask_ratio=args.mask_ratio,
+            mask_ratio_range=args.mask_ratio_range,
+            decode_layer=args.decode_layer,
+            lambda_orth=args.lambda_orth,
+            lambda_mi=args.lambda_mi,
+            lambda_disp=args.lambda_disp,
+            div_weight=args.div_weight,
+            div_weight_min=args.div_weight_min,
+            div_weight_max=args.div_weight_max,
+            div_warmup_steps=args.div_warmup,
+            div_adaptive=not args.div_fixed,
+            div_target_ratio=args.div_target_ratio,
+            rel_pos_bias=args.rel_pos_bias,
+            div_on_plain=args.div_on_plain,
+        )
+        print(
+            f"[配置] denoiser=code_mdt mask_ratio={args.mask_ratio:g} "
+            f"decode_layer={denoiser.decode_layer} blocks={denoiser.num_blocks} "
+            f"div_weight=[{denoiser.div_weights.min_weight:g},"
+            f"{denoiser.div_weights.max_weight:g}]"
+        )
+    else:
+        denoiser = DiT(**common)
+        print("[配置] denoiser=dit (original baseline)")
     interpolant = FlowMatchingInterpolant(
         min_t=1e-2,
         corrupt=True,
@@ -594,6 +711,7 @@ def build_ldm(args, output_dir):
         scheduler=build_lr_scheduler(),
         scheduler_frequency=VALIDATION_INTERVAL,
         compile=False,
+        mask_loss_weight=args.mask_loss_weight,
     )
 
 
@@ -616,7 +734,8 @@ def main():
     print(f"[数据] dataset={args.dataset} root={ROOT / 'data' / args.dataset}")
     print(
         f"[配置] dropout={args.dropout:g} "
-        f"weight_decay={args.weight_decay:g}"
+        f"weight_decay={args.weight_decay:g} "
+        f"vae_attention={args.vae_attention}"
     )
     model = build_vae(args, output_dir) if args.stage == "vae" else build_ldm(args, output_dir)
 
