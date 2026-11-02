@@ -49,6 +49,7 @@ class LatentDiffusionLitModule(LightningModule):
         if self.has_diversity:
             names += [
                 "div_loss",
+                "div_raw_loss",
                 "loss_orth",
                 "loss_mi",
                 "loss_disp",
@@ -163,6 +164,7 @@ class LatentDiffusionLitModule(LightningModule):
             logs["m_loss"] = masked["loss"]
             logs["m_x_loss"] = masked["x_loss"]
 
+        if self.has_diversity:
             diversity_term = getattr(self.denoiser, "diversity_term", None)
             if diversity_term is not None:
                 term = diversity_term(self.global_step, plain["loss"].detach())
@@ -170,6 +172,12 @@ class LatentDiffusionLitModule(LightningModule):
                     total = total + term
                     logs["div_loss"] = term.detach()
                     components = self.denoiser.diversity_components()
+                    if "div_loss" in components:
+                        logs["div_raw_loss"] = torch.as_tensor(
+                            components["div_loss"],
+                            device=total.device,
+                            dtype=total.dtype,
+                        )
                     for name in ("loss_orth", "loss_mi", "loss_disp"):
                         if name in components:
                             logs[name] = torch.as_tensor(

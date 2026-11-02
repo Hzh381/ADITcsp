@@ -7,7 +7,8 @@
 ## 项目范围
 
 - 数据集：`carbon_24`、`mp_20`、`mpts_52`、`perov_5`。
-- 模型：HiLo 注意力编码的成分条件 VAE + CoDeMDT 潜空间流匹配。
+- 模型：HiLo 注意力编码的成分条件 VAE + 潜空间流匹配。第二阶段支持
+  CoDeMDT、原始 DiT 和 DiverseDiT。
 - 输入：100 维元素计数向量。
 - 输出：候选晶体结构、有效候选的 CIF 文件和 CSP 评价指标。
 
@@ -60,6 +61,10 @@ python src/train_csp.py --stage dit --denoiser dit ...
 的阶段二输入；若要恢复完整的旧训练路径，应同时显式指定
 `--vae-attention standard` 和 `--denoiser dit`。
 
+DiverseDiT 是在原始 DiT 外新增的独立第二阶段模型。它保留标准 DiT
+backbone，不在普通路径中引入 MDT 的掩码编码器、Side Interpolator 或
+CoDeMDT 结构。
+
 当前模型从编码器到解码器均支持成分条件。原项目在 QM9/MP20 上训练的联合
 模型权重与本版本的输入和条件结构不兼容，不能直接用于这些 CSP 实验。
 
@@ -84,6 +89,7 @@ src/
     encoders/transformer.py
     decoders/transformer.py
     denoisers/dit.py
+    denoisers/diverse_dit.py    DiverseDiT、长残差和层间多样性损失
     denoisers/code_mdt.py       CoDeMDT、多样性损失和有界权重
     interpolants/flow_matching.py
   eval/
@@ -91,6 +97,7 @@ src/
     crystal_reconstruction.py
 tests/
   test_integrated_models.py      HiLo + CoDeMDT 的 CPU 集成测试
+  test_diverse_dit.py            DiverseDiT 前向、CFG 和反传测试
 ```
 
 以下目录被保留，因为其中包含已有测试结果或论文图件：
@@ -254,6 +261,77 @@ loss_curve.png
 loss_history.csv
 ```
 
+## 第二阶段：训练 DiverseDiT
+
+DiverseDiT 的实现参考
+[Towards Diverse Representation Learning in Diffusion Transformers](https://arxiv.org/abs/2603.04239)。
+它只复用标准 `DiT` 的输入、条件、block 和输出接口，并在其后增加：
+
+- 前半段 block 与镜像后半段 block 之间的长残差融合；
+- `orthogonality + mutual-information proxy + feature dispersion` 层间
+  多样性损失；
+- 按多样性损失值在 `[0.1, 0.5]` 区间内平滑启用的自适应权重。
+
+冻结 VAE 不变，重新训练第二阶段：
+
+```powershell
+python -m ADITcsp.src.train_csp `
+  --dataset carbon_24 `
+  --stage dit `
+  --vae-ckpt "runs/carbon24_hilovae/checkpoints/last.ckpt" `
+  --denoiser diverse_dit `
+  --dit-size s `
+  --dit-layers 6 `
+  --diverse-long-residual `
+  --diverse-blocks 6 `
+  --diverse-pairs 10 `
+  --diverse-loss-weight 1.0 `
+  --diverse-orth-weight 0.33 `
+  --diverse-mi-weight 0.33 `
+  --diverse-disp-weight 0.33 `
+  --epochs 500 `
+  --batch-size 32 `
+  --device cuda `
+  --output-dir "runs/carbon24_hilovae_diversedit"
+```
+
+MP-20 使用相同的第二阶段流程，只需替换数据集、VAE checkpoint 和输出目录。
+`--diverse-blocks` 表示参与损失计算的 block 数；block 多于该值时，每次
+训练前向随机选择对应数量的 block。`--diverse-pairs 0` 表示使用所选 block
+的全部 pair。
+
+DiverseDiT 的总体损失为：
+
+$$
+\mathcal L =
+\mathcal L_{\mathrm{diff}}
++ w_{\mathrm{div}}\mathcal L_{\mathrm{div}},
+\qquad
+\mathcal L_{\mathrm{div}} =
+0.33\mathcal L_{\mathrm{orth}}
++ 0.33\mathcal L_{\mathrm{MI}}
++ 0.33\mathcal L_{\mathrm{disp}}.
+$$
+
+`w_div` 由当前 `L_div` 自适应决定：不大于 `0.1` 时为 0，在
+`(0.1, 0.5]` 内线性增加，大于 `0.5` 时固定为 1。
+训练日志中的 `div_raw_loss` 是原始 `L_div`，`div_loss` 是乘上
+`w_div` 和 `--diverse-loss-weight` 后实际加入总损失的值。
+
+DiverseDiT checkpoint 与原始 DiT、CoDeMDT checkpoint 不兼容，必须从新的
+第二阶段任务开始训练。测试命令与普通第二阶段相同：
+
+```powershell
+python -m ADITcsp.src.test_csp `
+  --dataset carbon_24 `
+  --ckpt "runs/carbon24_hilovae_diversedit/checkpoints/last.ckpt" `
+  --vae-ckpt "runs/carbon24_hilovae/checkpoints/last.ckpt" `
+  --candidates 20 `
+  --limit 0 `
+  --device cuda `
+  --output "runs/carbon24_hilovae_diversedit_test"
+```
+
 ## 潜空间模型层间 CKA 热力图
 
 潜空间去噪器训练使用 PyTorch forward hook 捕获以下层的输出：
@@ -338,6 +416,37 @@ runs/<dataset>_test/generated/*.cif
 
 StructureMatcher 固定使用 `ltol=0.3`、`stol=0.5` 和 `angle_tol=10°`。
 
+## 测试 VAE 条件重建上界
+
+`src/test_vae.py` 用真实晶体的编码结果评估冻结 VAE 的重建能力。编码器只运行
+一次，随后分别使用后验均值和多次后验采样进行解码；解码器始终接收真实目标
+成分。该指标用于判断第二阶段是否已经接近 VAE 潜空间和解码器的表达上界。
+
+```powershell
+python src/test_vae.py `
+  --dataset carbon_24 `
+  --ckpt "runs/carbon_24_vae/checkpoints/last.ckpt" `
+  --split test `
+  --candidates 20 `
+  --limit 0 `
+  --device cuda `
+  --output "runs/carbon_24_vae_test_reconstruction"
+```
+
+输出包括：
+
+```text
+runs/<dataset>_vae_test_reconstruction/
+  summary.json
+  per_target.json
+  generated/                  仅在指定 --save-cifs 时创建
+```
+
+`mode_reconstruction` 使用后验均值，每个目标只有一个候选。
+`posterior_reconstruction_at_k` 从每个目标的后验分布采样 K 次并取最佳匹配。
+两项都报告成分正确率、结构合法率、结构匹配率、命中目标数和匹配目标的
+归一化 RMSD。未命中的目标不会进入 `mean_best_rms`。
+
 快速验证检查点仅使用一个 batch 训练，其输出接近随机模型。对应指标只能
 证明训练、采样、CIF 导出和指标计算流程可运行，不能作为模型效果结论。
 
@@ -354,7 +463,12 @@ StructureMatcher 固定使用 `ltol=0.3`、`stol=0.5` 和 `angle_tol=10°`。
 --weight-decay         AdamW 权重衰减，默认 1e-4
 --vae-ckpt          仅阶段二需要
 --dit-size s|b|l
---denoiser code_mdt|dit         默认 code_mdt
+--dit-layers                    覆盖 --dit-size 的 block 数
+--denoiser code_mdt|dit|diverse_dit 默认 code_mdt
+--diverse-long-residual         DiverseDiT 长残差，默认开启
+--diverse-blocks / --diverse-pairs
+--diverse-loss-weight
+--diverse-orth-weight / --diverse-mi-weight / --diverse-disp-weight
 --vae-attention hi_lo|standard 默认 hi_lo
 --hilo-low-freq-heads           默认 2
 --hilo-cutoff                   默认 5.0 Å

@@ -71,8 +71,8 @@ python src/train_csp.py `
   --output-dir runs/smoke_vae
 ```
 
-使用刚生成的 VAE 检查点（checkpoint）运行一个 CoDeMDT 训练 batch 和一个
-验证 batch：
+使用刚生成的 VAE checkpoint 运行一个 CoDeMDT 训练 batch 和一个验证
+batch：
 
 ```powershell
 python src/train_csp.py `
@@ -84,6 +84,22 @@ python src/train_csp.py `
   --limit-batches 1 `
   --batch-size 2 `
   --output-dir runs/smoke_codemdt
+```
+
+DiverseDiT 冒烟测试把 `--denoiser` 改为 `diverse_dit`，并使用偶数层数：
+
+```powershell
+python src/train_csp.py `
+  --dataset carbon_24 `
+  --stage dit `
+  --denoiser diverse_dit `
+  --dit-layers 4 `
+  --diverse-blocks 4 `
+  --vae-ckpt runs/smoke_vae/checkpoints/last.ckpt `
+  --epochs 10 `
+  --limit-batches 1 `
+  --batch-size 2 `
+  --output-dir runs/smoke_diversedit
 ```
 
 运行一个测试目标和一次候选采样：
@@ -131,11 +147,14 @@ python -m py_compile `
   src/models/encoders/transformer.py `
   src/models/decoders/transformer.py `
   src/models/components/hiloattention.py `
-  src/models/denoisers/code_mdt.py
+  src/models/denoisers/code_mdt.py `
+  src/models/denoisers/diverse_dit.py
 
 python -B -c "import runpy; ns=runpy.run_path('tests/test_integrated_models.py'); [ns[n]() for n in sorted(ns) if n.startswith('test_')]"
 
 python -B CoDeMDT/test_code_mdt.py
+
+python -B tests/test_diverse_dit.py
 ```
 
 `adit` 环境未安装 pytest，因此集成测试文件也支持上述 `runpy` 直接执行。
@@ -164,7 +183,7 @@ patience；若验证指标仍有明显改善，可以增大 patience 或最大 e
 
 ## 动态学习率
 
-VAE 和 CoDeMDT 都使用 `ReduceLROnPlateau`，监控 `val/loss`：
+VAE 和潜空间去噪器都使用 `ReduceLROnPlateau`，监控 `val/loss`：
 
 - 初始学习率为 `1e-4`。
 - 允许连续 2 次验证没有相对改善；如果下一次仍无改善，学习率乘以 `0.5`。
@@ -177,15 +196,15 @@ VAE 和 CoDeMDT 都使用 `ReduceLROnPlateau`，监控 `val/loss`：
 
 ## Dropout 与权重衰减
 
-VAE 和 CoDeMDT 默认使用：
+VAE 和潜空间去噪器默认使用：
 
 ```text
 dropout = 0.05
 AdamW weight_decay = 1e-4
 ```
 
-dropout 应用于 VAE Transformer layer 和 CoDeMDT 的 Attention/MLP。权重衰减
-只应用于二维及以上的矩阵参数，bias、LayerNorm 和 embedding 不衰减。
+dropout 应用于 VAE Transformer layer 和第二阶段去噪器的 Attention/MLP。
+权重衰减只应用于二维及以上的矩阵参数，bias、LayerNorm 和 embedding 不衰减。
 训练开始时会输出实际配置，也可以分别运行消融：
 
 ```powershell

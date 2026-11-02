@@ -40,6 +40,7 @@ from src.data.crystal_datamodule import (  # noqa: E402
 from src.models.decoders.transformer import TransformerDecoder  # noqa: E402
 from src.models.denoisers.code_mdt import CoDeMDT  # noqa: E402
 from src.models.denoisers.dit import DiT  # noqa: E402
+from src.models.denoisers.diverse_dit import DiverseDiT  # noqa: E402
 from src.models.encoders.transformer import TransformerEncoder  # noqa: E402
 from src.models.interpolants.flow_matching import FlowMatchingInterpolant  # noqa: E402
 from src.models.ldm_module import LatentDiffusionLitModule  # noqa: E402
@@ -502,10 +503,34 @@ def parse_args():
     parser.add_argument("--device", choices=["auto", "cpu", "cuda"], default="auto")
     parser.add_argument("--dit-size", choices=["s", "b", "l"], default="s")
     parser.add_argument(
+        "--dit-layers",
+        type=int,
+        default=None,
+        help="override the layer count from --dit-size",
+    )
+    parser.add_argument(
         "--denoiser",
-        choices=["code_mdt", "dit"],
+        choices=["code_mdt", "dit", "diverse_dit"],
         default="code_mdt",
         help="latent denoiser; dit is the original baseline",
+    )
+    parser.add_argument(
+        "--diverse-long-residual",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help="enable mirrored long residual connections in diverse_dit",
+    )
+    parser.add_argument("--diverse-blocks", type=int, default=10)
+    parser.add_argument("--diverse-pairs", type=int, default=10)
+    parser.add_argument("--diverse-loss-weight", type=float, default=1.0)
+    parser.add_argument("--diverse-orth-weight", type=float, default=0.33)
+    parser.add_argument("--diverse-mi-weight", type=float, default=0.33)
+    parser.add_argument("--diverse-disp-weight", type=float, default=0.33)
+    parser.add_argument(
+        "--diverse-mi-absolute",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help="use absolute cosine similarity for the mutual-information proxy",
     )
     parser.add_argument(
         "--vae-attention",
@@ -566,6 +591,20 @@ def parse_args():
         parser.error("--dropout must be in [0, 1)")
     if args.weight_decay < 0.0:
         parser.error("--weight-decay must be non-negative")
+    if args.dit_layers is not None and args.dit_layers < 1:
+        parser.error("--dit-layers must be positive")
+    if args.diverse_blocks < 0:
+        parser.error("--diverse-blocks must be non-negative")
+    if args.diverse_pairs < 0:
+        parser.error("--diverse-pairs must be non-negative")
+    if args.diverse_loss_weight < 0.0:
+        parser.error("--diverse-loss-weight must be non-negative")
+    if min(
+        args.diverse_orth_weight,
+        args.diverse_mi_weight,
+        args.diverse_disp_weight,
+    ) < 0.0:
+        parser.error("diverse loss component weights must be non-negative")
     if not 0.0 < args.mask_ratio < 1.0:
         parser.error("--mask-ratio must be in (0, 1)")
     if args.mask_ratio_range < 0.0:
@@ -655,11 +694,16 @@ def build_vae(args, output_dir):
 
 def build_ldm(args, output_dir):
     size = DIT_SIZES[args.dit_size]
+    num_layers = args.dit_layers or size["num_layers"]
+    if args.denoiser == "diverse_dit" and args.diverse_long_residual and num_layers % 2:
+        raise ValueError(
+            "diverse_dit long residual connections require an even --dit-layers value."
+        )
     common = dict(
         d_x=8,
         d_model=size["d_model"],
         nhead=size["nhead"],
-        num_layers=size["num_layers"],
+        num_layers=num_layers,
         num_datasets=2,
         composition_dim=100,
         composition_dropout_prob=0.1,
@@ -688,6 +732,25 @@ def build_ldm(args, output_dir):
             f"decode_layer={denoiser.decode_layer} blocks={denoiser.num_blocks} "
             f"div_weight=[{denoiser.div_weights.min_weight:g},"
             f"{denoiser.div_weights.max_weight:g}]"
+        )
+    elif args.denoiser == "diverse_dit":
+        denoiser = DiverseDiT(
+            **common,
+            long_residual=args.diverse_long_residual,
+            diversity_loss=True,
+            diversity_blocks=args.diverse_blocks,
+            diversity_max_pairs=args.diverse_pairs,
+            lambda_orth=args.diverse_orth_weight,
+            lambda_mi=args.diverse_mi_weight,
+            lambda_disp=args.diverse_disp_weight,
+            diversity_loss_scale=args.diverse_loss_weight,
+            diversity_mi_absolute=args.diverse_mi_absolute,
+        )
+        print(
+            f"[配置] denoiser=diverse_dit blocks={num_layers} "
+            f"long_residual={args.diverse_long_residual} "
+            f"diversity_blocks={args.diverse_blocks} "
+            f"diversity_pairs={args.diverse_pairs}"
         )
     else:
         denoiser = DiT(**common)
