@@ -1,0 +1,100 @@
+{
+  "scope": "Synthetic implementation checks; no trained checkpoints used.",
+  "frozen_vae_train_mode": {
+    "train_implementation": "Module.train",
+    "before_parent_train": false,
+    "after_parent_train": true,
+    "dropout_after_parent_train": true,
+    "parameters_require_grad": false
+  },
+  "noise_mean_variance": {
+    "6": {
+      "training_M24": 0.12486151605844498,
+      "theoretical_training": 0.125,
+      "test_M_equals_N": 7.418159968540288e-16
+    },
+    "12": {
+      "training_M24": 0.04159783944487572,
+      "theoretical_training": 0.041666666666666664,
+      "test_M_equals_N": 4.909795244419622e-16
+    },
+    "24": {
+      "training_M24": 3.507774398723483e-16,
+      "theoretical_training": 0.0,
+      "test_M_equals_N": 3.4993683908153723e-16
+    }
+  },
+  "mixed_length_mmd": {
+    "valid_token_rmse": 8.82221508026123,
+    "pooled_feature_max_error": 7.152557373046875e-07,
+    "mmd": 0.0
+  },
+  "mmd_joint_rescaling": {
+    "0.1": 0.18333859741687775,
+    "1.0": 0.13497519493103027,
+    "10.0": 0.0027164220809936523,
+    "100.0": 2.7418136596679688e-05
+  },
+  "local_dataset": {
+    "train": {
+      "count": 6091,
+      "atom_counts": {
+        "6": 1980,
+        "8": 1693,
+        "10": 937,
+        "12": 685,
+        "14": 302,
+        "16": 236,
+        "18": 116,
+        "20": 62,
+        "22": 43,
+        "24": 37
+      },
+      "elements": [
+        6
+      ]
+    },
+    "val": {
+      "count": 2032,
+      "atom_counts": {
+        "6": 671,
+        "8": 559,
+        "10": 309,
+        "12": 231,
+        "14": 95,
+        "16": 76,
+        "18": 50,
+        "20": 18,
+        "22": 16,
+        "24": 7
+      },
+      "elements": [
+        6
+      ]
+    },
+    "test": {
+      "count": 2030,
+      "atom_counts": {
+        "6": 705,
+        "8": 526,
+        "10": 317,
+        "12": 200,
+        "14": 110,
+        "16": 84,
+        "18": 37,
+        "20": 24,
+        "22": 17,
+        "24": 10
+      },
+      "elements": [
+        6
+      ]
+    }
+  },
+  "local_training_batch_example": {
+    "seed": 0,
+    "batches": 190,
+    "fraction_of_atoms_counts_below_batch_max": 0.957072377204895,
+    "fraction_mixed_lengths_in_first_16": 1.0
+  }
+}

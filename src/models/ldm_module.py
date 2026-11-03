@@ -87,6 +87,18 @@ class LatentDiffusionLitModule(LightningModule):
             }
         )
 
+    def train(self, mode: bool = True):
+        """Keep the frozen autoencoder in eval mode when the parent trains.
+
+        ``requires_grad_(False)`` only stops gradient updates; it does not
+        disable dropout. Lightning puts the whole module in training mode,
+        which would silently re-enable the autoencoder's dropout and change
+        the latent targets between training and inference.
+        """
+        super().train(mode)
+        self.autoencoder.eval()
+        return self
+
     def _prepare_batch(self, batch: Data):
         """Encode one crystal batch and prepare the latent flow-matching inputs."""
         with torch.no_grad():

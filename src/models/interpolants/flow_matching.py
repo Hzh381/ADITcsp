@@ -43,13 +43,24 @@ class FlowMatchingInterpolant:
         t = torch.rand(batch_size, device=self.device)
         return t * (1 - 2 * self.min_t) + self.min_t
 
-    def _centered_gaussian(self, batch_size, num_tokens, emb_dim=3):
+    def _centered_gaussian(self, batch_size, num_tokens, emb_dim=3, token_mask=None):
+        """Zero-mean Gaussian noise, centered over valid tokens only.
+
+        Centering must ignore padding, otherwise short structures keep a
+        random residual mean during training while test-time noise (no padding)
+        is centered exactly.
+        """
         noise = torch.randn(batch_size, num_tokens, emb_dim, device=self.device)
-        return noise - torch.mean(noise, dim=-2, keepdims=True)
+        if token_mask is None:
+            token_mask = torch.ones(batch_size, num_tokens, dtype=torch.bool, device=self.device)
+        mask = token_mask.to(noise.dtype).unsqueeze(-1)
+        counts = token_mask.sum(dim=-1, keepdim=True).to(noise.dtype).clamp_min(1.0)
+        mean = (noise * mask).sum(dim=-2, keepdim=True) / counts.unsqueeze(-1)
+        return (noise - mean) * mask
 
     def _corrupt_x(self, x_1, t, token_mask, diffuse_mask, x_0=None):
         if x_0 is None:
-            x_0 = self._centered_gaussian(*x_1.shape)
+            x_0 = self._centered_gaussian(*x_1.shape, token_mask=token_mask)
         x_t = (1 - t[..., None]) * x_0 + t[..., None] * x_1
         x_t = x_t * diffuse_mask[..., None] + x_1 * (~diffuse_mask[..., None])
         return x_t * token_mask[..., None]
@@ -79,7 +90,7 @@ class FlowMatchingInterpolant:
 
         # Apply corruptions
         if self.corrupt:
-            x_0 = self._centered_gaussian(*x_1.shape)
+            x_0 = self._centered_gaussian(*x_1.shape, token_mask=token_mask)
             noisy_batch["x_0"] = x_0
             if ot_coupler is not None:
                 x_1 = ot_coupler(x_0, x_1, token_mask, group_ids=group_ids)
@@ -127,7 +138,7 @@ class FlowMatchingInterpolant:
                 device=self.device,
             )
 
-        x_t = self._centered_gaussian(batch_size, num_tokens, emb_dim)
+        x_t = self._centered_gaussian(batch_size, num_tokens, emb_dim, token_mask=token_mask)
         ts = torch.linspace(self.min_t, 1.0, num_timesteps, device=self.device)
         t_1 = ts[0]
         x_sc = None
@@ -205,7 +216,7 @@ class FlowMatchingInterpolant:
         """
         # Set-up initial prior samples
         if x_0 is None:
-            x_0 = self._centered_gaussian(batch_size, num_tokens, emb_dim)
+            x_0 = self._centered_gaussian(batch_size, num_tokens, emb_dim, token_mask=token_mask)
         if token_mask is None:
             token_mask = torch.ones(batch_size, num_tokens, device=self.device).bool()
         if token_idx is None:
@@ -326,7 +337,7 @@ class FlowMatchingInterpolant:
 
         # Set-up initial prior samples
         if x_0 is None:
-            x_0 = self._centered_gaussian(batch_size, num_tokens, emb_dim)
+            x_0 = self._centered_gaussian(batch_size, num_tokens, emb_dim, token_mask=token_mask)
         if token_mask is None:
             token_mask = torch.ones(batch_size, num_tokens, device=self.device).bool()
         if token_idx is None:

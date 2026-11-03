@@ -1,0 +1,2536 @@
+{
+  "sources": {
+    "train_metrics": {
+      "carbon24_codemdt": {
+        "rows": 650,
+        "first_epoch": 1.0,
+        "last_epoch": 650.0,
+        "columns": [
+          "epoch",
+          "step",
+          "div_loss",
+          "div_weight",
+          "loss",
+          "loss_disp",
+          "loss_mi",
+          "loss_orth",
+          "lr_pg1",
+          "lr_pg2",
+          "m_loss",
+          "m_x_loss",
+          "plain_loss",
+          "weight_decay_pg1",
+          "weight_decay_pg2",
+          "x_loss"
+        ],
+        "final": {
+          "epoch": 650.0,
+          "step": 123500.0,
+          "div_loss": -0.1566886305809021,
+          "div_weight": 0.5,
+          "loss": 3.5498104095458984,
+          "loss_disp": -0.9351686239242554,
+          "loss_mi": -0.10937961935997009,
+          "loss_orth": -0.11048074811697006,
+          "lr_pg1": 1e-06,
+          "lr_pg2": 1e-06,
+          "m_loss": 1.8570469617843628,
+          "m_x_loss": 1.8570469617843628,
+          "plain_loss": 1.8494517803192139,
+          "weight_decay_pg1": 0.0001,
+          "weight_decay_pg2": 0.0,
+          "x_loss": 1.8494517803192139
+        },
+        "best_loss": {
+          "epoch": 603.0,
+          "value": 3.460033655166626
+        },
+        "best_x_loss": {
+          "epoch": 603.0,
+          "value": 1.8049194812774658
+        },
+        "best_lr_pg1": {
+          "epoch": 451.0,
+          "value": 1e-06
+        }
+      },
+      "carbon24_codemdt_decoder_6": {
+        "rows": 500,
+        "first_epoch": 1.0,
+        "last_epoch": 500.0,
+        "columns": [
+          "epoch",
+          "step",
+          "div_loss",
+          "div_weight",
+          "loss",
+          "loss_disp",
+          "loss_mi",
+          "loss_orth",
+          "lr_pg1",
+          "lr_pg2",
+          "m_loss",
+          "m_x_loss",
+          "plain_loss",
+          "weight_decay_pg1",
+          "weight_decay_pg2",
+          "x_loss"
+        ],
+        "final": {
+          "epoch": 500.0,
+          "step": 95000.0,
+          "div_loss": -0.2487064152956009,
+          "div_weight": 0.5,
+          "loss": 3.256164789199829,
+          "loss_disp": -0.9805496335029602,
+          "loss_mi": -0.19958017766475677,
+          "loss_orth": -0.19977767765522003,
+          "lr_pg1": 1e-06,
+          "lr_pg2": 1e-06,
+          "m_loss": 1.7516378164291382,
+          "m_x_loss": 1.7516378164291382,
+          "plain_loss": 1.7532352209091187,
+          "weight_decay_pg1": 0.0001,
+          "weight_decay_pg2": 0.0,
+          "x_loss": 1.7532352209091187
+        },
+        "best_loss": {
+          "epoch": 484.0,
+          "value": 3.1457929611206055
+        },
+        "best_x_loss": {
+          "epoch": 484.0,
+          "value": 1.6992992162704468
+        },
+        "best_lr_pg1": {
+          "epoch": 461.0,
+          "value": 1e-06
+        }
+      },
+      "carbon24_dit": {
+        "rows": 350,
+        "first_epoch": 1.0,
+        "last_epoch": 350.0,
+        "columns": [
+          "epoch",
+          "step",
+          "loss",
+          "lr_pg1",
+          "lr_pg2",
+          "weight_decay_pg1",
+          "weight_decay_pg2",
+          "x_loss"
+        ],
+        "final": {
+          "epoch": 350.0,
+          "step": 66500.0,
+          "loss": 1.7762478590011597,
+          "lr_pg1": 1.5625e-06,
+          "lr_pg2": 1.5625e-06,
+          "weight_decay_pg1": 0.0001,
+          "weight_decay_pg2": 0.0,
+          "x_loss": 1.7762478590011597
+        },
+        "best_loss": {
+          "epoch": 255.0,
+          "value": 1.7419743537902832
+        },
+        "best_x_loss": {
+          "epoch": 255.0,
+          "value": 1.7419743537902832
+        },
+        "best_lr_pg1": {
+          "epoch": 341.0,
+          "value": 1.5625e-06
+        }
+      },
+      "carbon24_dit_mmd_only": {
+        "rows": 350,
+        "first_epoch": 1.0,
+        "last_epoch": 350.0,
+        "columns": [
+          "epoch",
+          "step",
+          "loss",
+          "lr_pg1",
+          "lr_pg2",
+          "mmd_bandwidth",
+          "mmd_loss",
+          "mmd_raw_loss",
+          "weight_decay_pg1",
+          "weight_decay_pg2",
+          "x_loss"
+        ],
+        "final": {
+          "epoch": 350.0,
+          "step": 66500.0,
+          "loss": 1.8222393989562988,
+          "lr_pg1": 1.5625e-06,
+          "lr_pg2": 1.5625e-06,
+          "mmd_bandwidth": 2.3531806468963623,
+          "mmd_loss": 0.000351711583789438,
+          "mmd_raw_loss": 0.0070342314429581165,
+          "weight_decay_pg1": 0.0001,
+          "weight_decay_pg2": 0.0,
+          "x_loss": 1.821887493133545
+        },
+        "best_loss": {
+          "epoch": 348.0,
+          "value": 1.7583963871002197
+        },
+        "best_x_loss": {
+          "epoch": 348.0,
+          "value": 1.7579998970031738
+        },
+        "best_lr_pg1": {
+          "epoch": 341.0,
+          "value": 1.5625e-06
+        }
+      },
+      "carbon24_dit_ot_only": {
+        "rows": 310,
+        "first_epoch": 1.0,
+        "last_epoch": 310.0,
+        "columns": [
+          "epoch",
+          "step",
+          "loss",
+          "lr_pg1",
+          "lr_pg2",
+          "ot_cost",
+          "weight_decay_pg1",
+          "weight_decay_pg2",
+          "x_loss"
+        ],
+        "final": {
+          "epoch": 310.0,
+          "step": 58900.0,
+          "loss": 1.4985229969024658,
+          "lr_pg1": 3.125e-06,
+          "lr_pg2": 3.125e-06,
+          "ot_cost": 5.021515369415283,
+          "weight_decay_pg1": 0.0001,
+          "weight_decay_pg2": 0.0,
+          "x_loss": 1.4985229969024658
+        },
+        "best_loss": {
+          "epoch": 255.0,
+          "value": 1.4496392011642456
+        },
+        "best_x_loss": {
+          "epoch": 255.0,
+          "value": 1.4496392011642456
+        },
+        "best_lr_pg1": {
+          "epoch": 301.0,
+          "value": 3.125e-06
+        }
+      },
+      "carbon24_hilovae_diversedit_12": {
+        "rows": 450,
+        "first_epoch": 1.0,
+        "last_epoch": 450.0,
+        "columns": [
+          "epoch",
+          "step",
+          "div_loss",
+          "div_raw_loss",
+          "div_weight",
+          "loss",
+          "loss_disp",
+          "loss_mi",
+          "loss_orth",
+          "lr_pg1",
+          "lr_pg2",
+          "weight_decay_pg1",
+          "weight_decay_pg2",
+          "x_loss"
+        ],
+        "final": {
+          "epoch": 450.0,
+          "step": 85500.0,
+          "div_loss": 0.00033670972334221005,
+          "div_raw_loss": 0.07215553522109985,
+          "div_weight": 0.0029461276717483997,
+          "loss": 1.7070062160491943,
+          "loss_disp": -0.0020034497138112783,
+          "loss_mi": 0.2579937279224396,
+          "loss_orth": -0.037337105721235275,
+          "lr_pg1": 1.5625e-06,
+          "lr_pg2": 1.5625e-06,
+          "weight_decay_pg1": 0.0001,
+          "weight_decay_pg2": 0.0,
+          "x_loss": 1.7066696882247925
+        },
+        "best_loss": {
+          "epoch": 376.0,
+          "value": 1.6442010402679443
+        },
+        "best_x_loss": {
+          "epoch": 376.0,
+          "value": 1.6436952352523804
+        },
+        "best_lr_pg1": {
+          "epoch": 441.0,
+          "value": 1.5625e-06
+        }
+      },
+      "carbon24_standard_vae": {
+        "rows": 120,
+        "first_epoch": 1.0,
+        "last_epoch": 120.0,
+        "columns": [
+          "epoch",
+          "step",
+          "loss",
+          "loss_angles",
+          "loss_atom_types",
+          "loss_composition",
+          "loss_frac_coords",
+          "loss_kl",
+          "loss_lengths",
+          "loss_pos",
+          "lr_pg1",
+          "lr_pg2",
+          "unscaled/loss_angles",
+          "unscaled/loss_atom_types",
+          "unscaled/loss_frac_coords",
+          "unscaled/loss_kl",
+          "unscaled/loss_lengths",
+          "unscaled/loss_pos",
+          "weight_decay_pg1",
+          "weight_decay_pg2"
+        ],
+        "final": {
+          "epoch": 120.0,
+          "step": 22800.0,
+          "loss": 0.08890295773744583,
+          "loss_angles": 0.05412635952234268,
+          "loss_atom_types": 2.0634011166364985e-10,
+          "loss_composition": 4.306990152348461e-17,
+          "loss_frac_coords": 0.02236519753932953,
+          "loss_kl": 0.0006113661802373827,
+          "loss_lengths": 0.011808454059064388,
+          "loss_pos": 0.0,
+          "lr_pg1": 1.25e-05,
+          "lr_pg2": 1.25e-05,
+          "unscaled/loss_angles": 0.005412634462118149,
+          "unscaled/loss_atom_types": 2.0634011166364985e-10,
+          "unscaled/loss_frac_coords": 0.002236520405858755,
+          "unscaled/loss_kl": 61.13660430908203,
+          "unscaled/loss_lengths": 0.011808454059064388,
+          "unscaled/loss_pos": 0.02551843971014023,
+          "weight_decay_pg1": 0.0001,
+          "weight_decay_pg2": 0.0
+        },
+        "best_loss": {
+          "epoch": 113.0,
+          "value": 0.08779682219028473
+        },
+        "best_loss_atom_types": {
+          "epoch": 117.0,
+          "value": 1.5094625549494367e-10
+        },
+        "best_loss_lengths": {
+          "epoch": 118.0,
+          "value": 0.011020410805940628
+        },
+        "best_loss_angles": {
+          "epoch": 113.0,
+          "value": 0.052810534834861755
+        },
+        "best_loss_frac_coords": {
+          "epoch": 120.0,
+          "value": 0.02236519753932953
+        },
+        "best_loss_kl": {
+          "epoch": 1.0,
+          "value": 0.0004264907620381564
+        },
+        "best_lr_pg1": {
+          "epoch": 111.0,
+          "value": 1.25e-05
+        }
+      },
+      "carbon24_standard_vae_codemdt": {
+        "rows": 260,
+        "first_epoch": 1.0,
+        "last_epoch": 260.0,
+        "columns": [
+          "epoch",
+          "step",
+          "div_loss",
+          "div_weight",
+          "loss",
+          "loss_disp",
+          "loss_mi",
+          "loss_orth",
+          "lr_pg1",
+          "lr_pg2",
+          "m_loss",
+          "m_x_loss",
+          "plain_loss",
+          "weight_decay_pg1",
+          "weight_decay_pg2",
+          "x_loss"
+        ],
+        "final": {
+          "epoch": 260.0,
+          "step": 49400.0,
+          "div_loss": -0.1561742126941681,
+          "div_weight": 0.5,
+          "loss": 4.108846187591553,
+          "loss_disp": -0.9312760233879089,
+          "loss_mi": -0.10886214673519135,
+          "loss_orth": -0.11035878211259842,
+          "lr_pg1": 3.125e-06,
+          "lr_pg2": 3.125e-06,
+          "m_loss": 2.135097026824951,
+          "m_x_loss": 2.135097026824951,
+          "plain_loss": 2.1299216747283936,
+          "weight_decay_pg1": 0.0001,
+          "weight_decay_pg2": 0.0,
+          "x_loss": 2.1299216747283936
+        },
+        "best_loss": {
+          "epoch": 255.0,
+          "value": 4.055299758911133
+        },
+        "best_x_loss": {
+          "epoch": 255.0,
+          "value": 2.102341890335083
+        },
+        "best_lr_pg1": {
+          "epoch": 251.0,
+          "value": 3.125e-06
+        }
+      },
+      "carbon24_standardvae_codemdt_decoder_6": {
+        "rows": 320,
+        "first_epoch": 1.0,
+        "last_epoch": 320.0,
+        "columns": [
+          "epoch",
+          "step",
+          "div_loss",
+          "div_weight",
+          "loss",
+          "loss_disp",
+          "loss_mi",
+          "loss_orth",
+          "lr_pg1",
+          "lr_pg2",
+          "m_loss",
+          "m_x_loss",
+          "plain_loss",
+          "weight_decay_pg1",
+          "weight_decay_pg2",
+          "x_loss"
+        ],
+        "final": {
+          "epoch": 320.0,
+          "step": 60800.0,
+          "div_loss": -0.24739423394203186,
+          "div_weight": 0.5,
+          "loss": 3.825848340988159,
+          "loss_disp": -0.9586542248725891,
+          "loss_mi": -0.19925165176391602,
+          "loss_orth": -0.19967155158519745,
+          "lr_pg1": 3.125e-06,
+          "lr_pg2": 3.125e-06,
+          "m_loss": 2.035667896270752,
+          "m_x_loss": 2.035667896270752,
+          "plain_loss": 2.0375752449035645,
+          "weight_decay_pg1": 0.0001,
+          "weight_decay_pg2": 0.0,
+          "x_loss": 2.0375752449035645
+        },
+        "best_loss": {
+          "epoch": 272.0,
+          "value": 3.7830326557159424
+        },
+        "best_x_loss": {
+          "epoch": 272.0,
+          "value": 2.0148868560791016
+        },
+        "best_lr_pg1": {
+          "epoch": 311.0,
+          "value": 3.125e-06
+        }
+      },
+      "carbon_24_hilo_vae": {
+        "rows": 310,
+        "first_epoch": 1.0,
+        "last_epoch": 310.0,
+        "columns": [
+          "epoch",
+          "step",
+          "loss",
+          "loss_angles",
+          "loss_atom_types",
+          "loss_composition",
+          "loss_frac_coords",
+          "loss_kl",
+          "loss_lengths",
+          "loss_pos",
+          "lr_pg1",
+          "lr_pg2",
+          "unscaled/loss_angles",
+          "unscaled/loss_atom_types",
+          "unscaled/loss_frac_coords",
+          "unscaled/loss_kl",
+          "unscaled/loss_lengths",
+          "unscaled/loss_pos",
+          "weight_decay_pg1",
+          "weight_decay_pg2"
+        ],
+        "final": {
+          "epoch": 310.0,
+          "step": 58900.0,
+          "loss": 0.019930701702833176,
+          "loss_angles": 0.00011650382657535374,
+          "loss_atom_types": 0.0,
+          "loss_composition": 5.713066364734975e-20,
+          "loss_frac_coords": 0.019292401149868965,
+          "loss_kl": 0.0004526884004008025,
+          "loss_lengths": 8.242383046308532e-05,
+          "loss_pos": 0.0,
+          "lr_pg1": 6.25e-06,
+          "lr_pg2": 6.25e-06,
+          "unscaled/loss_angles": 1.1650387023109943e-05,
+          "unscaled/loss_atom_types": 0.0,
+          "unscaled/loss_frac_coords": 0.0019292403012514114,
+          "unscaled/loss_kl": 45.268836975097656,
+          "unscaled/loss_lengths": 8.242383046308532e-05,
+          "unscaled/loss_pos": 0.02202019654214382,
+          "weight_decay_pg1": 0.0001,
+          "weight_decay_pg2": 0.0
+        },
+        "best_loss": {
+          "epoch": 257.0,
+          "value": 0.017082011327147484
+        },
+        "best_loss_atom_types": {
+          "epoch": 97.0,
+          "value": 0.0
+        },
+        "best_loss_lengths": {
+          "epoch": 286.0,
+          "value": 8.062463894020766e-05
+        },
+        "best_loss_angles": {
+          "epoch": 274.0,
+          "value": 0.00010616984945954755
+        },
+        "best_loss_frac_coords": {
+          "epoch": 257.0,
+          "value": 0.016412466764450073
+        },
+        "best_loss_kl": {
+          "epoch": 309.0,
+          "value": 0.0004526343254838139
+        },
+        "best_lr_pg1": {
+          "epoch": 271.0,
+          "value": 6.25e-06
+        }
+      },
+      "standard_vae_standard_dit": {
+        "rows": 300,
+        "first_epoch": 1.0,
+        "last_epoch": 300.0,
+        "columns": [
+          "epoch",
+          "step",
+          "loss",
+          "lr_pg1",
+          "lr_pg2",
+          "weight_decay_pg1",
+          "weight_decay_pg2",
+          "x_loss"
+        ],
+        "final": {
+          "epoch": 300.0,
+          "step": 57000.0,
+          "loss": 2.040205717086792,
+          "lr_pg1": 1.25e-05,
+          "lr_pg2": 1.25e-05,
+          "weight_decay_pg1": 0.0001,
+          "weight_decay_pg2": 0.0,
+          "x_loss": 2.040205717086792
+        },
+        "best_loss": {
+          "epoch": 263.0,
+          "value": 1.9790180921554565
+        },
+        "best_x_loss": {
+          "epoch": 263.0,
+          "value": 1.9790180921554565
+        },
+        "best_lr_pg1": {
+          "epoch": 281.0,
+          "value": 1.25e-05
+        }
+      }
+    },
+    "validation_metrics": {
+      "carbon24_codemdt": {
+        "rows": 65,
+        "first_epoch": 10.0,
+        "last_epoch": 650.0,
+        "columns": [
+          "epoch",
+          "step",
+          "loss",
+          "x_loss"
+        ],
+        "final": {
+          "epoch": 650.0,
+          "step": 123500.0,
+          "loss": 1.9134563207626343,
+          "x_loss": 1.9166195392608643
+        },
+        "best_loss": {
+          "epoch": 550.0,
+          "value": 1.7218928337097168
+        },
+        "best_x_loss": {
+          "epoch": 550.0,
+          "value": 1.722750186920166
+        }
+      },
+      "carbon24_codemdt_decoder_6": {
+        "rows": 50,
+        "first_epoch": 10.0,
+        "last_epoch": 500.0,
+        "columns": [
+          "epoch",
+          "step",
+          "loss",
+          "x_loss"
+        ],
+        "final": {
+          "epoch": 500.0,
+          "step": 95000.0,
+          "loss": 1.772499442100525,
+          "x_loss": 1.7772482633590698
+        },
+        "best_loss": {
+          "epoch": 400.0,
+          "value": 1.708480715751648
+        },
+        "best_x_loss": {
+          "epoch": 400.0,
+          "value": 1.7040430307388306
+        }
+      },
+      "carbon24_dit": {
+        "rows": 35,
+        "first_epoch": 10.0,
+        "last_epoch": 350.0,
+        "columns": [
+          "epoch",
+          "step",
+          "loss",
+          "x_loss"
+        ],
+        "final": {
+          "epoch": 350.0,
+          "step": 66500.0,
+          "loss": 1.8148046731948853,
+          "x_loss": 1.8153945207595825
+        },
+        "best_loss": {
+          "epoch": 250.0,
+          "value": 1.7675498723983765
+        },
+        "best_x_loss": {
+          "epoch": 250.0,
+          "value": 1.7693328857421875
+        }
+      },
+      "carbon24_dit_mmd_only": {
+        "rows": 35,
+        "first_epoch": 10.0,
+        "last_epoch": 350.0,
+        "columns": [
+          "epoch",
+          "step",
+          "loss",
+          "x_loss"
+        ],
+        "final": {
+          "epoch": 350.0,
+          "step": 66500.0,
+          "loss": 1.7970813512802124,
+          "x_loss": 1.7956308126449585
+        },
+        "best_loss": {
+          "epoch": 250.0,
+          "value": 1.737666368484497
+        },
+        "best_x_loss": {
+          "epoch": 250.0,
+          "value": 1.7378652095794678
+        }
+      },
+      "carbon24_dit_ot_only": {
+        "rows": 31,
+        "first_epoch": 10.0,
+        "last_epoch": 310.0,
+        "columns": [
+          "epoch",
+          "step",
+          "loss",
+          "x_loss"
+        ],
+        "final": {
+          "epoch": 310.0,
+          "step": 58900.0,
+          "loss": 1.8970218896865845,
+          "x_loss": 1.9005351066589355
+        },
+        "best_loss": {
+          "epoch": 210.0,
+          "value": 1.8105119466781616
+        },
+        "best_x_loss": {
+          "epoch": 220.0,
+          "value": 1.8120148181915283
+        }
+      },
+      "carbon24_hilovae_diversedit_12": {
+        "rows": 45,
+        "first_epoch": 10.0,
+        "last_epoch": 450.0,
+        "columns": [
+          "epoch",
+          "step",
+          "loss",
+          "x_loss"
+        ],
+        "final": {
+          "epoch": 450.0,
+          "step": 85500.0,
+          "loss": 1.7004122734069824,
+          "x_loss": 1.700473427772522
+        },
+        "best_loss": {
+          "epoch": 350.0,
+          "value": 1.6891552209854126
+        },
+        "best_x_loss": {
+          "epoch": 350.0,
+          "value": 1.6888009309768677
+        }
+      },
+      "carbon24_standard_vae": {
+        "rows": 12,
+        "first_epoch": 10.0,
+        "last_epoch": 120.0,
+        "columns": [
+          "epoch",
+          "step",
+          "loss",
+          "loss_angles",
+          "loss_atom_types",
+          "loss_composition",
+          "loss_frac_coords",
+          "loss_kl",
+          "loss_lengths",
+          "loss_pos",
+          "match_rate",
+          "rms_dist",
+          "unscaled/loss_angles",
+          "unscaled/loss_atom_types",
+          "unscaled/loss_frac_coords",
+          "unscaled/loss_kl",
+          "unscaled/loss_lengths",
+          "unscaled/loss_pos"
+        ],
+        "final": {
+          "epoch": 120.0,
+          "step": 22800.0,
+          "loss": 0.8782156109809875,
+          "loss_angles": 0.7632129788398743,
+          "loss_atom_types": 7.655524825178617e-11,
+          "loss_composition": 2.318735487751906e-17,
+          "loss_frac_coords": 0.010687670670449734,
+          "loss_kl": 0.00045144668547436595,
+          "loss_lengths": 0.1020510271191597,
+          "loss_pos": 0.0,
+          "match_rate": 0.3095472455024719,
+          "rms_dist": 0.22957412898540497,
+          "unscaled/loss_angles": 0.0763213038444519,
+          "unscaled/loss_atom_types": 7.655524825178617e-11,
+          "unscaled/loss_frac_coords": 0.001068767043761909,
+          "unscaled/loss_kl": 45.144691467285156,
+          "unscaled/loss_lengths": 0.1020510271191597,
+          "unscaled/loss_pos": 0.0248325914144516
+        },
+        "best_loss": {
+          "epoch": 20.0,
+          "value": 0.8168315887451172
+        },
+        "best_match_rate": {
+          "epoch": 20.0,
+          "value": 0.33710628747940063
+        },
+        "best_rms_dist": {
+          "epoch": 80.0,
+          "value": 0.21616533398628235
+        },
+        "best_loss_atom_types": {
+          "epoch": 120.0,
+          "value": 7.655524825178617e-11
+        },
+        "best_loss_lengths": {
+          "epoch": 120.0,
+          "value": 0.1020510271191597
+        },
+        "best_loss_angles": {
+          "epoch": 20.0,
+          "value": 0.6586118936538696
+        },
+        "best_loss_frac_coords": {
+          "epoch": 110.0,
+          "value": 0.00817763339728117
+        },
+        "best_loss_kl": {
+          "epoch": 120.0,
+          "value": 0.00045144668547436595
+        }
+      },
+      "carbon24_standard_vae_codemdt": {
+        "rows": 26,
+        "first_epoch": 10.0,
+        "last_epoch": 260.0,
+        "columns": [
+          "epoch",
+          "step",
+          "loss",
+          "x_loss"
+        ],
+        "final": {
+          "epoch": 260.0,
+          "step": 49400.0,
+          "loss": 2.205814838409424,
+          "x_loss": 2.206794261932373
+        },
+        "best_loss": {
+          "epoch": 160.0,
+          "value": 2.1491544246673584
+        },
+        "best_x_loss": {
+          "epoch": 160.0,
+          "value": 2.152360439300537
+        }
+      },
+      "carbon24_standardvae_codemdt_decoder_6": {
+        "rows": 32,
+        "first_epoch": 10.0,
+        "last_epoch": 320.0,
+        "columns": [
+          "epoch",
+          "step",
+          "loss",
+          "x_loss"
+        ],
+        "final": {
+          "epoch": 320.0,
+          "step": 60800.0,
+          "loss": 2.0499260425567627,
+          "x_loss": 2.048741579055786
+        },
+        "best_loss": {
+          "epoch": 220.0,
+          "value": 2.014474391937256
+        },
+        "best_x_loss": {
+          "epoch": 220.0,
+          "value": 2.0197935104370117
+        }
+      },
+      "carbon_24_hilo_vae": {
+        "rows": 31,
+        "first_epoch": 10.0,
+        "last_epoch": 310.0,
+        "columns": [
+          "epoch",
+          "step",
+          "loss",
+          "loss_angles",
+          "loss_atom_types",
+          "loss_composition",
+          "loss_frac_coords",
+          "loss_kl",
+          "loss_lengths",
+          "loss_pos",
+          "match_rate",
+          "rms_dist",
+          "unscaled/loss_angles",
+          "unscaled/loss_atom_types",
+          "unscaled/loss_frac_coords",
+          "unscaled/loss_kl",
+          "unscaled/loss_lengths",
+          "unscaled/loss_pos"
+        ],
+        "final": {
+          "epoch": 310.0,
+          "step": 58900.0,
+          "loss": 0.001567570143379271,
+          "loss_angles": 9.579096513334662e-05,
+          "loss_atom_types": 0.0,
+          "loss_composition": 5.364058184783539e-20,
+          "loss_frac_coords": 0.0009746222640387714,
+          "loss_kl": 0.00045746949035674334,
+          "loss_lengths": 4.005468508694321e-05,
+          "loss_pos": 0.0,
+          "match_rate": 0.9635826945304871,
+          "rms_dist": 0.02434835024178028,
+          "unscaled/loss_angles": 9.579097422829363e-06,
+          "unscaled/loss_atom_types": 0.0,
+          "unscaled/loss_frac_coords": 9.746217983774841e-05,
+          "unscaled/loss_kl": 45.74694061279297,
+          "unscaled/loss_lengths": 4.005468508694321e-05,
+          "unscaled/loss_pos": 0.013597946614027023
+        },
+        "best_loss": {
+          "epoch": 300.0,
+          "value": 0.001498279976658523
+        },
+        "best_match_rate": {
+          "epoch": 280.0,
+          "value": 0.9670275449752808
+        },
+        "best_rms_dist": {
+          "epoch": 210.0,
+          "value": 0.02291879616677761
+        },
+        "best_loss_atom_types": {
+          "epoch": 100.0,
+          "value": 0.0
+        },
+        "best_loss_lengths": {
+          "epoch": 310.0,
+          "value": 4.005468508694321e-05
+        },
+        "best_loss_angles": {
+          "epoch": 260.0,
+          "value": 9.068792860489339e-05
+        },
+        "best_loss_frac_coords": {
+          "epoch": 210.0,
+          "value": 0.0008451594621874392
+        },
+        "best_loss_kl": {
+          "epoch": 310.0,
+          "value": 0.00045746949035674334
+        }
+      },
+      "standard_vae_standard_dit": {
+        "rows": 30,
+        "first_epoch": 10.0,
+        "last_epoch": 300.0,
+        "columns": [
+          "epoch",
+          "step",
+          "loss",
+          "x_loss"
+        ],
+        "final": {
+          "epoch": 300.0,
+          "step": 57000.0,
+          "loss": 2.0820398330688477,
+          "x_loss": 2.0849483013153076
+        },
+        "best_loss": {
+          "epoch": 250.0,
+          "value": 2.0506982803344727
+        },
+        "best_x_loss": {
+          "epoch": 250.0,
+          "value": 2.0508008003234863
+        }
+      }
+    },
+    "loss_history": {
+      "carbon24_codemdt": {
+        "rows": 650,
+        "first_epoch": 1.0,
+        "last_epoch": 650.0,
+        "columns": [
+          "epoch",
+          "train_loss",
+          "val_loss"
+        ],
+        "final": {
+          "epoch": 650.0,
+          "train_loss": 3.5498104095458984,
+          "val_loss": 1.9134563207626343
+        },
+        "best_val_loss": {
+          "epoch": 550.0,
+          "value": 1.7218928337097168
+        }
+      },
+      "carbon24_codemdt_decoder_6": {
+        "rows": 500,
+        "first_epoch": 1.0,
+        "last_epoch": 500.0,
+        "columns": [
+          "epoch",
+          "train_loss",
+          "val_loss"
+        ],
+        "final": {
+          "epoch": 500.0,
+          "train_loss": 3.256164789199829,
+          "val_loss": 1.772499442100525
+        },
+        "best_val_loss": {
+          "epoch": 400.0,
+          "value": 1.708480715751648
+        }
+      },
+      "carbon24_dit": {
+        "rows": 350,
+        "first_epoch": 1.0,
+        "last_epoch": 350.0,
+        "columns": [
+          "epoch",
+          "train_loss",
+          "val_loss"
+        ],
+        "final": {
+          "epoch": 350.0,
+          "train_loss": 1.7762478590011597,
+          "val_loss": 1.8148046731948853
+        },
+        "best_val_loss": {
+          "epoch": 250.0,
+          "value": 1.7675498723983765
+        }
+      },
+      "carbon24_dit_mmd_only": {
+        "rows": 350,
+        "first_epoch": 1.0,
+        "last_epoch": 350.0,
+        "columns": [
+          "epoch",
+          "train_loss",
+          "val_loss"
+        ],
+        "final": {
+          "epoch": 350.0,
+          "train_loss": 1.8222393989562988,
+          "val_loss": 1.7970813512802124
+        },
+        "best_val_loss": {
+          "epoch": 250.0,
+          "value": 1.737666368484497
+        }
+      },
+      "carbon24_dit_ot_only": {
+        "rows": 310,
+        "first_epoch": 1.0,
+        "last_epoch": 310.0,
+        "columns": [
+          "epoch",
+          "train_loss",
+          "val_loss"
+        ],
+        "final": {
+          "epoch": 310.0,
+          "train_loss": 1.4985229969024658,
+          "val_loss": 1.8970218896865845
+        },
+        "best_val_loss": {
+          "epoch": 210.0,
+          "value": 1.8105119466781616
+        }
+      },
+      "carbon24_hilovae_diversedit_12": {
+        "rows": 450,
+        "first_epoch": 1.0,
+        "last_epoch": 450.0,
+        "columns": [
+          "epoch",
+          "train_loss",
+          "val_loss"
+        ],
+        "final": {
+          "epoch": 450.0,
+          "train_loss": 1.7070062160491943,
+          "val_loss": 1.7004122734069824
+        },
+        "best_val_loss": {
+          "epoch": 350.0,
+          "value": 1.6891552209854126
+        }
+      },
+      "carbon24_standard_vae": {
+        "rows": 120,
+        "first_epoch": 1.0,
+        "last_epoch": 120.0,
+        "columns": [
+          "epoch",
+          "train_loss",
+          "val_loss"
+        ],
+        "final": {
+          "epoch": 120.0,
+          "train_loss": 0.08890295773744583,
+          "val_loss": 0.8782156109809875
+        },
+        "best_val_loss": {
+          "epoch": 20.0,
+          "value": 0.8168315887451172
+        }
+      },
+      "carbon24_standard_vae_codemdt": {
+        "rows": 260,
+        "first_epoch": 1.0,
+        "last_epoch": 260.0,
+        "columns": [
+          "epoch",
+          "train_loss",
+          "val_loss"
+        ],
+        "final": {
+          "epoch": 260.0,
+          "train_loss": 4.108846187591553,
+          "val_loss": 2.205814838409424
+        },
+        "best_val_loss": {
+          "epoch": 160.0,
+          "value": 2.1491544246673584
+        }
+      },
+      "carbon24_standardvae_codemdt_decoder_6": {
+        "rows": 320,
+        "first_epoch": 1.0,
+        "last_epoch": 320.0,
+        "columns": [
+          "epoch",
+          "train_loss",
+          "val_loss"
+        ],
+        "final": {
+          "epoch": 320.0,
+          "train_loss": 3.825848340988159,
+          "val_loss": 2.0499260425567627
+        },
+        "best_val_loss": {
+          "epoch": 220.0,
+          "value": 2.014474391937256
+        }
+      },
+      "carbon_24_hilo_vae": {
+        "rows": 310,
+        "first_epoch": 1.0,
+        "last_epoch": 310.0,
+        "columns": [
+          "epoch",
+          "train_loss",
+          "val_loss"
+        ],
+        "final": {
+          "epoch": 310.0,
+          "train_loss": 0.019930701702833176,
+          "val_loss": 0.001567570143379271
+        },
+        "best_val_loss": {
+          "epoch": 300.0,
+          "value": 0.001498279976658523
+        }
+      },
+      "standard_vae_standard_dit": {
+        "rows": 300,
+        "first_epoch": 1.0,
+        "last_epoch": 300.0,
+        "columns": [
+          "epoch",
+          "train_loss",
+          "val_loss"
+        ],
+        "final": {
+          "epoch": 300.0,
+          "train_loss": 2.040205717086792,
+          "val_loss": 2.0820398330688477
+        },
+        "best_val_loss": {
+          "epoch": 250.0,
+          "value": 2.0506982803344727
+        }
+      }
+    },
+    "per_target": {
+      "carbon24_hilo_vae_test_reconstruction": {
+        "targets": 2030,
+        "matches": 1980,
+        "match_rate": 0.9753694581280788,
+        "mean_finite_best_rms": 0.021985404710308683,
+        "finite_best_rms_targets": 1980,
+        "candidates": 40600,
+        "candidate_composition_rate": 1.0,
+        "candidate_struct_valid_rate": 1.0,
+        "candidate_match_rate": 0.9627832512315271,
+        "samples_per_target": 20,
+        "targets_with_zero_candidate_matches": 50,
+        "targets_with_all_candidates_matching": 1921,
+        "candidate_match_count_distribution": {
+          "0": 50,
+          "1": 6,
+          "2": 1,
+          "3": 3,
+          "4": 4,
+          "5": 3,
+          "6": 2,
+          "7": 1,
+          "8": 4,
+          "9": 2,
+          "10": 1,
+          "11": 1,
+          "12": 1,
+          "14": 1,
+          "15": 5,
+          "16": 3,
+          "17": 4,
+          "18": 9,
+          "19": 8,
+          "20": 1921
+        },
+        "matched_candidate_rms_quantiles": {
+          "p10": 0.009110753934784449,
+          "p50": 0.02111943915242846,
+          "p90": 0.041403186982114766
+        },
+        "by_num_atoms": {
+          "6": {
+            "targets": 705,
+            "matches": 687,
+            "match_rate": 0.9744680851063829
+          },
+          "8": {
+            "targets": 526,
+            "matches": 515,
+            "match_rate": 0.9790874524714829
+          },
+          "10": {
+            "targets": 317,
+            "matches": 305,
+            "match_rate": 0.9621451104100947
+          },
+          "12": {
+            "targets": 200,
+            "matches": 194,
+            "match_rate": 0.97
+          },
+          "14": {
+            "targets": 110,
+            "matches": 109,
+            "match_rate": 0.990909090909091
+          },
+          "16": {
+            "targets": 84,
+            "matches": 83,
+            "match_rate": 0.9880952380952381
+          },
+          "18": {
+            "targets": 37,
+            "matches": 36,
+            "match_rate": 0.972972972972973
+          },
+          "20": {
+            "targets": 24,
+            "matches": 24,
+            "match_rate": 1.0
+          },
+          "22": {
+            "targets": 17,
+            "matches": 17,
+            "match_rate": 1.0
+          },
+          "24": {
+            "targets": 10,
+            "matches": 10,
+            "match_rate": 1.0
+          }
+        }
+      },
+      "carbon24_hilovae_codemdt_decoder_6_test": {
+        "targets": 2030,
+        "matches": 321,
+        "match_rate": 0.158128078817734,
+        "mean_finite_best_rms": 0.3671516859467533,
+        "finite_best_rms_targets": 321,
+        "candidates": 40600,
+        "candidate_composition_rate": 1.0,
+        "candidate_struct_valid_rate": 0.9858866995073892,
+        "candidate_match_rate": 0.11204433497536946,
+        "samples_per_target": 20,
+        "targets_with_zero_candidate_matches": 1709,
+        "targets_with_all_candidates_matching": 151,
+        "candidate_match_count_distribution": {
+          "0": 1709,
+          "1": 26,
+          "2": 10,
+          "3": 12,
+          "4": 13,
+          "5": 9,
+          "6": 6,
+          "7": 5,
+          "8": 7,
+          "9": 8,
+          "10": 6,
+          "11": 6,
+          "12": 5,
+          "13": 5,
+          "14": 4,
+          "15": 10,
+          "16": 3,
+          "17": 8,
+          "18": 3,
+          "19": 24,
+          "20": 151
+        },
+        "matched_candidate_rms_quantiles": {
+          "p10": 0.32547713207397266,
+          "p50": 0.42724430698642996,
+          "p90": 0.48233620637903235
+        },
+        "by_num_atoms": {
+          "6": {
+            "targets": 705,
+            "matches": 61,
+            "match_rate": 0.08652482269503546
+          },
+          "8": {
+            "targets": 526,
+            "matches": 20,
+            "match_rate": 0.03802281368821293
+          },
+          "10": {
+            "targets": 317,
+            "matches": 58,
+            "match_rate": 0.1829652996845426
+          },
+          "12": {
+            "targets": 200,
+            "matches": 49,
+            "match_rate": 0.245
+          },
+          "14": {
+            "targets": 110,
+            "matches": 44,
+            "match_rate": 0.4
+          },
+          "16": {
+            "targets": 84,
+            "matches": 32,
+            "match_rate": 0.38095238095238093
+          },
+          "18": {
+            "targets": 37,
+            "matches": 21,
+            "match_rate": 0.5675675675675675
+          },
+          "20": {
+            "targets": 24,
+            "matches": 16,
+            "match_rate": 0.6666666666666666
+          },
+          "22": {
+            "targets": 17,
+            "matches": 14,
+            "match_rate": 0.8235294117647058
+          },
+          "24": {
+            "targets": 10,
+            "matches": 6,
+            "match_rate": 0.6
+          }
+        }
+      },
+      "carbon24_hilovae_dit_mmd_only_test": {
+        "targets": 2030,
+        "matches": 349,
+        "match_rate": 0.17192118226600986,
+        "mean_finite_best_rms": 0.38648333854884115,
+        "finite_best_rms_targets": 349,
+        "candidates": 40600,
+        "candidate_composition_rate": 1.0,
+        "candidate_struct_valid_rate": 0.9292118226600985,
+        "candidate_match_rate": 0.11613300492610837,
+        "samples_per_target": 20,
+        "targets_with_zero_candidate_matches": 1681,
+        "targets_with_all_candidates_matching": 134,
+        "candidate_match_count_distribution": {
+          "0": 1681,
+          "1": 19,
+          "2": 17,
+          "3": 16,
+          "4": 14,
+          "5": 7,
+          "6": 9,
+          "7": 11,
+          "8": 11,
+          "9": 13,
+          "10": 8,
+          "11": 8,
+          "12": 7,
+          "13": 8,
+          "14": 8,
+          "15": 9,
+          "16": 5,
+          "17": 9,
+          "18": 13,
+          "19": 23,
+          "20": 134
+        },
+        "matched_candidate_rms_quantiles": {
+          "p10": 0.3544586516260991,
+          "p50": 0.43741553763814106,
+          "p90": 0.48604201490339477
+        },
+        "by_num_atoms": {
+          "6": {
+            "targets": 705,
+            "matches": 61,
+            "match_rate": 0.08652482269503546
+          },
+          "8": {
+            "targets": 526,
+            "matches": 18,
+            "match_rate": 0.034220532319391636
+          },
+          "10": {
+            "targets": 317,
+            "matches": 60,
+            "match_rate": 0.1892744479495268
+          },
+          "12": {
+            "targets": 200,
+            "matches": 51,
+            "match_rate": 0.255
+          },
+          "14": {
+            "targets": 110,
+            "matches": 46,
+            "match_rate": 0.41818181818181815
+          },
+          "16": {
+            "targets": 84,
+            "matches": 50,
+            "match_rate": 0.5952380952380952
+          },
+          "18": {
+            "targets": 37,
+            "matches": 24,
+            "match_rate": 0.6486486486486487
+          },
+          "20": {
+            "targets": 24,
+            "matches": 17,
+            "match_rate": 0.7083333333333334
+          },
+          "22": {
+            "targets": 17,
+            "matches": 14,
+            "match_rate": 0.8235294117647058
+          },
+          "24": {
+            "targets": 10,
+            "matches": 8,
+            "match_rate": 0.8
+          }
+        }
+      },
+      "carbon24_hilovae_diversedit_12_test": {
+        "targets": 2030,
+        "matches": 352,
+        "match_rate": 0.17339901477832512,
+        "mean_finite_best_rms": 0.3544063339890027,
+        "finite_best_rms_targets": 352,
+        "candidates": 40600,
+        "candidate_composition_rate": 1.0,
+        "candidate_struct_valid_rate": 0.985615763546798,
+        "candidate_match_rate": 0.12536945812807881,
+        "samples_per_target": 20,
+        "targets_with_zero_candidate_matches": 1678,
+        "targets_with_all_candidates_matching": 144,
+        "candidate_match_count_distribution": {
+          "0": 1678,
+          "1": 17,
+          "2": 10,
+          "3": 11,
+          "4": 12,
+          "5": 7,
+          "6": 9,
+          "7": 7,
+          "8": 15,
+          "9": 8,
+          "10": 8,
+          "11": 6,
+          "12": 4,
+          "13": 10,
+          "14": 12,
+          "15": 11,
+          "16": 7,
+          "17": 9,
+          "18": 15,
+          "19": 30,
+          "20": 144
+        },
+        "matched_candidate_rms_quantiles": {
+          "p10": 0.29838589854617564,
+          "p50": 0.42775361498945913,
+          "p90": 0.4840363184140938
+        },
+        "by_num_atoms": {
+          "6": {
+            "targets": 705,
+            "matches": 61,
+            "match_rate": 0.08652482269503546
+          },
+          "8": {
+            "targets": 526,
+            "matches": 22,
+            "match_rate": 0.04182509505703422
+          },
+          "10": {
+            "targets": 317,
+            "matches": 52,
+            "match_rate": 0.1640378548895899
+          },
+          "12": {
+            "targets": 200,
+            "matches": 48,
+            "match_rate": 0.24
+          },
+          "14": {
+            "targets": 110,
+            "matches": 41,
+            "match_rate": 0.37272727272727274
+          },
+          "16": {
+            "targets": 84,
+            "matches": 63,
+            "match_rate": 0.75
+          },
+          "18": {
+            "targets": 37,
+            "matches": 26,
+            "match_rate": 0.7027027027027027
+          },
+          "20": {
+            "targets": 24,
+            "matches": 15,
+            "match_rate": 0.625
+          },
+          "22": {
+            "targets": 17,
+            "matches": 15,
+            "match_rate": 0.8823529411764706
+          },
+          "24": {
+            "targets": 10,
+            "matches": 9,
+            "match_rate": 0.9
+          }
+        }
+      },
+      "carbon24_hilovae_ot_only_test": {
+        "targets": 2030,
+        "matches": 377,
+        "match_rate": 0.18571428571428572,
+        "mean_finite_best_rms": 0.38452721190707384,
+        "finite_best_rms_targets": 377,
+        "candidates": 40600,
+        "candidate_composition_rate": 1.0,
+        "candidate_struct_valid_rate": 0.9669211822660099,
+        "candidate_match_rate": 0.11610837438423645,
+        "samples_per_target": 20,
+        "targets_with_zero_candidate_matches": 1653,
+        "targets_with_all_candidates_matching": 140,
+        "candidate_match_count_distribution": {
+          "0": 1653,
+          "1": 42,
+          "2": 29,
+          "3": 16,
+          "4": 15,
+          "5": 16,
+          "6": 6,
+          "7": 7,
+          "8": 11,
+          "9": 4,
+          "10": 6,
+          "11": 6,
+          "12": 8,
+          "13": 7,
+          "14": 6,
+          "15": 11,
+          "16": 3,
+          "17": 8,
+          "18": 13,
+          "19": 23,
+          "20": 140
+        },
+        "matched_candidate_rms_quantiles": {
+          "p10": 0.3457204090928847,
+          "p50": 0.43223148331794753,
+          "p90": 0.4840959472251339
+        },
+        "by_num_atoms": {
+          "6": {
+            "targets": 705,
+            "matches": 66,
+            "match_rate": 0.09361702127659574
+          },
+          "8": {
+            "targets": 526,
+            "matches": 36,
+            "match_rate": 0.06844106463878327
+          },
+          "10": {
+            "targets": 317,
+            "matches": 68,
+            "match_rate": 0.21451104100946372
+          },
+          "12": {
+            "targets": 200,
+            "matches": 48,
+            "match_rate": 0.24
+          },
+          "14": {
+            "targets": 110,
+            "matches": 46,
+            "match_rate": 0.41818181818181815
+          },
+          "16": {
+            "targets": 84,
+            "matches": 52,
+            "match_rate": 0.6190476190476191
+          },
+          "18": {
+            "targets": 37,
+            "matches": 22,
+            "match_rate": 0.5945945945945946
+          },
+          "20": {
+            "targets": 24,
+            "matches": 15,
+            "match_rate": 0.625
+          },
+          "22": {
+            "targets": 17,
+            "matches": 14,
+            "match_rate": 0.8235294117647058
+          },
+          "24": {
+            "targets": 10,
+            "matches": 10,
+            "match_rate": 1.0
+          }
+        }
+      },
+      "carbon24_hilovae_standard_dit_test": {
+        "targets": 2030,
+        "matches": 351,
+        "match_rate": 0.1729064039408867,
+        "mean_finite_best_rms": 0.37982608434311727,
+        "finite_best_rms_targets": 351,
+        "candidates": 40600,
+        "candidate_composition_rate": 1.0,
+        "candidate_struct_valid_rate": 0.9703448275862069,
+        "candidate_match_rate": 0.11714285714285715,
+        "samples_per_target": 20,
+        "targets_with_zero_candidate_matches": 1679,
+        "targets_with_all_candidates_matching": 144,
+        "candidate_match_count_distribution": {
+          "0": 1679,
+          "1": 33,
+          "2": 9,
+          "3": 10,
+          "4": 10,
+          "5": 17,
+          "6": 13,
+          "7": 12,
+          "8": 4,
+          "9": 12,
+          "10": 6,
+          "11": 7,
+          "12": 6,
+          "13": 3,
+          "14": 2,
+          "15": 10,
+          "16": 9,
+          "17": 12,
+          "18": 14,
+          "19": 18,
+          "20": 144
+        },
+        "matched_candidate_rms_quantiles": {
+          "p10": 0.34265277293584695,
+          "p50": 0.43445375912882833,
+          "p90": 0.4859224781666373
+        },
+        "by_num_atoms": {
+          "6": {
+            "targets": 705,
+            "matches": 62,
+            "match_rate": 0.08794326241134752
+          },
+          "8": {
+            "targets": 526,
+            "matches": 23,
+            "match_rate": 0.043726235741444866
+          },
+          "10": {
+            "targets": 317,
+            "matches": 59,
+            "match_rate": 0.1861198738170347
+          },
+          "12": {
+            "targets": 200,
+            "matches": 50,
+            "match_rate": 0.25
+          },
+          "14": {
+            "targets": 110,
+            "matches": 54,
+            "match_rate": 0.4909090909090909
+          },
+          "16": {
+            "targets": 84,
+            "matches": 44,
+            "match_rate": 0.5238095238095238
+          },
+          "18": {
+            "targets": 37,
+            "matches": 22,
+            "match_rate": 0.5945945945945946
+          },
+          "20": {
+            "targets": 24,
+            "matches": 16,
+            "match_rate": 0.6666666666666666
+          },
+          "22": {
+            "targets": 17,
+            "matches": 13,
+            "match_rate": 0.7647058823529411
+          },
+          "24": {
+            "targets": 10,
+            "matches": 8,
+            "match_rate": 0.8
+          }
+        }
+      },
+      "carbon24_standard_vae_codemdt_decoder_6_test": {
+        "targets": 2030,
+        "matches": 1196,
+        "match_rate": 0.5891625615763547,
+        "mean_finite_best_rms": 0.37828738635324827,
+        "finite_best_rms_targets": 1196,
+        "candidates": 40600,
+        "candidate_composition_rate": 1.0,
+        "candidate_struct_valid_rate": 0.9771428571428571,
+        "candidate_match_rate": 0.2367733990147783,
+        "samples_per_target": 20,
+        "targets_with_zero_candidate_matches": 834,
+        "targets_with_all_candidates_matching": 14,
+        "candidate_match_count_distribution": {
+          "0": 834,
+          "1": 150,
+          "2": 121,
+          "3": 95,
+          "4": 91,
+          "5": 77,
+          "6": 65,
+          "7": 70,
+          "8": 39,
+          "9": 56,
+          "10": 32,
+          "11": 29,
+          "12": 38,
+          "13": 31,
+          "14": 60,
+          "15": 35,
+          "16": 56,
+          "17": 54,
+          "18": 43,
+          "19": 40,
+          "20": 14
+        },
+        "matched_candidate_rms_quantiles": {
+          "p10": 0.35578279854852146,
+          "p50": 0.4272840538105941,
+          "p90": 0.4787570945468358
+        },
+        "by_num_atoms": {
+          "6": {
+            "targets": 705,
+            "matches": 339,
+            "match_rate": 0.4808510638297872
+          },
+          "8": {
+            "targets": 526,
+            "matches": 312,
+            "match_rate": 0.5931558935361216
+          },
+          "10": {
+            "targets": 317,
+            "matches": 245,
+            "match_rate": 0.7728706624605678
+          },
+          "12": {
+            "targets": 200,
+            "matches": 129,
+            "match_rate": 0.645
+          },
+          "14": {
+            "targets": 110,
+            "matches": 85,
+            "match_rate": 0.7727272727272727
+          },
+          "16": {
+            "targets": 84,
+            "matches": 55,
+            "match_rate": 0.6547619047619048
+          },
+          "18": {
+            "targets": 37,
+            "matches": 22,
+            "match_rate": 0.5945945945945946
+          },
+          "20": {
+            "targets": 24,
+            "matches": 7,
+            "match_rate": 0.2916666666666667
+          },
+          "22": {
+            "targets": 17,
+            "matches": 2,
+            "match_rate": 0.11764705882352941
+          },
+          "24": {
+            "targets": 10,
+            "matches": 0,
+            "match_rate": 0.0
+          }
+        }
+      },
+      "carbon24_standard_vae_codemdt_test": {
+        "targets": 2030,
+        "matches": 1203,
+        "match_rate": 0.5926108374384237,
+        "mean_finite_best_rms": 0.3865835151581822,
+        "finite_best_rms_targets": 1203,
+        "candidates": 40600,
+        "candidate_composition_rate": 1.0,
+        "candidate_struct_valid_rate": 0.9378571428571428,
+        "candidate_match_rate": 0.23852216748768473,
+        "samples_per_target": 20,
+        "targets_with_zero_candidate_matches": 827,
+        "targets_with_all_candidates_matching": 21,
+        "candidate_match_count_distribution": {
+          "0": 827,
+          "1": 139,
+          "2": 120,
+          "3": 84,
+          "4": 87,
+          "5": 99,
+          "6": 74,
+          "7": 62,
+          "8": 64,
+          "9": 43,
+          "10": 43,
+          "11": 36,
+          "12": 27,
+          "13": 39,
+          "14": 43,
+          "15": 44,
+          "16": 47,
+          "17": 49,
+          "18": 49,
+          "19": 33,
+          "20": 21
+        },
+        "matched_candidate_rms_quantiles": {
+          "p10": 0.3590118654151269,
+          "p50": 0.4295841482982535,
+          "p90": 0.4808749210827929
+        },
+        "by_num_atoms": {
+          "6": {
+            "targets": 705,
+            "matches": 333,
+            "match_rate": 0.4723404255319149
+          },
+          "8": {
+            "targets": 526,
+            "matches": 310,
+            "match_rate": 0.5893536121673004
+          },
+          "10": {
+            "targets": 317,
+            "matches": 249,
+            "match_rate": 0.7854889589905363
+          },
+          "12": {
+            "targets": 200,
+            "matches": 135,
+            "match_rate": 0.675
+          },
+          "14": {
+            "targets": 110,
+            "matches": 87,
+            "match_rate": 0.7909090909090909
+          },
+          "16": {
+            "targets": 84,
+            "matches": 55,
+            "match_rate": 0.6547619047619048
+          },
+          "18": {
+            "targets": 37,
+            "matches": 20,
+            "match_rate": 0.5405405405405406
+          },
+          "20": {
+            "targets": 24,
+            "matches": 10,
+            "match_rate": 0.4166666666666667
+          },
+          "22": {
+            "targets": 17,
+            "matches": 3,
+            "match_rate": 0.17647058823529413
+          },
+          "24": {
+            "targets": 10,
+            "matches": 1,
+            "match_rate": 0.1
+          }
+        }
+      },
+      "carbon24_standard_vae_standard_dit_test": {
+        "targets": 2030,
+        "matches": 1218,
+        "match_rate": 0.6,
+        "mean_finite_best_rms": 0.374135466143678,
+        "finite_best_rms_targets": 1218,
+        "candidates": 40600,
+        "candidate_composition_rate": 1.0,
+        "candidate_struct_valid_rate": 0.9714532019704434,
+        "candidate_match_rate": 0.24635467980295567,
+        "samples_per_target": 20,
+        "targets_with_zero_candidate_matches": 812,
+        "targets_with_all_candidates_matching": 20,
+        "candidate_match_count_distribution": {
+          "0": 812,
+          "1": 136,
+          "2": 100,
+          "3": 102,
+          "4": 91,
+          "5": 79,
+          "6": 76,
+          "7": 86,
+          "8": 44,
+          "9": 61,
+          "10": 41,
+          "11": 34,
+          "12": 33,
+          "13": 34,
+          "14": 46,
+          "15": 48,
+          "16": 45,
+          "17": 58,
+          "18": 46,
+          "19": 38,
+          "20": 20
+        },
+        "matched_candidate_rms_quantiles": {
+          "p10": 0.35305912469671935,
+          "p50": 0.4263564574672546,
+          "p90": 0.47862070007618335
+        },
+        "by_num_atoms": {
+          "6": {
+            "targets": 705,
+            "matches": 343,
+            "match_rate": 0.48652482269503544
+          },
+          "8": {
+            "targets": 526,
+            "matches": 311,
+            "match_rate": 0.591254752851711
+          },
+          "10": {
+            "targets": 317,
+            "matches": 246,
+            "match_rate": 0.7760252365930599
+          },
+          "12": {
+            "targets": 200,
+            "matches": 140,
+            "match_rate": 0.7
+          },
+          "14": {
+            "targets": 110,
+            "matches": 85,
+            "match_rate": 0.7727272727272727
+          },
+          "16": {
+            "targets": 84,
+            "matches": 55,
+            "match_rate": 0.6547619047619048
+          },
+          "18": {
+            "targets": 37,
+            "matches": 23,
+            "match_rate": 0.6216216216216216
+          },
+          "20": {
+            "targets": 24,
+            "matches": 14,
+            "match_rate": 0.5833333333333334
+          },
+          "22": {
+            "targets": 17,
+            "matches": 1,
+            "match_rate": 0.058823529411764705
+          },
+          "24": {
+            "targets": 10,
+            "matches": 0,
+            "match_rate": 0.0
+          }
+        }
+      },
+      "carbon24_standard_vae_test_reconstruction": {
+        "targets": 2030,
+        "matches": 702,
+        "match_rate": 0.3458128078817734,
+        "mean_finite_best_rms": 0.22332697539240312,
+        "finite_best_rms_targets": 702,
+        "candidates": 40600,
+        "candidate_composition_rate": 1.0,
+        "candidate_struct_valid_rate": 0.999679802955665,
+        "candidate_match_rate": 0.2915024630541872,
+        "samples_per_target": 20,
+        "targets_with_zero_candidate_matches": 1328,
+        "targets_with_all_candidates_matching": 509,
+        "candidate_match_count_distribution": {
+          "0": 1328,
+          "1": 36,
+          "2": 17,
+          "3": 9,
+          "4": 13,
+          "5": 9,
+          "6": 4,
+          "7": 9,
+          "8": 11,
+          "9": 8,
+          "10": 6,
+          "11": 2,
+          "12": 4,
+          "13": 7,
+          "14": 7,
+          "15": 5,
+          "16": 8,
+          "17": 10,
+          "18": 10,
+          "19": 18,
+          "20": 509
+        },
+        "matched_candidate_rms_quantiles": {
+          "p10": 0.06535844962569282,
+          "p50": 0.259011304878461,
+          "p90": 0.42214809499885125
+        },
+        "by_num_atoms": {
+          "6": {
+            "targets": 705,
+            "matches": 246,
+            "match_rate": 0.34893617021276596
+          },
+          "8": {
+            "targets": 526,
+            "matches": 195,
+            "match_rate": 0.37072243346007605
+          },
+          "10": {
+            "targets": 317,
+            "matches": 100,
+            "match_rate": 0.31545741324921134
+          },
+          "12": {
+            "targets": 200,
+            "matches": 73,
+            "match_rate": 0.365
+          },
+          "14": {
+            "targets": 110,
+            "matches": 43,
+            "match_rate": 0.39090909090909093
+          },
+          "16": {
+            "targets": 84,
+            "matches": 28,
+            "match_rate": 0.3333333333333333
+          },
+          "18": {
+            "targets": 37,
+            "matches": 7,
+            "match_rate": 0.1891891891891892
+          },
+          "20": {
+            "targets": 24,
+            "matches": 6,
+            "match_rate": 0.25
+          },
+          "22": {
+            "targets": 17,
+            "matches": 3,
+            "match_rate": 0.17647058823529413
+          },
+          "24": {
+            "targets": 10,
+            "matches": 1,
+            "match_rate": 0.1
+          }
+        }
+      },
+      "carbon24_test": {
+        "targets": 2030,
+        "matches": 321,
+        "match_rate": 0.158128078817734,
+        "mean_finite_best_rms": 0.39066752022864026,
+        "finite_best_rms_targets": 321,
+        "candidates": 40600,
+        "candidate_composition_rate": 1.0,
+        "candidate_struct_valid_rate": 0.8885714285714286,
+        "candidate_match_rate": 0.10679802955665024,
+        "samples_per_target": 20,
+        "targets_with_zero_candidate_matches": 1709,
+        "targets_with_all_candidates_matching": 125,
+        "candidate_match_count_distribution": {
+          "0": 1709,
+          "1": 34,
+          "2": 12,
+          "3": 16,
+          "4": 4,
+          "5": 10,
+          "6": 8,
+          "7": 4,
+          "8": 8,
+          "9": 7,
+          "10": 8,
+          "11": 7,
+          "12": 6,
+          "13": 4,
+          "14": 8,
+          "15": 5,
+          "16": 4,
+          "17": 9,
+          "18": 22,
+          "19": 20,
+          "20": 125
+        },
+        "matched_candidate_rms_quantiles": {
+          "p10": 0.35977499470017277,
+          "p50": 0.4371051749494905,
+          "p90": 0.4861353152178489
+        },
+        "by_num_atoms": {
+          "6": {
+            "targets": 705,
+            "matches": 61,
+            "match_rate": 0.08652482269503546
+          },
+          "8": {
+            "targets": 526,
+            "matches": 23,
+            "match_rate": 0.043726235741444866
+          },
+          "10": {
+            "targets": 317,
+            "matches": 64,
+            "match_rate": 0.20189274447949526
+          },
+          "12": {
+            "targets": 200,
+            "matches": 49,
+            "match_rate": 0.245
+          },
+          "14": {
+            "targets": 110,
+            "matches": 45,
+            "match_rate": 0.4090909090909091
+          },
+          "16": {
+            "targets": 84,
+            "matches": 28,
+            "match_rate": 0.3333333333333333
+          },
+          "18": {
+            "targets": 37,
+            "matches": 17,
+            "match_rate": 0.4594594594594595
+          },
+          "20": {
+            "targets": 24,
+            "matches": 15,
+            "match_rate": 0.625
+          },
+          "22": {
+            "targets": 17,
+            "matches": 12,
+            "match_rate": 0.7058823529411765
+          },
+          "24": {
+            "targets": 10,
+            "matches": 7,
+            "match_rate": 0.7
+          }
+        }
+      }
+    }
+  },
+  "match_set_overlap": {
+    "carbon24_hilo_vae_test_reconstruction__carbon24_hilovae_codemdt_decoder_6_test": {
+      "left_matches": 1980,
+      "right_matches": 321,
+      "intersection": 321,
+      "jaccard": 0.1621212121212121
+    },
+    "carbon24_hilo_vae_test_reconstruction__carbon24_hilovae_dit_mmd_only_test": {
+      "left_matches": 1980,
+      "right_matches": 349,
+      "intersection": 349,
+      "jaccard": 0.17626262626262626
+    },
+    "carbon24_hilo_vae_test_reconstruction__carbon24_hilovae_diversedit_12_test": {
+      "left_matches": 1980,
+      "right_matches": 352,
+      "intersection": 352,
+      "jaccard": 0.17777777777777778
+    },
+    "carbon24_hilo_vae_test_reconstruction__carbon24_hilovae_ot_only_test": {
+      "left_matches": 1980,
+      "right_matches": 377,
+      "intersection": 377,
+      "jaccard": 0.1904040404040404
+    },
+    "carbon24_hilo_vae_test_reconstruction__carbon24_hilovae_standard_dit_test": {
+      "left_matches": 1980,
+      "right_matches": 351,
+      "intersection": 351,
+      "jaccard": 0.17727272727272728
+    },
+    "carbon24_hilo_vae_test_reconstruction__carbon24_standard_vae_codemdt_decoder_6_test": {
+      "left_matches": 1980,
+      "right_matches": 1196,
+      "intersection": 1196,
+      "jaccard": 0.604040404040404
+    },
+    "carbon24_hilo_vae_test_reconstruction__carbon24_standard_vae_codemdt_test": {
+      "left_matches": 1980,
+      "right_matches": 1203,
+      "intersection": 1203,
+      "jaccard": 0.6075757575757575
+    },
+    "carbon24_hilo_vae_test_reconstruction__carbon24_standard_vae_standard_dit_test": {
+      "left_matches": 1980,
+      "right_matches": 1218,
+      "intersection": 1218,
+      "jaccard": 0.6151515151515151
+    },
+    "carbon24_hilo_vae_test_reconstruction__carbon24_standard_vae_test_reconstruction": {
+      "left_matches": 1980,
+      "right_matches": 702,
+      "intersection": 697,
+      "jaccard": 0.35113350125944587
+    },
+    "carbon24_hilo_vae_test_reconstruction__carbon24_test": {
+      "left_matches": 1980,
+      "right_matches": 321,
+      "intersection": 321,
+      "jaccard": 0.1621212121212121
+    },
+    "carbon24_hilovae_codemdt_decoder_6_test__carbon24_hilovae_dit_mmd_only_test": {
+      "left_matches": 321,
+      "right_matches": 349,
+      "intersection": 311,
+      "jaccard": 0.8662952646239555
+    },
+    "carbon24_hilovae_codemdt_decoder_6_test__carbon24_hilovae_diversedit_12_test": {
+      "left_matches": 321,
+      "right_matches": 352,
+      "intersection": 306,
+      "jaccard": 0.8337874659400545
+    },
+    "carbon24_hilovae_codemdt_decoder_6_test__carbon24_hilovae_ot_only_test": {
+      "left_matches": 321,
+      "right_matches": 377,
+      "intersection": 309,
+      "jaccard": 0.794344473007712
+    },
+    "carbon24_hilovae_codemdt_decoder_6_test__carbon24_hilovae_standard_dit_test": {
+      "left_matches": 321,
+      "right_matches": 351,
+      "intersection": 306,
+      "jaccard": 0.8360655737704918
+    },
+    "carbon24_hilovae_codemdt_decoder_6_test__carbon24_standard_vae_codemdt_decoder_6_test": {
+      "left_matches": 321,
+      "right_matches": 1196,
+      "intersection": 153,
+      "jaccard": 0.11217008797653959
+    },
+    "carbon24_hilovae_codemdt_decoder_6_test__carbon24_standard_vae_codemdt_test": {
+      "left_matches": 321,
+      "right_matches": 1203,
+      "intersection": 156,
+      "jaccard": 0.11403508771929824
+    },
+    "carbon24_hilovae_codemdt_decoder_6_test__carbon24_standard_vae_standard_dit_test": {
+      "left_matches": 321,
+      "right_matches": 1218,
+      "intersection": 162,
+      "jaccard": 0.11764705882352941
+    },
+    "carbon24_hilovae_codemdt_decoder_6_test__carbon24_standard_vae_test_reconstruction": {
+      "left_matches": 321,
+      "right_matches": 702,
+      "intersection": 69,
+      "jaccard": 0.07232704402515723
+    },
+    "carbon24_hilovae_codemdt_decoder_6_test__carbon24_test": {
+      "left_matches": 321,
+      "right_matches": 321,
+      "intersection": 295,
+      "jaccard": 0.8501440922190202
+    },
+    "carbon24_hilovae_dit_mmd_only_test__carbon24_hilovae_diversedit_12_test": {
+      "left_matches": 349,
+      "right_matches": 352,
+      "intersection": 326,
+      "jaccard": 0.8693333333333333
+    },
+    "carbon24_hilovae_dit_mmd_only_test__carbon24_hilovae_ot_only_test": {
+      "left_matches": 349,
+      "right_matches": 377,
+      "intersection": 329,
+      "jaccard": 0.8287153652392947
+    },
+    "carbon24_hilovae_dit_mmd_only_test__carbon24_hilovae_standard_dit_test": {
+      "left_matches": 349,
+      "right_matches": 351,
+      "intersection": 328,
+      "jaccard": 0.8817204301075269
+    },
+    "carbon24_hilovae_dit_mmd_only_test__carbon24_standard_vae_codemdt_decoder_6_test": {
+      "left_matches": 349,
+      "right_matches": 1196,
+      "intersection": 176,
+      "jaccard": 0.12856099342585828
+    },
+    "carbon24_hilovae_dit_mmd_only_test__carbon24_standard_vae_codemdt_test": {
+      "left_matches": 349,
+      "right_matches": 1203,
+      "intersection": 178,
+      "jaccard": 0.12954876273653565
+    },
+    "carbon24_hilovae_dit_mmd_only_test__carbon24_standard_vae_standard_dit_test": {
+      "left_matches": 349,
+      "right_matches": 1218,
+      "intersection": 184,
+      "jaccard": 0.13304410701373826
+    },
+    "carbon24_hilovae_dit_mmd_only_test__carbon24_standard_vae_test_reconstruction": {
+      "left_matches": 349,
+      "right_matches": 702,
+      "intersection": 75,
+      "jaccard": 0.07684426229508197
+    },
+    "carbon24_hilovae_dit_mmd_only_test__carbon24_test": {
+      "left_matches": 349,
+      "right_matches": 321,
+      "intersection": 303,
+      "jaccard": 0.8256130790190735
+    },
+    "carbon24_hilovae_diversedit_12_test__carbon24_hilovae_ot_only_test": {
+      "left_matches": 352,
+      "right_matches": 377,
+      "intersection": 328,
+      "jaccard": 0.8179551122194514
+    },
+    "carbon24_hilovae_diversedit_12_test__carbon24_hilovae_standard_dit_test": {
+      "left_matches": 352,
+      "right_matches": 351,
+      "intersection": 320,
+      "jaccard": 0.835509138381201
+    },
+    "carbon24_hilovae_diversedit_12_test__carbon24_standard_vae_codemdt_decoder_6_test": {
+      "left_matches": 352,
+      "right_matches": 1196,
+      "intersection": 177,
+      "jaccard": 0.12910284463894967
+    },
+    "carbon24_hilovae_diversedit_12_test__carbon24_standard_vae_codemdt_test": {
+      "left_matches": 352,
+      "right_matches": 1203,
+      "intersection": 176,
+      "jaccard": 0.12762871646120377
+    },
+    "carbon24_hilovae_diversedit_12_test__carbon24_standard_vae_standard_dit_test": {
+      "left_matches": 352,
+      "right_matches": 1218,
+      "intersection": 183,
+      "jaccard": 0.13193943763518384
+    },
+    "carbon24_hilovae_diversedit_12_test__carbon24_standard_vae_test_reconstruction": {
+      "left_matches": 352,
+      "right_matches": 702,
+      "intersection": 76,
+      "jaccard": 0.07770961145194274
+    },
+    "carbon24_hilovae_diversedit_12_test__carbon24_test": {
+      "left_matches": 352,
+      "right_matches": 321,
+      "intersection": 293,
+      "jaccard": 0.7710526315789473
+    },
+    "carbon24_hilovae_ot_only_test__carbon24_hilovae_standard_dit_test": {
+      "left_matches": 377,
+      "right_matches": 351,
+      "intersection": 325,
+      "jaccard": 0.8064516129032258
+    },
+    "carbon24_hilovae_ot_only_test__carbon24_standard_vae_codemdt_decoder_6_test": {
+      "left_matches": 377,
+      "right_matches": 1196,
+      "intersection": 197,
+      "jaccard": 0.1431686046511628
+    },
+    "carbon24_hilovae_ot_only_test__carbon24_standard_vae_codemdt_test": {
+      "left_matches": 377,
+      "right_matches": 1203,
+      "intersection": 201,
+      "jaccard": 0.1457577955039884
+    },
+    "carbon24_hilovae_ot_only_test__carbon24_standard_vae_standard_dit_test": {
+      "left_matches": 377,
+      "right_matches": 1218,
+      "intersection": 207,
+      "jaccard": 0.14913544668587897
+    },
+    "carbon24_hilovae_ot_only_test__carbon24_standard_vae_test_reconstruction": {
+      "left_matches": 377,
+      "right_matches": 702,
+      "intersection": 78,
+      "jaccard": 0.07792207792207792
+    },
+    "carbon24_hilovae_ot_only_test__carbon24_test": {
+      "left_matches": 377,
+      "right_matches": 321,
+      "intersection": 307,
+      "jaccard": 0.7851662404092071
+    },
+    "carbon24_hilovae_standard_dit_test__carbon24_standard_vae_codemdt_decoder_6_test": {
+      "left_matches": 351,
+      "right_matches": 1196,
+      "intersection": 183,
+      "jaccard": 0.13416422287390029
+    },
+    "carbon24_hilovae_standard_dit_test__carbon24_standard_vae_codemdt_test": {
+      "left_matches": 351,
+      "right_matches": 1203,
+      "intersection": 185,
+      "jaccard": 0.13513513513513514
+    },
+    "carbon24_hilovae_standard_dit_test__carbon24_standard_vae_standard_dit_test": {
+      "left_matches": 351,
+      "right_matches": 1218,
+      "intersection": 190,
+      "jaccard": 0.13778100072516317
+    },
+    "carbon24_hilovae_standard_dit_test__carbon24_standard_vae_test_reconstruction": {
+      "left_matches": 351,
+      "right_matches": 702,
+      "intersection": 75,
+      "jaccard": 0.07668711656441718
+    },
+    "carbon24_hilovae_standard_dit_test__carbon24_test": {
+      "left_matches": 351,
+      "right_matches": 321,
+      "intersection": 301,
+      "jaccard": 0.8113207547169812
+    },
+    "carbon24_standard_vae_codemdt_decoder_6_test__carbon24_standard_vae_codemdt_test": {
+      "left_matches": 1196,
+      "right_matches": 1203,
+      "intersection": 1128,
+      "jaccard": 0.8874901652242329
+    },
+    "carbon24_standard_vae_codemdt_decoder_6_test__carbon24_standard_vae_standard_dit_test": {
+      "left_matches": 1196,
+      "right_matches": 1218,
+      "intersection": 1126,
+      "jaccard": 0.8742236024844721
+    },
+    "carbon24_standard_vae_codemdt_decoder_6_test__carbon24_standard_vae_test_reconstruction": {
+      "left_matches": 1196,
+      "right_matches": 702,
+      "intersection": 568,
+      "jaccard": 0.4270676691729323
+    },
+    "carbon24_standard_vae_codemdt_decoder_6_test__carbon24_test": {
+      "left_matches": 1196,
+      "right_matches": 321,
+      "intersection": 153,
+      "jaccard": 0.11217008797653959
+    },
+    "carbon24_standard_vae_codemdt_test__carbon24_standard_vae_standard_dit_test": {
+      "left_matches": 1203,
+      "right_matches": 1218,
+      "intersection": 1132,
+      "jaccard": 0.878200155159038
+    },
+    "carbon24_standard_vae_codemdt_test__carbon24_standard_vae_test_reconstruction": {
+      "left_matches": 1203,
+      "right_matches": 702,
+      "intersection": 565,
+      "jaccard": 0.4216417910447761
+    },
+    "carbon24_standard_vae_codemdt_test__carbon24_test": {
+      "left_matches": 1203,
+      "right_matches": 321,
+      "intersection": 156,
+      "jaccard": 0.11403508771929824
+    },
+    "carbon24_standard_vae_standard_dit_test__carbon24_standard_vae_test_reconstruction": {
+      "left_matches": 1218,
+      "right_matches": 702,
+      "intersection": 571,
+      "jaccard": 0.42327650111193477
+    },
+    "carbon24_standard_vae_standard_dit_test__carbon24_test": {
+      "left_matches": 1218,
+      "right_matches": 321,
+      "intersection": 159,
+      "jaccard": 0.11521739130434783
+    },
+    "carbon24_standard_vae_test_reconstruction__carbon24_test": {
+      "left_matches": 702,
+      "right_matches": 321,
+      "intersection": 66,
+      "jaccard": 0.06896551724137931
+    }
+  }
+}

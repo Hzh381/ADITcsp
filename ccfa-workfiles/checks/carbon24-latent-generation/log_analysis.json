@@ -1,0 +1,4563 @@
+{
+  "summaries": {
+    "carbon24_hilo_vae_test_reconstruction": {
+      "dataset": "carbon_24",
+      "split": "test",
+      "checkpoint": "runs/carbon_24_hilo_vae/checkpoints/last.ckpt",
+      "num_targets": 2030,
+      "seed": 0,
+      "composition_conditioning": true,
+      "structure_matcher": {
+        "stol": 0.5,
+        "ltol": 0.3,
+        "angle_tol": 10
+      },
+      "mode_reconstruction": {
+        "samples_per_target": 1,
+        "candidate_count": 2030,
+        "composition_match_rate": 1.0,
+        "struct_valid_rate": 1.0,
+        "overall_valid_rate": 1.0,
+        "structure_match_at_k": 0.9625615763546798,
+        "matched_targets": 1954,
+        "unmatched_targets": 76,
+        "mean_best_rms": 0.023571162519292664
+      },
+      "posterior_reconstruction_at_k": {
+        "samples_per_target": 20,
+        "candidate_count": 40600,
+        "composition_match_rate": 1.0,
+        "struct_valid_rate": 1.0,
+        "overall_valid_rate": 1.0,
+        "structure_match_at_k": 0.9753694581280788,
+        "matched_targets": 1980,
+        "unmatched_targets": 50,
+        "mean_best_rms": 0.021985404710308673
+      },
+      "rms_note": "mean_best_rms is the mean of the best finite normalized RMSD only for targets with at least one match; unmatched targets are excluded."
+    },
+    "carbon24_hilovae_codemdt_decoder_6_test": {
+      "dataset": "carbon_24",
+      "num_targets": 2030,
+      "candidates_per_target": 20,
+      "composition_match_rate": 1.0,
+      "composition_success_at_k": 1.0,
+      "struct_valid_rate": 0.9858866995073892,
+      "overall_valid_rate": 0.9858866995073892,
+      "structure_match_at_k": 0.158128078817734,
+      "mean_best_rms": 0.3671516859467532,
+      "cfg": 2.0,
+      "steps": 100
+    },
+    "carbon24_hilovae_dit_mmd_only_test": {
+      "dataset": "carbon_24",
+      "num_targets": 2030,
+      "candidates_per_target": 20,
+      "composition_match_rate": 1.0,
+      "composition_success_at_k": 1.0,
+      "struct_valid_rate": 0.9292118226600985,
+      "overall_valid_rate": 0.9292118226600985,
+      "structure_match_at_k": 0.17192118226600986,
+      "mean_best_rms": 0.38648333854884126,
+      "cfg": 2.0,
+      "steps": 100
+    },
+    "carbon24_hilovae_diversedit_12_test": {
+      "dataset": "carbon_24",
+      "num_targets": 2030,
+      "candidates_per_target": 20,
+      "composition_match_rate": 1.0,
+      "composition_success_at_k": 1.0,
+      "struct_valid_rate": 0.985615763546798,
+      "overall_valid_rate": 0.985615763546798,
+      "structure_match_at_k": 0.17339901477832512,
+      "mean_best_rms": 0.3544063339890027,
+      "cfg": 2.0,
+      "steps": 100
+    },
+    "carbon24_hilovae_ot_only_test": {
+      "dataset": "carbon_24",
+      "num_targets": 2030,
+      "candidates_per_target": 20,
+      "composition_match_rate": 1.0,
+      "composition_success_at_k": 1.0,
+      "struct_valid_rate": 0.9669211822660099,
+      "overall_valid_rate": 0.9669211822660099,
+      "structure_match_at_k": 0.18571428571428572,
+      "mean_best_rms": 0.3845272119070738,
+      "cfg": 2.0,
+      "steps": 100
+    },
+    "carbon24_hilovae_standard_dit_test": {
+      "dataset": "carbon_24",
+      "num_targets": 2030,
+      "candidates_per_target": 20,
+      "composition_match_rate": 1.0,
+      "composition_success_at_k": 1.0,
+      "struct_valid_rate": 0.9703448275862069,
+      "overall_valid_rate": 0.9703448275862069,
+      "structure_match_at_k": 0.1729064039408867,
+      "mean_best_rms": 0.37982608434311743,
+      "cfg": 2.0,
+      "steps": 100
+    },
+    "carbon24_standard_vae_codemdt_decoder_6_test": {
+      "dataset": "carbon_24",
+      "num_targets": 2030,
+      "candidates_per_target": 20,
+      "composition_match_rate": 1.0,
+      "composition_success_at_k": 1.0,
+      "struct_valid_rate": 0.9771428571428571,
+      "overall_valid_rate": 0.9771428571428571,
+      "structure_match_at_k": 0.5891625615763547,
+      "mean_best_rms": 0.3782873863532483,
+      "cfg": 2.0,
+      "steps": 100
+    },
+    "carbon24_standard_vae_codemdt_test": {
+      "dataset": "carbon_24",
+      "num_targets": 2030,
+      "candidates_per_target": 20,
+      "composition_match_rate": 1.0,
+      "composition_success_at_k": 1.0,
+      "struct_valid_rate": 0.9378571428571428,
+      "overall_valid_rate": 0.9378571428571428,
+      "structure_match_at_k": 0.5926108374384237,
+      "mean_best_rms": 0.38658351515818196,
+      "cfg": 2.0,
+      "steps": 100
+    },
+    "carbon24_standard_vae_standard_dit_test": {
+      "dataset": "carbon_24",
+      "num_targets": 2030,
+      "candidates_per_target": 20,
+      "composition_match_rate": 1.0,
+      "composition_success_at_k": 1.0,
+      "struct_valid_rate": 0.9714532019704434,
+      "overall_valid_rate": 0.9714532019704434,
+      "structure_match_at_k": 0.6,
+      "mean_best_rms": 0.3741354661436778,
+      "cfg": 2.0,
+      "steps": 100
+    },
+    "carbon24_standard_vae_test_reconstruction": {
+      "dataset": "carbon_24",
+      "split": "test",
+      "checkpoint": "runs/carbon24_standard_vae/checkpoints/last.ckpt",
+      "num_targets": 2030,
+      "seed": 0,
+      "composition_conditioning": true,
+      "structure_matcher": {
+        "stol": 0.5,
+        "ltol": 0.3,
+        "angle_tol": 10
+      },
+      "mode_reconstruction": {
+        "samples_per_target": 1,
+        "candidate_count": 2030,
+        "composition_match_rate": 1.0,
+        "struct_valid_rate": 0.9995073891625615,
+        "overall_valid_rate": 0.9995073891625615,
+        "structure_match_at_k": 0.29310344827586204,
+        "matched_targets": 595,
+        "unmatched_targets": 1435,
+        "mean_best_rms": 0.23241313124788082
+      },
+      "posterior_reconstruction_at_k": {
+        "samples_per_target": 20,
+        "candidate_count": 40600,
+        "composition_match_rate": 1.0,
+        "struct_valid_rate": 0.999679802955665,
+        "overall_valid_rate": 0.999679802955665,
+        "structure_match_at_k": 0.3458128078817734,
+        "matched_targets": 702,
+        "unmatched_targets": 1328,
+        "mean_best_rms": 0.22332697539240268
+      },
+      "rms_note": "mean_best_rms is the mean of the best finite normalized RMSD only for targets with at least one match; unmatched targets are excluded."
+    },
+    "carbon24_test": {
+      "dataset": "carbon_24",
+      "num_targets": 2030,
+      "candidates_per_target": 20,
+      "composition_match_rate": 1.0,
+      "composition_success_at_k": 1.0,
+      "struct_valid_rate": 0.8885714285714286,
+      "overall_valid_rate": 0.8885714285714286,
+      "structure_match_at_k": 0.158128078817734,
+      "mean_best_rms": 0.39066752022864026,
+      "cfg": 2.0,
+      "steps": 100
+    }
+  },
+  "training": {
+    "carbon24_codemdt": {
+      "epochs": 650,
+      "steps": 123500,
+      "last_train_primary_loss": 1.8494517803192139,
+      "last_validation_primary_loss": 1.9166195392608643,
+      "best_validation_epoch": 550,
+      "best_validation_loss": 1.722750186920166,
+      "last_train": {
+        "epoch": "650",
+        "step": "123500",
+        "div_loss": "-0.1566886305809021",
+        "div_weight": "0.5",
+        "loss": "3.5498104095458984",
+        "loss_disp": "-0.9351686239242554",
+        "loss_mi": "-0.10937961935997009",
+        "loss_orth": "-0.11048074811697006",
+        "lr_pg1": "1e-06",
+        "lr_pg2": "1e-06",
+        "m_loss": "1.8570469617843628",
+        "m_x_loss": "1.8570469617843628",
+        "plain_loss": "1.8494517803192139",
+        "weight_decay_pg1": "0.0001",
+        "weight_decay_pg2": "0.0",
+        "x_loss": "1.8494517803192139"
+      },
+      "last_validation": {
+        "epoch": "650",
+        "step": "123500",
+        "loss": "1.9134563207626343",
+        "x_loss": "1.9166195392608643"
+      }
+    },
+    "carbon24_codemdt_decoder_6": {
+      "epochs": 500,
+      "steps": 95000,
+      "last_train_primary_loss": 1.7532352209091187,
+      "last_validation_primary_loss": 1.7772482633590698,
+      "best_validation_epoch": 400,
+      "best_validation_loss": 1.7040430307388306,
+      "last_train": {
+        "epoch": "500",
+        "step": "95000",
+        "div_loss": "-0.2487064152956009",
+        "div_weight": "0.5",
+        "loss": "3.256164789199829",
+        "loss_disp": "-0.9805496335029602",
+        "loss_mi": "-0.19958017766475677",
+        "loss_orth": "-0.19977767765522003",
+        "lr_pg1": "1e-06",
+        "lr_pg2": "1e-06",
+        "m_loss": "1.7516378164291382",
+        "m_x_loss": "1.7516378164291382",
+        "plain_loss": "1.7532352209091187",
+        "weight_decay_pg1": "0.0001",
+        "weight_decay_pg2": "0.0",
+        "x_loss": "1.7532352209091187"
+      },
+      "last_validation": {
+        "epoch": "500",
+        "step": "95000",
+        "loss": "1.772499442100525",
+        "x_loss": "1.7772482633590698"
+      }
+    },
+    "carbon24_dit": {
+      "epochs": 350,
+      "steps": 66500,
+      "last_train_primary_loss": 1.7762478590011597,
+      "last_validation_primary_loss": 1.8153945207595825,
+      "best_validation_epoch": 250,
+      "best_validation_loss": 1.7693328857421875,
+      "last_train": {
+        "epoch": "350",
+        "step": "66500",
+        "loss": "1.7762478590011597",
+        "lr_pg1": "1.5625e-06",
+        "lr_pg2": "1.5625e-06",
+        "weight_decay_pg1": "0.0001",
+        "weight_decay_pg2": "0.0",
+        "x_loss": "1.7762478590011597"
+      },
+      "last_validation": {
+        "epoch": "350",
+        "step": "66500",
+        "loss": "1.8148046731948853",
+        "x_loss": "1.8153945207595825"
+      }
+    },
+    "carbon24_dit_mmd_only": {
+      "epochs": 350,
+      "steps": 66500,
+      "last_train_primary_loss": 1.821887493133545,
+      "last_validation_primary_loss": 1.7956308126449585,
+      "best_validation_epoch": 250,
+      "best_validation_loss": 1.7378652095794678,
+      "last_train": {
+        "epoch": "350",
+        "step": "66500",
+        "loss": "1.8222393989562988",
+        "lr_pg1": "1.5625e-06",
+        "lr_pg2": "1.5625e-06",
+        "mmd_bandwidth": "2.3531806468963623",
+        "mmd_loss": "0.000351711583789438",
+        "mmd_raw_loss": "0.0070342314429581165",
+        "weight_decay_pg1": "0.0001",
+        "weight_decay_pg2": "0.0",
+        "x_loss": "1.821887493133545"
+      },
+      "last_validation": {
+        "epoch": "350",
+        "step": "66500",
+        "loss": "1.7970813512802124",
+        "x_loss": "1.7956308126449585"
+      }
+    },
+    "carbon24_dit_ot_only": {
+      "epochs": 310,
+      "steps": 58900,
+      "last_train_primary_loss": 1.4985229969024658,
+      "last_validation_primary_loss": 1.9005351066589355,
+      "best_validation_epoch": 220,
+      "best_validation_loss": 1.8120148181915283,
+      "last_train": {
+        "epoch": "310",
+        "step": "58900",
+        "loss": "1.4985229969024658",
+        "lr_pg1": "3.125e-06",
+        "lr_pg2": "3.125e-06",
+        "ot_cost": "5.021515369415283",
+        "weight_decay_pg1": "0.0001",
+        "weight_decay_pg2": "0.0",
+        "x_loss": "1.4985229969024658"
+      },
+      "last_validation": {
+        "epoch": "310",
+        "step": "58900",
+        "loss": "1.8970218896865845",
+        "x_loss": "1.9005351066589355"
+      }
+    },
+    "carbon24_hilovae_diversedit_12": {
+      "epochs": 450,
+      "steps": 85500,
+      "last_train_primary_loss": 1.7066696882247925,
+      "last_validation_primary_loss": 1.700473427772522,
+      "best_validation_epoch": 350,
+      "best_validation_loss": 1.6888009309768677,
+      "last_train": {
+        "epoch": "450",
+        "step": "85500",
+        "div_loss": "0.00033670972334221005",
+        "div_raw_loss": "0.07215553522109985",
+        "div_weight": "0.0029461276717483997",
+        "loss": "1.7070062160491943",
+        "loss_disp": "-0.0020034497138112783",
+        "loss_mi": "0.2579937279224396",
+        "loss_orth": "-0.037337105721235275",
+        "lr_pg1": "1.5625e-06",
+        "lr_pg2": "1.5625e-06",
+        "weight_decay_pg1": "0.0001",
+        "weight_decay_pg2": "0.0",
+        "x_loss": "1.7066696882247925"
+      },
+      "last_validation": {
+        "epoch": "450",
+        "step": "85500",
+        "loss": "1.7004122734069824",
+        "x_loss": "1.700473427772522"
+      }
+    },
+    "carbon24_standard_vae": {
+      "epochs": 120,
+      "steps": 22800,
+      "last_train_primary_loss": 0.08890295773744583,
+      "last_validation_primary_loss": 0.8782156109809875,
+      "best_validation_epoch": 20,
+      "best_validation_loss": 0.8168315887451172,
+      "last_train": {
+        "epoch": "120",
+        "step": "22800",
+        "loss": "0.08890295773744583",
+        "loss_angles": "0.05412635952234268",
+        "loss_atom_types": "2.0634011166364985e-10",
+        "loss_composition": "4.306990152348461e-17",
+        "loss_frac_coords": "0.02236519753932953",
+        "loss_kl": "0.0006113661802373827",
+        "loss_lengths": "0.011808454059064388",
+        "loss_pos": "0.0",
+        "lr_pg1": "1.25e-05",
+        "lr_pg2": "1.25e-05",
+        "unscaled/loss_angles": "0.005412634462118149",
+        "unscaled/loss_atom_types": "2.0634011166364985e-10",
+        "unscaled/loss_frac_coords": "0.002236520405858755",
+        "unscaled/loss_kl": "61.13660430908203",
+        "unscaled/loss_lengths": "0.011808454059064388",
+        "unscaled/loss_pos": "0.02551843971014023",
+        "weight_decay_pg1": "0.0001",
+        "weight_decay_pg2": "0.0"
+      },
+      "last_validation": {
+        "epoch": "120",
+        "step": "22800",
+        "loss": "0.8782156109809875",
+        "loss_angles": "0.7632129788398743",
+        "loss_atom_types": "7.655524825178617e-11",
+        "loss_composition": "2.318735487751906e-17",
+        "loss_frac_coords": "0.010687670670449734",
+        "loss_kl": "0.00045144668547436595",
+        "loss_lengths": "0.1020510271191597",
+        "loss_pos": "0.0",
+        "match_rate": "0.3095472455024719",
+        "rms_dist": "0.22957412898540497",
+        "unscaled/loss_angles": "0.0763213038444519",
+        "unscaled/loss_atom_types": "7.655524825178617e-11",
+        "unscaled/loss_frac_coords": "0.001068767043761909",
+        "unscaled/loss_kl": "45.144691467285156",
+        "unscaled/loss_lengths": "0.1020510271191597",
+        "unscaled/loss_pos": "0.0248325914144516"
+      }
+    },
+    "carbon24_standard_vae_codemdt": {
+      "epochs": 260,
+      "steps": 49400,
+      "last_train_primary_loss": 2.1299216747283936,
+      "last_validation_primary_loss": 2.206794261932373,
+      "best_validation_epoch": 160,
+      "best_validation_loss": 2.152360439300537,
+      "last_train": {
+        "epoch": "260",
+        "step": "49400",
+        "div_loss": "-0.1561742126941681",
+        "div_weight": "0.5",
+        "loss": "4.108846187591553",
+        "loss_disp": "-0.9312760233879089",
+        "loss_mi": "-0.10886214673519135",
+        "loss_orth": "-0.11035878211259842",
+        "lr_pg1": "3.125e-06",
+        "lr_pg2": "3.125e-06",
+        "m_loss": "2.135097026824951",
+        "m_x_loss": "2.135097026824951",
+        "plain_loss": "2.1299216747283936",
+        "weight_decay_pg1": "0.0001",
+        "weight_decay_pg2": "0.0",
+        "x_loss": "2.1299216747283936"
+      },
+      "last_validation": {
+        "epoch": "260",
+        "step": "49400",
+        "loss": "2.205814838409424",
+        "x_loss": "2.206794261932373"
+      }
+    },
+    "carbon24_standardvae_codemdt_decoder_6": {
+      "epochs": 320,
+      "steps": 60800,
+      "last_train_primary_loss": 2.0375752449035645,
+      "last_validation_primary_loss": 2.048741579055786,
+      "best_validation_epoch": 220,
+      "best_validation_loss": 2.0197935104370117,
+      "last_train": {
+        "epoch": "320",
+        "step": "60800",
+        "div_loss": "-0.24739423394203186",
+        "div_weight": "0.5",
+        "loss": "3.825848340988159",
+        "loss_disp": "-0.9586542248725891",
+        "loss_mi": "-0.19925165176391602",
+        "loss_orth": "-0.19967155158519745",
+        "lr_pg1": "3.125e-06",
+        "lr_pg2": "3.125e-06",
+        "m_loss": "2.035667896270752",
+        "m_x_loss": "2.035667896270752",
+        "plain_loss": "2.0375752449035645",
+        "weight_decay_pg1": "0.0001",
+        "weight_decay_pg2": "0.0",
+        "x_loss": "2.0375752449035645"
+      },
+      "last_validation": {
+        "epoch": "320",
+        "step": "60800",
+        "loss": "2.0499260425567627",
+        "x_loss": "2.048741579055786"
+      }
+    },
+    "carbon_24_hilo_vae": {
+      "epochs": 310,
+      "steps": 58900,
+      "last_train_primary_loss": 0.019930701702833176,
+      "last_validation_primary_loss": 0.001567570143379271,
+      "best_validation_epoch": 300,
+      "best_validation_loss": 0.001498279976658523,
+      "last_train": {
+        "epoch": "310",
+        "step": "58900",
+        "loss": "0.019930701702833176",
+        "loss_angles": "0.00011650382657535374",
+        "loss_atom_types": "0.0",
+        "loss_composition": "5.713066364734975e-20",
+        "loss_frac_coords": "0.019292401149868965",
+        "loss_kl": "0.0004526884004008025",
+        "loss_lengths": "8.242383046308532e-05",
+        "loss_pos": "0.0",
+        "lr_pg1": "6.25e-06",
+        "lr_pg2": "6.25e-06",
+        "unscaled/loss_angles": "1.1650387023109943e-05",
+        "unscaled/loss_atom_types": "0.0",
+        "unscaled/loss_frac_coords": "0.0019292403012514114",
+        "unscaled/loss_kl": "45.268836975097656",
+        "unscaled/loss_lengths": "8.242383046308532e-05",
+        "unscaled/loss_pos": "0.02202019654214382",
+        "weight_decay_pg1": "0.0001",
+        "weight_decay_pg2": "0.0"
+      },
+      "last_validation": {
+        "epoch": "310",
+        "step": "58900",
+        "loss": "0.001567570143379271",
+        "loss_angles": "9.579096513334662e-05",
+        "loss_atom_types": "0.0",
+        "loss_composition": "5.364058184783539e-20",
+        "loss_frac_coords": "0.0009746222640387714",
+        "loss_kl": "0.00045746949035674334",
+        "loss_lengths": "4.005468508694321e-05",
+        "loss_pos": "0.0",
+        "match_rate": "0.9635826945304871",
+        "rms_dist": "0.02434835024178028",
+        "unscaled/loss_angles": "9.579097422829363e-06",
+        "unscaled/loss_atom_types": "0.0",
+        "unscaled/loss_frac_coords": "9.746217983774841e-05",
+        "unscaled/loss_kl": "45.74694061279297",
+        "unscaled/loss_lengths": "4.005468508694321e-05",
+        "unscaled/loss_pos": "0.013597946614027023"
+      }
+    },
+    "standard_vae_standard_dit": {
+      "epochs": 300,
+      "steps": 57000,
+      "last_train_primary_loss": 2.040205717086792,
+      "last_validation_primary_loss": 2.0849483013153076,
+      "best_validation_epoch": 250,
+      "best_validation_loss": 2.0508008003234863,
+      "last_train": {
+        "epoch": "300",
+        "step": "57000",
+        "loss": "2.040205717086792",
+        "lr_pg1": "1.25e-05",
+        "lr_pg2": "1.25e-05",
+        "weight_decay_pg1": "0.0001",
+        "weight_decay_pg2": "0.0",
+        "x_loss": "2.040205717086792"
+      },
+      "last_validation": {
+        "epoch": "300",
+        "step": "57000",
+        "loss": "2.0820398330688477",
+        "x_loss": "2.0849483013153076"
+      }
+    }
+  },
+  "targets": {
+    "carbon24_hilo_vae_test_reconstruction": {
+      "count": 2030,
+      "by_n": {
+        "6": {
+          "count": 705,
+          "matched": 687,
+          "match_rate": 0.9744680851063829,
+          "matched_target_spacegroups": {
+            "12": 285,
+            "51": 22,
+            "166": 56,
+            "74": 10,
+            "63": 67,
+            "227": 37,
+            "8": 3,
+            "178": 12,
+            "69": 26,
+            "179": 8,
+            "2": 80,
+            "65": 36,
+            "71": 11,
+            "15": 17,
+            "1": 4,
+            "10": 4,
+            "229": 2,
+            "5": 4,
+            "194": 2,
+            "191": 1
+          },
+          "prefix_hits": {
+            "1": 676,
+            "5": 684,
+            "10": 685,
+            "20": 687
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 18,
+            "1": 3,
+            "3": 1,
+            "4": 3,
+            "5": 1,
+            "8": 3,
+            "9": 1,
+            "15": 2,
+            "16": 2,
+            "17": 2,
+            "18": 7,
+            "19": 6,
+            "20": 656
+          }
+        },
+        "8": {
+          "count": 526,
+          "matched": 515,
+          "match_rate": 0.9790874524714829,
+          "matched_target_spacegroups": {
+            "5": 12,
+            "65": 21,
+            "2": 76,
+            "12": 203,
+            "63": 21,
+            "69": 8,
+            "10": 24,
+            "166": 20,
+            "227": 18,
+            "15": 11,
+            "20": 4,
+            "25": 7,
+            "14": 5,
+            "74": 19,
+            "194": 17,
+            "1": 16,
+            "11": 3,
+            "140": 1,
+            "64": 3,
+            "44": 10,
+            "42": 1,
+            "139": 8,
+            "191": 1,
+            "8": 5,
+            "13": 1
+          },
+          "prefix_hits": {
+            "1": 509,
+            "5": 513,
+            "10": 513,
+            "20": 515
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 11,
+            "1": 2,
+            "5": 1,
+            "7": 1,
+            "8": 1,
+            "10": 1,
+            "11": 1,
+            "15": 2,
+            "17": 1,
+            "19": 1,
+            "20": 504
+          }
+        },
+        "10": {
+          "count": 317,
+          "matched": 305,
+          "match_rate": 0.9621451104100947,
+          "matched_target_spacegroups": {
+            "1": 24,
+            "38": 11,
+            "2": 75,
+            "5": 14,
+            "12": 70,
+            "8": 26,
+            "25": 9,
+            "11": 17,
+            "17": 1,
+            "6": 15,
+            "65": 2,
+            "69": 1,
+            "10": 12,
+            "74": 4,
+            "44": 6,
+            "47": 3,
+            "24": 5,
+            "71": 3,
+            "35": 3,
+            "166": 1,
+            "227": 2,
+            "42": 1
+          },
+          "prefix_hits": {
+            "1": 301,
+            "5": 305,
+            "10": 305,
+            "20": 305
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 12,
+            "1": 1,
+            "3": 1,
+            "4": 1,
+            "5": 1,
+            "6": 2,
+            "19": 1,
+            "20": 298
+          }
+        },
+        "12": {
+          "count": 200,
+          "matched": 194,
+          "match_rate": 0.97,
+          "matched_target_spacegroups": {
+            "1": 38,
+            "8": 18,
+            "12": 37,
+            "44": 1,
+            "6": 13,
+            "2": 37,
+            "15": 2,
+            "63": 9,
+            "5": 5,
+            "65": 2,
+            "122": 1,
+            "7": 1,
+            "11": 1,
+            "227": 3,
+            "194": 2,
+            "166": 3,
+            "38": 2,
+            "74": 2,
+            "10": 6,
+            "17": 1,
+            "36": 1,
+            "9": 1,
+            "31": 2,
+            "25": 2,
+            "20": 1,
+            "13": 1,
+            "71": 1,
+            "148": 1
+          },
+          "prefix_hits": {
+            "1": 191,
+            "5": 193,
+            "10": 193,
+            "20": 194
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 6,
+            "2": 1,
+            "3": 1,
+            "9": 1,
+            "12": 1,
+            "14": 1,
+            "15": 1,
+            "17": 1,
+            "18": 2,
+            "20": 185
+          }
+        },
+        "14": {
+          "count": 110,
+          "matched": 109,
+          "match_rate": 0.990909090909091,
+          "matched_target_spacegroups": {
+            "8": 13,
+            "2": 15,
+            "44": 2,
+            "1": 32,
+            "11": 4,
+            "12": 19,
+            "6": 12,
+            "38": 2,
+            "5": 4,
+            "25": 1,
+            "10": 3,
+            "166": 1,
+            "63": 1
+          },
+          "prefix_hits": {
+            "1": 109,
+            "5": 109,
+            "10": 109,
+            "20": 109
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 1,
+            "20": 109
+          }
+        },
+        "16": {
+          "count": 84,
+          "matched": 83,
+          "match_rate": 0.9880952380952381,
+          "matched_target_spacegroups": {
+            "6": 6,
+            "8": 14,
+            "2": 8,
+            "1": 38,
+            "12": 10,
+            "11": 1,
+            "3": 2,
+            "10": 1,
+            "42": 1,
+            "38": 1,
+            "74": 1
+          },
+          "prefix_hits": {
+            "1": 83,
+            "5": 83,
+            "10": 83,
+            "20": 83
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 1,
+            "20": 83
+          }
+        },
+        "18": {
+          "count": 37,
+          "matched": 36,
+          "match_rate": 0.972972972972973,
+          "matched_target_spacegroups": {
+            "1": 18,
+            "8": 4,
+            "6": 3,
+            "12": 6,
+            "2": 3,
+            "5": 1,
+            "10": 1
+          },
+          "prefix_hits": {
+            "1": 36,
+            "5": 36,
+            "10": 36,
+            "20": 36
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 1,
+            "16": 1,
+            "20": 35
+          }
+        },
+        "20": {
+          "count": 24,
+          "matched": 24,
+          "match_rate": 1.0,
+          "matched_target_spacegroups": {
+            "2": 3,
+            "1": 15,
+            "8": 3,
+            "6": 3
+          },
+          "prefix_hits": {
+            "1": 24,
+            "5": 24,
+            "10": 24,
+            "20": 24
+          },
+          "matching_candidates_per_target_histogram": {
+            "20": 24
+          }
+        },
+        "22": {
+          "count": 17,
+          "matched": 17,
+          "match_rate": 1.0,
+          "matched_target_spacegroups": {
+            "8": 4,
+            "1": 11,
+            "6": 1,
+            "2": 1
+          },
+          "prefix_hits": {
+            "1": 17,
+            "5": 17,
+            "10": 17,
+            "20": 17
+          },
+          "matching_candidates_per_target_histogram": {
+            "20": 17
+          }
+        },
+        "24": {
+          "count": 10,
+          "matched": 10,
+          "match_rate": 1.0,
+          "matched_target_spacegroups": {
+            "1": 8,
+            "8": 2
+          },
+          "prefix_hits": {
+            "1": 10,
+            "5": 10,
+            "10": 10,
+            "20": 10
+          },
+          "matching_candidates_per_target_histogram": {
+            "20": 10
+          }
+        }
+      },
+      "matched": 1980
+    },
+    "carbon24_hilovae_codemdt_decoder_6_test": {
+      "count": 2030,
+      "by_n": {
+        "6": {
+          "count": 705,
+          "matched": 61,
+          "match_rate": 0.08652482269503546,
+          "matched_target_spacegroups": {
+            "51": 22,
+            "63": 39
+          },
+          "prefix_hits": {
+            "1": 61,
+            "5": 61,
+            "10": 61,
+            "20": 61
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 644,
+            "20": 61
+          }
+        },
+        "8": {
+          "count": 526,
+          "matched": 20,
+          "match_rate": 0.03802281368821293,
+          "matched_target_spacegroups": {
+            "20": 3,
+            "25": 7,
+            "2": 7,
+            "10": 1,
+            "13": 1,
+            "12": 1
+          },
+          "prefix_hits": {
+            "1": 14,
+            "5": 18,
+            "10": 18,
+            "20": 20
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 506,
+            "1": 2,
+            "8": 1,
+            "13": 1,
+            "14": 2,
+            "15": 3,
+            "20": 11
+          }
+        },
+        "10": {
+          "count": 317,
+          "matched": 58,
+          "match_rate": 0.1829652996845426,
+          "matched_target_spacegroups": {
+            "25": 9,
+            "6": 9,
+            "74": 4,
+            "10": 8,
+            "2": 6,
+            "47": 3,
+            "12": 3,
+            "35": 2,
+            "1": 7,
+            "8": 2,
+            "11": 4,
+            "38": 1
+          },
+          "prefix_hits": {
+            "1": 49,
+            "5": 54,
+            "10": 54,
+            "20": 58
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 259,
+            "1": 4,
+            "2": 1,
+            "4": 3,
+            "5": 1,
+            "8": 1,
+            "10": 1,
+            "13": 1,
+            "16": 1,
+            "19": 3,
+            "20": 42
+          }
+        },
+        "12": {
+          "count": 200,
+          "matched": 49,
+          "match_rate": 0.245,
+          "matched_target_spacegroups": {
+            "8": 3,
+            "12": 7,
+            "6": 3,
+            "2": 9,
+            "1": 10,
+            "63": 3,
+            "38": 2,
+            "10": 4,
+            "17": 1,
+            "65": 1,
+            "31": 2,
+            "25": 2,
+            "20": 1,
+            "5": 1
+          },
+          "prefix_hits": {
+            "1": 33,
+            "5": 47,
+            "10": 48,
+            "20": 49
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 151,
+            "1": 1,
+            "3": 1,
+            "4": 2,
+            "5": 2,
+            "7": 2,
+            "8": 3,
+            "9": 1,
+            "10": 1,
+            "11": 1,
+            "12": 2,
+            "13": 2,
+            "14": 1,
+            "17": 1,
+            "18": 1,
+            "19": 5,
+            "20": 23
+          }
+        },
+        "14": {
+          "count": 110,
+          "matched": 44,
+          "match_rate": 0.4,
+          "matched_target_spacegroups": {
+            "8": 7,
+            "44": 2,
+            "1": 10,
+            "11": 3,
+            "12": 4,
+            "38": 2,
+            "25": 1,
+            "2": 2,
+            "10": 3,
+            "166": 1,
+            "6": 7,
+            "63": 1,
+            "5": 1
+          },
+          "prefix_hits": {
+            "1": 29,
+            "5": 38,
+            "10": 40,
+            "20": 44
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 66,
+            "1": 4,
+            "4": 2,
+            "5": 2,
+            "6": 2,
+            "7": 1,
+            "8": 1,
+            "9": 4,
+            "10": 1,
+            "11": 1,
+            "15": 2,
+            "16": 1,
+            "17": 3,
+            "18": 1,
+            "19": 11,
+            "20": 8
+          }
+        },
+        "16": {
+          "count": 84,
+          "matched": 32,
+          "match_rate": 0.38095238095238093,
+          "matched_target_spacegroups": {
+            "8": 5,
+            "12": 2,
+            "1": 14,
+            "6": 4,
+            "3": 2,
+            "10": 1,
+            "42": 1,
+            "38": 1,
+            "2": 1,
+            "74": 1
+          },
+          "prefix_hits": {
+            "1": 17,
+            "5": 23,
+            "10": 29,
+            "20": 32
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 52,
+            "1": 9,
+            "3": 3,
+            "5": 1,
+            "6": 1,
+            "7": 1,
+            "9": 1,
+            "10": 1,
+            "11": 1,
+            "15": 3,
+            "16": 1,
+            "17": 1,
+            "18": 1,
+            "19": 3,
+            "20": 5
+          }
+        },
+        "18": {
+          "count": 37,
+          "matched": 21,
+          "match_rate": 0.5675675675675675,
+          "matched_target_spacegroups": {
+            "8": 4,
+            "6": 2,
+            "12": 4,
+            "2": 1,
+            "1": 9,
+            "10": 1
+          },
+          "prefix_hits": {
+            "1": 7,
+            "5": 13,
+            "10": 18,
+            "20": 21
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 16,
+            "1": 4,
+            "2": 3,
+            "3": 1,
+            "4": 1,
+            "6": 1,
+            "9": 2,
+            "10": 1,
+            "11": 1,
+            "12": 2,
+            "14": 1,
+            "15": 1,
+            "19": 2,
+            "20": 1
+          }
+        },
+        "20": {
+          "count": 24,
+          "matched": 16,
+          "match_rate": 0.6666666666666666,
+          "matched_target_spacegroups": {
+            "1": 10,
+            "2": 2,
+            "8": 2,
+            "6": 2
+          },
+          "prefix_hits": {
+            "1": 5,
+            "5": 13,
+            "10": 14,
+            "20": 16
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 8,
+            "1": 1,
+            "2": 1,
+            "3": 3,
+            "4": 1,
+            "5": 2,
+            "6": 2,
+            "7": 1,
+            "8": 1,
+            "11": 1,
+            "12": 1,
+            "17": 2
+          }
+        },
+        "22": {
+          "count": 17,
+          "matched": 14,
+          "match_rate": 0.8235294117647058,
+          "matched_target_spacegroups": {
+            "8": 4,
+            "1": 9,
+            "6": 1
+          },
+          "prefix_hits": {
+            "1": 7,
+            "5": 9,
+            "10": 12,
+            "20": 14
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 3,
+            "1": 1,
+            "2": 4,
+            "3": 2,
+            "4": 1,
+            "5": 1,
+            "10": 1,
+            "11": 1,
+            "13": 1,
+            "15": 1,
+            "17": 1
+          }
+        },
+        "24": {
+          "count": 10,
+          "matched": 6,
+          "match_rate": 0.6,
+          "matched_target_spacegroups": {
+            "1": 4,
+            "8": 2
+          },
+          "prefix_hits": {
+            "1": 0,
+            "5": 3,
+            "10": 6,
+            "20": 6
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 4,
+            "2": 1,
+            "3": 2,
+            "4": 3
+          }
+        }
+      },
+      "matched": 321,
+      "prefix_hits": {
+        "1": 222,
+        "5": 279,
+        "10": 300,
+        "20": 321
+      },
+      "targets_with_rms_below": {
+        "0.1": 0,
+        "0.2": 23,
+        "0.3": 76
+      }
+    },
+    "carbon24_hilovae_dit_mmd_only_test": {
+      "count": 2030,
+      "by_n": {
+        "6": {
+          "count": 705,
+          "matched": 61,
+          "match_rate": 0.08652482269503546,
+          "matched_target_spacegroups": {
+            "51": 22,
+            "63": 39
+          },
+          "prefix_hits": {
+            "1": 61,
+            "5": 61,
+            "10": 61,
+            "20": 61
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 644,
+            "20": 61
+          }
+        },
+        "8": {
+          "count": 526,
+          "matched": 18,
+          "match_rate": 0.034220532319391636,
+          "matched_target_spacegroups": {
+            "20": 3,
+            "25": 7,
+            "2": 6,
+            "10": 1,
+            "13": 1
+          },
+          "prefix_hits": {
+            "1": 12,
+            "5": 17,
+            "10": 18,
+            "20": 18
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 508,
+            "7": 1,
+            "9": 2,
+            "10": 2,
+            "15": 1,
+            "18": 1,
+            "19": 1,
+            "20": 10
+          }
+        },
+        "10": {
+          "count": 317,
+          "matched": 60,
+          "match_rate": 0.1892744479495268,
+          "matched_target_spacegroups": {
+            "25": 9,
+            "6": 11,
+            "12": 4,
+            "74": 4,
+            "10": 8,
+            "2": 7,
+            "47": 3,
+            "35": 2,
+            "1": 7,
+            "8": 1,
+            "11": 3,
+            "38": 1
+          },
+          "prefix_hits": {
+            "1": 51,
+            "5": 59,
+            "10": 60,
+            "20": 60
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 257,
+            "1": 2,
+            "2": 2,
+            "3": 2,
+            "6": 1,
+            "7": 1,
+            "9": 2,
+            "10": 1,
+            "13": 1,
+            "14": 1,
+            "15": 2,
+            "17": 2,
+            "18": 2,
+            "19": 6,
+            "20": 35
+          }
+        },
+        "12": {
+          "count": 200,
+          "matched": 51,
+          "match_rate": 0.255,
+          "matched_target_spacegroups": {
+            "8": 3,
+            "12": 7,
+            "6": 5,
+            "2": 9,
+            "11": 1,
+            "1": 9,
+            "63": 3,
+            "38": 2,
+            "10": 4,
+            "17": 1,
+            "65": 1,
+            "31": 2,
+            "25": 2,
+            "20": 1,
+            "5": 1
+          },
+          "prefix_hits": {
+            "1": 38,
+            "5": 48,
+            "10": 49,
+            "20": 51
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 149,
+            "1": 2,
+            "2": 1,
+            "6": 1,
+            "7": 4,
+            "8": 1,
+            "9": 4,
+            "10": 1,
+            "11": 1,
+            "12": 2,
+            "13": 2,
+            "15": 1,
+            "16": 2,
+            "17": 2,
+            "18": 2,
+            "19": 6,
+            "20": 19
+          }
+        },
+        "14": {
+          "count": 110,
+          "matched": 46,
+          "match_rate": 0.41818181818181815,
+          "matched_target_spacegroups": {
+            "8": 8,
+            "44": 2,
+            "1": 10,
+            "12": 6,
+            "38": 2,
+            "25": 1,
+            "2": 3,
+            "10": 3,
+            "166": 1,
+            "6": 7,
+            "63": 1,
+            "11": 1,
+            "5": 1
+          },
+          "prefix_hits": {
+            "1": 25,
+            "5": 38,
+            "10": 43,
+            "20": 46
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 64,
+            "1": 5,
+            "2": 1,
+            "3": 3,
+            "5": 3,
+            "6": 2,
+            "7": 1,
+            "8": 2,
+            "9": 2,
+            "12": 2,
+            "13": 1,
+            "14": 2,
+            "15": 1,
+            "16": 2,
+            "17": 3,
+            "18": 4,
+            "19": 5,
+            "20": 7
+          }
+        },
+        "16": {
+          "count": 84,
+          "matched": 50,
+          "match_rate": 0.5952380952380952,
+          "matched_target_spacegroups": {
+            "6": 5,
+            "8": 10,
+            "1": 18,
+            "12": 7,
+            "2": 3,
+            "11": 1,
+            "3": 2,
+            "10": 1,
+            "42": 1,
+            "38": 1,
+            "74": 1
+          },
+          "prefix_hits": {
+            "1": 23,
+            "5": 38,
+            "10": 45,
+            "20": 50
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 34,
+            "1": 6,
+            "2": 7,
+            "3": 5,
+            "4": 5,
+            "5": 2,
+            "6": 2,
+            "8": 3,
+            "10": 1,
+            "11": 4,
+            "14": 3,
+            "15": 2,
+            "17": 2,
+            "18": 1,
+            "19": 5,
+            "20": 2
+          }
+        },
+        "18": {
+          "count": 37,
+          "matched": 24,
+          "match_rate": 0.6486486486486487,
+          "matched_target_spacegroups": {
+            "1": 12,
+            "8": 4,
+            "6": 2,
+            "12": 4,
+            "2": 1,
+            "10": 1
+          },
+          "prefix_hits": {
+            "1": 10,
+            "5": 21,
+            "10": 24,
+            "20": 24
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 13,
+            "1": 1,
+            "2": 2,
+            "3": 2,
+            "4": 3,
+            "6": 2,
+            "7": 1,
+            "8": 3,
+            "9": 1,
+            "10": 1,
+            "11": 1,
+            "13": 2,
+            "15": 1,
+            "16": 1,
+            "18": 3
+          }
+        },
+        "20": {
+          "count": 24,
+          "matched": 17,
+          "match_rate": 0.7083333333333334,
+          "matched_target_spacegroups": {
+            "1": 10,
+            "2": 1,
+            "8": 3,
+            "6": 3
+          },
+          "prefix_hits": {
+            "1": 7,
+            "5": 13,
+            "10": 15,
+            "20": 17
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 7,
+            "1": 1,
+            "2": 3,
+            "3": 2,
+            "4": 2,
+            "5": 1,
+            "6": 1,
+            "7": 1,
+            "8": 1,
+            "10": 1,
+            "11": 1,
+            "12": 1,
+            "13": 1,
+            "14": 1
+          }
+        },
+        "22": {
+          "count": 17,
+          "matched": 14,
+          "match_rate": 0.8235294117647058,
+          "matched_target_spacegroups": {
+            "8": 4,
+            "1": 10
+          },
+          "prefix_hits": {
+            "1": 8,
+            "5": 13,
+            "10": 13,
+            "20": 14
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 3,
+            "1": 1,
+            "4": 3,
+            "5": 1,
+            "7": 1,
+            "9": 1,
+            "10": 1,
+            "11": 1,
+            "12": 2,
+            "13": 1,
+            "14": 1,
+            "15": 1
+          }
+        },
+        "24": {
+          "count": 10,
+          "matched": 8,
+          "match_rate": 0.8,
+          "matched_target_spacegroups": {
+            "1": 6,
+            "8": 2
+          },
+          "prefix_hits": {
+            "1": 2,
+            "5": 6,
+            "10": 6,
+            "20": 8
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 2,
+            "1": 1,
+            "2": 1,
+            "3": 2,
+            "4": 1,
+            "7": 1,
+            "8": 1,
+            "9": 1
+          }
+        }
+      },
+      "matched": 349,
+      "prefix_hits": {
+        "1": 237,
+        "5": 314,
+        "10": 334,
+        "20": 349
+      },
+      "targets_with_rms_below": {
+        "0.1": 0,
+        "0.2": 6,
+        "0.3": 56
+      }
+    },
+    "carbon24_hilovae_diversedit_12_test": {
+      "count": 2030,
+      "by_n": {
+        "6": {
+          "count": 705,
+          "matched": 61,
+          "match_rate": 0.08652482269503546,
+          "matched_target_spacegroups": {
+            "51": 22,
+            "63": 39
+          },
+          "prefix_hits": {
+            "1": 61,
+            "5": 61,
+            "10": 61,
+            "20": 61
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 644,
+            "20": 61
+          }
+        },
+        "8": {
+          "count": 526,
+          "matched": 22,
+          "match_rate": 0.04182509505703422,
+          "matched_target_spacegroups": {
+            "20": 3,
+            "25": 7,
+            "2": 8,
+            "64": 1,
+            "12": 1,
+            "10": 1,
+            "13": 1
+          },
+          "prefix_hits": {
+            "1": 16,
+            "5": 19,
+            "10": 21,
+            "20": 22
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 504,
+            "1": 4,
+            "8": 1,
+            "15": 2,
+            "16": 2,
+            "17": 1,
+            "19": 4,
+            "20": 8
+          }
+        },
+        "10": {
+          "count": 317,
+          "matched": 52,
+          "match_rate": 0.1640378548895899,
+          "matched_target_spacegroups": {
+            "25": 9,
+            "6": 7,
+            "10": 8,
+            "2": 6,
+            "47": 3,
+            "12": 3,
+            "74": 2,
+            "35": 2,
+            "1": 7,
+            "8": 1,
+            "11": 3,
+            "38": 1
+          },
+          "prefix_hits": {
+            "1": 45,
+            "5": 50,
+            "10": 51,
+            "20": 52
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 265,
+            "1": 1,
+            "3": 1,
+            "4": 1,
+            "8": 1,
+            "11": 1,
+            "15": 1,
+            "18": 2,
+            "19": 8,
+            "20": 36
+          }
+        },
+        "12": {
+          "count": 200,
+          "matched": 48,
+          "match_rate": 0.24,
+          "matched_target_spacegroups": {
+            "8": 3,
+            "12": 7,
+            "6": 3,
+            "2": 9,
+            "1": 9,
+            "63": 3,
+            "38": 2,
+            "10": 4,
+            "17": 1,
+            "65": 1,
+            "31": 2,
+            "25": 2,
+            "20": 1,
+            "5": 1
+          },
+          "prefix_hits": {
+            "1": 39,
+            "5": 45,
+            "10": 47,
+            "20": 48
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 152,
+            "2": 1,
+            "3": 1,
+            "5": 2,
+            "6": 1,
+            "7": 1,
+            "8": 1,
+            "9": 1,
+            "11": 1,
+            "13": 1,
+            "14": 3,
+            "15": 2,
+            "17": 2,
+            "18": 5,
+            "19": 3,
+            "20": 23
+          }
+        },
+        "14": {
+          "count": 110,
+          "matched": 41,
+          "match_rate": 0.37272727272727274,
+          "matched_target_spacegroups": {
+            "8": 7,
+            "2": 3,
+            "44": 2,
+            "1": 8,
+            "11": 2,
+            "12": 3,
+            "38": 2,
+            "25": 1,
+            "10": 3,
+            "166": 1,
+            "6": 7,
+            "63": 1,
+            "5": 1
+          },
+          "prefix_hits": {
+            "1": 32,
+            "5": 35,
+            "10": 36,
+            "20": 41
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 69,
+            "1": 4,
+            "2": 2,
+            "3": 2,
+            "4": 1,
+            "8": 3,
+            "11": 1,
+            "13": 1,
+            "14": 1,
+            "17": 3,
+            "18": 3,
+            "19": 8,
+            "20": 12
+          }
+        },
+        "16": {
+          "count": 84,
+          "matched": 63,
+          "match_rate": 0.75,
+          "matched_target_spacegroups": {
+            "6": 6,
+            "8": 13,
+            "1": 25,
+            "12": 9,
+            "2": 3,
+            "11": 1,
+            "3": 2,
+            "10": 1,
+            "42": 1,
+            "38": 1,
+            "74": 1
+          },
+          "prefix_hits": {
+            "1": 33,
+            "5": 52,
+            "10": 59,
+            "20": 63
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 21,
+            "1": 3,
+            "2": 1,
+            "3": 3,
+            "4": 6,
+            "5": 2,
+            "6": 6,
+            "7": 3,
+            "8": 8,
+            "9": 3,
+            "10": 3,
+            "12": 2,
+            "13": 4,
+            "14": 1,
+            "15": 4,
+            "16": 2,
+            "18": 4,
+            "19": 5,
+            "20": 3
+          }
+        },
+        "18": {
+          "count": 37,
+          "matched": 26,
+          "match_rate": 0.7027027027027027,
+          "matched_target_spacegroups": {
+            "1": 13,
+            "8": 4,
+            "6": 3,
+            "12": 4,
+            "2": 1,
+            "10": 1
+          },
+          "prefix_hits": {
+            "1": 11,
+            "5": 22,
+            "10": 25,
+            "20": 26
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 11,
+            "1": 1,
+            "2": 2,
+            "3": 1,
+            "4": 2,
+            "5": 1,
+            "6": 1,
+            "7": 1,
+            "8": 1,
+            "9": 1,
+            "10": 1,
+            "11": 2,
+            "12": 2,
+            "14": 4,
+            "16": 1,
+            "17": 2,
+            "18": 1,
+            "19": 1,
+            "20": 1
+          }
+        },
+        "20": {
+          "count": 24,
+          "matched": 15,
+          "match_rate": 0.625,
+          "matched_target_spacegroups": {
+            "1": 9,
+            "2": 1,
+            "8": 3,
+            "6": 2
+          },
+          "prefix_hits": {
+            "1": 7,
+            "5": 11,
+            "10": 14,
+            "20": 15
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 9,
+            "1": 1,
+            "4": 2,
+            "6": 1,
+            "7": 2,
+            "9": 2,
+            "10": 2,
+            "13": 2,
+            "16": 2,
+            "17": 1
+          }
+        },
+        "22": {
+          "count": 17,
+          "matched": 15,
+          "match_rate": 0.8823529411764706,
+          "matched_target_spacegroups": {
+            "8": 4,
+            "1": 10,
+            "6": 1
+          },
+          "prefix_hits": {
+            "1": 8,
+            "5": 15,
+            "10": 15,
+            "20": 15
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 2,
+            "3": 1,
+            "5": 2,
+            "9": 1,
+            "10": 2,
+            "11": 1,
+            "13": 2,
+            "14": 3,
+            "15": 2,
+            "19": 1
+          }
+        },
+        "24": {
+          "count": 10,
+          "matched": 9,
+          "match_rate": 0.9,
+          "matched_target_spacegroups": {
+            "1": 7,
+            "8": 2
+          },
+          "prefix_hits": {
+            "1": 2,
+            "5": 5,
+            "10": 7,
+            "20": 9
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 1,
+            "1": 3,
+            "2": 4,
+            "3": 2
+          }
+        }
+      },
+      "matched": 352,
+      "prefix_hits": {
+        "1": 254,
+        "5": 315,
+        "10": 336,
+        "20": 352
+      },
+      "targets_with_rms_below": {
+        "0.1": 5,
+        "0.2": 50,
+        "0.3": 81
+      }
+    },
+    "carbon24_hilovae_ot_only_test": {
+      "count": 2030,
+      "by_n": {
+        "6": {
+          "count": 705,
+          "matched": 66,
+          "match_rate": 0.09361702127659574,
+          "matched_target_spacegroups": {
+            "51": 22,
+            "63": 39,
+            "69": 4,
+            "12": 1
+          },
+          "prefix_hits": {
+            "1": 62,
+            "5": 64,
+            "10": 64,
+            "20": 66
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 639,
+            "1": 4,
+            "3": 1,
+            "20": 61
+          }
+        },
+        "8": {
+          "count": 526,
+          "matched": 36,
+          "match_rate": 0.06844106463878327,
+          "matched_target_spacegroups": {
+            "12": 13,
+            "20": 3,
+            "25": 7,
+            "2": 7,
+            "63": 2,
+            "5": 1,
+            "10": 1,
+            "13": 1,
+            "44": 1
+          },
+          "prefix_hits": {
+            "1": 16,
+            "5": 22,
+            "10": 29,
+            "20": 36
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 490,
+            "1": 11,
+            "2": 5,
+            "3": 2,
+            "7": 1,
+            "8": 1,
+            "11": 1,
+            "13": 1,
+            "15": 2,
+            "17": 1,
+            "18": 1,
+            "19": 1,
+            "20": 9
+          }
+        },
+        "10": {
+          "count": 317,
+          "matched": 68,
+          "match_rate": 0.21451104100946372,
+          "matched_target_spacegroups": {
+            "25": 9,
+            "12": 11,
+            "6": 11,
+            "74": 4,
+            "10": 8,
+            "2": 6,
+            "47": 3,
+            "35": 3,
+            "1": 7,
+            "8": 2,
+            "11": 3,
+            "38": 1
+          },
+          "prefix_hits": {
+            "1": 50,
+            "5": 59,
+            "10": 66,
+            "20": 68
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 249,
+            "1": 7,
+            "2": 5,
+            "3": 2,
+            "4": 1,
+            "5": 1,
+            "7": 1,
+            "8": 1,
+            "9": 1,
+            "10": 1,
+            "13": 1,
+            "15": 1,
+            "17": 3,
+            "18": 1,
+            "19": 4,
+            "20": 38
+          }
+        },
+        "12": {
+          "count": 200,
+          "matched": 48,
+          "match_rate": 0.24,
+          "matched_target_spacegroups": {
+            "8": 3,
+            "12": 7,
+            "6": 3,
+            "2": 9,
+            "1": 9,
+            "63": 3,
+            "38": 2,
+            "10": 4,
+            "17": 1,
+            "65": 1,
+            "31": 2,
+            "25": 2,
+            "20": 1,
+            "5": 1
+          },
+          "prefix_hits": {
+            "1": 40,
+            "5": 46,
+            "10": 47,
+            "20": 48
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 152,
+            "4": 1,
+            "5": 2,
+            "6": 1,
+            "8": 2,
+            "9": 1,
+            "10": 3,
+            "12": 3,
+            "14": 1,
+            "15": 4,
+            "17": 2,
+            "18": 2,
+            "19": 6,
+            "20": 20
+          }
+        },
+        "14": {
+          "count": 110,
+          "matched": 46,
+          "match_rate": 0.41818181818181815,
+          "matched_target_spacegroups": {
+            "8": 7,
+            "44": 2,
+            "1": 12,
+            "11": 3,
+            "12": 3,
+            "38": 2,
+            "25": 1,
+            "2": 3,
+            "10": 3,
+            "166": 1,
+            "6": 7,
+            "63": 1,
+            "5": 1
+          },
+          "prefix_hits": {
+            "1": 33,
+            "5": 40,
+            "10": 44,
+            "20": 46
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 64,
+            "1": 3,
+            "2": 1,
+            "3": 2,
+            "5": 5,
+            "6": 3,
+            "7": 1,
+            "8": 2,
+            "10": 2,
+            "11": 1,
+            "12": 1,
+            "13": 2,
+            "14": 2,
+            "15": 1,
+            "16": 1,
+            "17": 1,
+            "18": 4,
+            "19": 6,
+            "20": 8
+          }
+        },
+        "16": {
+          "count": 84,
+          "matched": 52,
+          "match_rate": 0.6190476190476191,
+          "matched_target_spacegroups": {
+            "6": 5,
+            "8": 9,
+            "1": 22,
+            "12": 7,
+            "2": 2,
+            "11": 1,
+            "3": 2,
+            "10": 1,
+            "42": 1,
+            "38": 1,
+            "74": 1
+          },
+          "prefix_hits": {
+            "1": 18,
+            "5": 40,
+            "10": 47,
+            "20": 52
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 32,
+            "1": 8,
+            "2": 9,
+            "3": 3,
+            "4": 4,
+            "5": 3,
+            "6": 1,
+            "7": 1,
+            "8": 1,
+            "9": 1,
+            "11": 3,
+            "12": 3,
+            "13": 1,
+            "14": 3,
+            "16": 1,
+            "18": 2,
+            "19": 5,
+            "20": 3
+          }
+        },
+        "18": {
+          "count": 37,
+          "matched": 22,
+          "match_rate": 0.5945945945945946,
+          "matched_target_spacegroups": {
+            "1": 11,
+            "8": 4,
+            "6": 3,
+            "12": 3,
+            "10": 1
+          },
+          "prefix_hits": {
+            "1": 8,
+            "5": 17,
+            "10": 21,
+            "20": 22
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 15,
+            "1": 3,
+            "2": 1,
+            "3": 3,
+            "4": 2,
+            "5": 1,
+            "6": 1,
+            "8": 2,
+            "9": 1,
+            "13": 2,
+            "15": 2,
+            "17": 1,
+            "18": 1,
+            "19": 1,
+            "20": 1
+          }
+        },
+        "20": {
+          "count": 24,
+          "matched": 15,
+          "match_rate": 0.625,
+          "matched_target_spacegroups": {
+            "1": 9,
+            "2": 1,
+            "8": 3,
+            "6": 2
+          },
+          "prefix_hits": {
+            "1": 6,
+            "5": 14,
+            "10": 14,
+            "20": 15
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 9,
+            "2": 3,
+            "4": 6,
+            "7": 1,
+            "12": 1,
+            "15": 1,
+            "16": 1,
+            "18": 2
+          }
+        },
+        "22": {
+          "count": 17,
+          "matched": 14,
+          "match_rate": 0.8235294117647058,
+          "matched_target_spacegroups": {
+            "8": 3,
+            "1": 10,
+            "6": 1
+          },
+          "prefix_hits": {
+            "1": 3,
+            "5": 11,
+            "10": 14,
+            "20": 14
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 3,
+            "1": 1,
+            "2": 4,
+            "3": 2,
+            "5": 2,
+            "7": 2,
+            "8": 2,
+            "11": 1
+          }
+        },
+        "24": {
+          "count": 10,
+          "matched": 10,
+          "match_rate": 1.0,
+          "matched_target_spacegroups": {
+            "1": 8,
+            "8": 2
+          },
+          "prefix_hits": {
+            "1": 0,
+            "5": 4,
+            "10": 7,
+            "20": 10
+          },
+          "matching_candidates_per_target_histogram": {
+            "1": 5,
+            "2": 1,
+            "3": 1,
+            "4": 1,
+            "5": 2
+          }
+        }
+      },
+      "matched": 377,
+      "prefix_hits": {
+        "1": 236,
+        "5": 317,
+        "10": 353,
+        "20": 377
+      },
+      "targets_with_rms_below": {
+        "0.1": 0,
+        "0.2": 5,
+        "0.3": 59
+      }
+    },
+    "carbon24_hilovae_standard_dit_test": {
+      "count": 2030,
+      "by_n": {
+        "6": {
+          "count": 705,
+          "matched": 62,
+          "match_rate": 0.08794326241134752,
+          "matched_target_spacegroups": {
+            "51": 22,
+            "63": 39,
+            "12": 1
+          },
+          "prefix_hits": {
+            "1": 61,
+            "5": 61,
+            "10": 61,
+            "20": 62
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 643,
+            "1": 1,
+            "20": 61
+          }
+        },
+        "8": {
+          "count": 526,
+          "matched": 23,
+          "match_rate": 0.043726235741444866,
+          "matched_target_spacegroups": {
+            "20": 3,
+            "25": 7,
+            "2": 7,
+            "5": 1,
+            "10": 1,
+            "12": 3,
+            "13": 1
+          },
+          "prefix_hits": {
+            "1": 13,
+            "5": 18,
+            "10": 20,
+            "20": 23
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 503,
+            "1": 5,
+            "5": 1,
+            "6": 1,
+            "7": 2,
+            "9": 1,
+            "12": 1,
+            "15": 1,
+            "16": 1,
+            "19": 1,
+            "20": 9
+          }
+        },
+        "10": {
+          "count": 317,
+          "matched": 59,
+          "match_rate": 0.1861198738170347,
+          "matched_target_spacegroups": {
+            "25": 9,
+            "12": 5,
+            "6": 9,
+            "74": 4,
+            "10": 8,
+            "2": 7,
+            "47": 3,
+            "35": 2,
+            "1": 7,
+            "8": 1,
+            "11": 3,
+            "38": 1
+          },
+          "prefix_hits": {
+            "1": 44,
+            "5": 56,
+            "10": 57,
+            "20": 59
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 258,
+            "1": 5,
+            "2": 2,
+            "3": 1,
+            "4": 1,
+            "7": 1,
+            "9": 1,
+            "10": 1,
+            "12": 1,
+            "16": 1,
+            "17": 2,
+            "18": 1,
+            "19": 4,
+            "20": 38
+          }
+        },
+        "12": {
+          "count": 200,
+          "matched": 50,
+          "match_rate": 0.25,
+          "matched_target_spacegroups": {
+            "8": 3,
+            "12": 7,
+            "6": 4,
+            "2": 9,
+            "1": 10,
+            "63": 3,
+            "38": 2,
+            "10": 4,
+            "17": 1,
+            "65": 1,
+            "31": 2,
+            "25": 2,
+            "20": 1,
+            "5": 1
+          },
+          "prefix_hits": {
+            "1": 40,
+            "5": 49,
+            "10": 50,
+            "20": 50
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 150,
+            "1": 2,
+            "5": 4,
+            "6": 2,
+            "8": 1,
+            "9": 3,
+            "10": 2,
+            "11": 2,
+            "12": 1,
+            "14": 1,
+            "15": 1,
+            "16": 1,
+            "17": 2,
+            "18": 1,
+            "19": 5,
+            "20": 22
+          }
+        },
+        "14": {
+          "count": 110,
+          "matched": 54,
+          "match_rate": 0.4909090909090909,
+          "matched_target_spacegroups": {
+            "8": 8,
+            "2": 5,
+            "44": 2,
+            "1": 12,
+            "11": 3,
+            "12": 8,
+            "38": 2,
+            "25": 1,
+            "10": 3,
+            "166": 1,
+            "6": 7,
+            "63": 1,
+            "5": 1
+          },
+          "prefix_hits": {
+            "1": 37,
+            "5": 47,
+            "10": 50,
+            "20": 54
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 56,
+            "1": 6,
+            "2": 2,
+            "3": 1,
+            "4": 3,
+            "5": 2,
+            "6": 3,
+            "7": 2,
+            "9": 3,
+            "14": 1,
+            "15": 3,
+            "16": 3,
+            "17": 6,
+            "18": 5,
+            "19": 6,
+            "20": 8
+          }
+        },
+        "16": {
+          "count": 84,
+          "matched": 44,
+          "match_rate": 0.5238095238095238,
+          "matched_target_spacegroups": {
+            "6": 4,
+            "8": 11,
+            "1": 16,
+            "12": 5,
+            "2": 2,
+            "3": 2,
+            "10": 1,
+            "42": 1,
+            "38": 1,
+            "74": 1
+          },
+          "prefix_hits": {
+            "1": 14,
+            "5": 36,
+            "10": 41,
+            "20": 44
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 40,
+            "1": 9,
+            "2": 2,
+            "3": 4,
+            "4": 3,
+            "5": 3,
+            "6": 1,
+            "7": 2,
+            "9": 1,
+            "10": 2,
+            "11": 2,
+            "12": 1,
+            "15": 3,
+            "16": 1,
+            "18": 4,
+            "19": 2,
+            "20": 4
+          }
+        },
+        "18": {
+          "count": 37,
+          "matched": 22,
+          "match_rate": 0.5945945945945946,
+          "matched_target_spacegroups": {
+            "1": 11,
+            "8": 4,
+            "6": 2,
+            "12": 3,
+            "2": 1,
+            "10": 1
+          },
+          "prefix_hits": {
+            "1": 11,
+            "5": 19,
+            "10": 21,
+            "20": 22
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 15,
+            "1": 1,
+            "3": 2,
+            "4": 2,
+            "5": 2,
+            "6": 2,
+            "7": 1,
+            "8": 2,
+            "9": 3,
+            "10": 1,
+            "11": 1,
+            "15": 1,
+            "18": 2,
+            "20": 2
+          }
+        },
+        "20": {
+          "count": 24,
+          "matched": 16,
+          "match_rate": 0.6666666666666666,
+          "matched_target_spacegroups": {
+            "1": 9,
+            "2": 1,
+            "8": 3,
+            "6": 3
+          },
+          "prefix_hits": {
+            "1": 8,
+            "5": 16,
+            "10": 16,
+            "20": 16
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 8,
+            "4": 1,
+            "5": 4,
+            "6": 2,
+            "7": 3,
+            "8": 1,
+            "11": 2,
+            "15": 1,
+            "16": 1,
+            "17": 1
+          }
+        },
+        "22": {
+          "count": 17,
+          "matched": 13,
+          "match_rate": 0.7647058823529411,
+          "matched_target_spacegroups": {
+            "8": 4,
+            "1": 8,
+            "6": 1
+          },
+          "prefix_hits": {
+            "1": 5,
+            "5": 10,
+            "10": 11,
+            "20": 13
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 4,
+            "1": 2,
+            "2": 3,
+            "3": 2,
+            "5": 1,
+            "13": 3,
+            "17": 1,
+            "18": 1
+          }
+        },
+        "24": {
+          "count": 10,
+          "matched": 8,
+          "match_rate": 0.8,
+          "matched_target_spacegroups": {
+            "1": 6,
+            "8": 2
+          },
+          "prefix_hits": {
+            "1": 3,
+            "5": 6,
+            "10": 6,
+            "20": 8
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 2,
+            "1": 2,
+            "6": 2,
+            "7": 1,
+            "12": 2,
+            "16": 1
+          }
+        }
+      },
+      "matched": 351,
+      "prefix_hits": {
+        "1": 236,
+        "5": 318,
+        "10": 333,
+        "20": 351
+      },
+      "targets_with_rms_below": {
+        "0.1": 0,
+        "0.2": 5,
+        "0.3": 63
+      }
+    },
+    "carbon24_standard_vae_codemdt_decoder_6_test": {
+      "count": 2030,
+      "by_n": {
+        "6": {
+          "count": 705,
+          "matched": 339,
+          "match_rate": 0.4808510638297872,
+          "matched_target_spacegroups": {
+            "12": 177,
+            "74": 5,
+            "178": 6,
+            "69": 20,
+            "2": 69,
+            "65": 5,
+            "71": 11,
+            "15": 17,
+            "63": 27,
+            "229": 2
+          },
+          "prefix_hits": {
+            "1": 174,
+            "5": 279,
+            "10": 312,
+            "20": 339
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 366,
+            "1": 47,
+            "2": 32,
+            "3": 19,
+            "4": 9,
+            "5": 6,
+            "6": 9,
+            "7": 8,
+            "8": 9,
+            "9": 10,
+            "10": 9,
+            "11": 7,
+            "12": 6,
+            "13": 15,
+            "14": 25,
+            "15": 18,
+            "16": 31,
+            "17": 36,
+            "18": 20,
+            "19": 17,
+            "20": 6
+          }
+        },
+        "8": {
+          "count": 526,
+          "matched": 312,
+          "match_rate": 0.5931558935361216,
+          "matched_target_spacegroups": {
+            "5": 12,
+            "65": 16,
+            "2": 54,
+            "12": 138,
+            "63": 11,
+            "69": 4,
+            "20": 4,
+            "14": 5,
+            "74": 12,
+            "15": 8,
+            "1": 13,
+            "140": 1,
+            "10": 19,
+            "44": 10,
+            "42": 1,
+            "8": 3,
+            "13": 1
+          },
+          "prefix_hits": {
+            "1": 106,
+            "5": 243,
+            "10": 290,
+            "20": 312
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 214,
+            "1": 23,
+            "2": 27,
+            "3": 28,
+            "4": 34,
+            "5": 26,
+            "6": 26,
+            "7": 29,
+            "8": 13,
+            "9": 20,
+            "10": 13,
+            "11": 9,
+            "12": 11,
+            "13": 8,
+            "14": 8,
+            "15": 7,
+            "16": 5,
+            "17": 4,
+            "18": 12,
+            "19": 6,
+            "20": 3
+          }
+        },
+        "10": {
+          "count": 317,
+          "matched": 245,
+          "match_rate": 0.7728706624605678,
+          "matched_target_spacegroups": {
+            "1": 22,
+            "2": 72,
+            "5": 13,
+            "12": 56,
+            "8": 15,
+            "11": 15,
+            "6": 12,
+            "65": 2,
+            "69": 1,
+            "10": 8,
+            "74": 4,
+            "44": 6,
+            "47": 1,
+            "24": 5,
+            "71": 3,
+            "38": 8,
+            "35": 1,
+            "25": 1
+          },
+          "prefix_hits": {
+            "1": 83,
+            "5": 166,
+            "10": 212,
+            "20": 245
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 72,
+            "1": 32,
+            "2": 26,
+            "3": 26,
+            "4": 24,
+            "5": 20,
+            "6": 15,
+            "7": 15,
+            "8": 10,
+            "9": 5,
+            "10": 7,
+            "11": 5,
+            "12": 7,
+            "13": 2,
+            "14": 8,
+            "15": 6,
+            "16": 8,
+            "17": 10,
+            "18": 3,
+            "19": 13,
+            "20": 3
+          }
+        },
+        "12": {
+          "count": 200,
+          "matched": 129,
+          "match_rate": 0.645,
+          "matched_target_spacegroups": {
+            "12": 28,
+            "1": 33,
+            "44": 1,
+            "2": 30,
+            "5": 5,
+            "122": 1,
+            "6": 10,
+            "11": 1,
+            "63": 1,
+            "38": 1,
+            "10": 4,
+            "74": 1,
+            "8": 8,
+            "65": 1,
+            "25": 1,
+            "31": 1,
+            "13": 1,
+            "148": 1
+          },
+          "prefix_hits": {
+            "1": 51,
+            "5": 103,
+            "10": 118,
+            "20": 129
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 71,
+            "1": 16,
+            "2": 10,
+            "3": 8,
+            "4": 14,
+            "5": 11,
+            "6": 6,
+            "7": 9,
+            "8": 3,
+            "9": 10,
+            "11": 4,
+            "12": 6,
+            "13": 4,
+            "14": 6,
+            "16": 9,
+            "17": 3,
+            "18": 4,
+            "19": 4,
+            "20": 2
+          }
+        },
+        "14": {
+          "count": 110,
+          "matched": 85,
+          "match_rate": 0.7727272727272727,
+          "matched_target_spacegroups": {
+            "2": 15,
+            "8": 11,
+            "44": 2,
+            "1": 28,
+            "11": 2,
+            "12": 12,
+            "5": 2,
+            "166": 1,
+            "10": 1,
+            "6": 10,
+            "63": 1
+          },
+          "prefix_hits": {
+            "1": 21,
+            "5": 58,
+            "10": 76,
+            "20": 85
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 25,
+            "1": 14,
+            "2": 11,
+            "3": 6,
+            "4": 6,
+            "5": 9,
+            "6": 4,
+            "7": 3,
+            "8": 4,
+            "9": 3,
+            "10": 1,
+            "11": 3,
+            "12": 3,
+            "13": 2,
+            "14": 8,
+            "15": 4,
+            "16": 1,
+            "17": 1,
+            "18": 2
+          }
+        },
+        "16": {
+          "count": 84,
+          "matched": 55,
+          "match_rate": 0.6547619047619048,
+          "matched_target_spacegroups": {
+            "6": 3,
+            "2": 6,
+            "1": 27,
+            "12": 8,
+            "8": 8,
+            "11": 1,
+            "10": 1,
+            "74": 1
+          },
+          "prefix_hits": {
+            "1": 16,
+            "5": 41,
+            "10": 49,
+            "20": 55
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 29,
+            "1": 9,
+            "2": 6,
+            "3": 5,
+            "4": 4,
+            "5": 4,
+            "6": 4,
+            "7": 5,
+            "9": 5,
+            "10": 2,
+            "12": 4,
+            "14": 3,
+            "16": 2,
+            "18": 2
+          }
+        },
+        "18": {
+          "count": 37,
+          "matched": 22,
+          "match_rate": 0.5945945945945946,
+          "matched_target_spacegroups": {
+            "1": 13,
+            "8": 3,
+            "12": 3,
+            "2": 2,
+            "6": 1
+          },
+          "prefix_hits": {
+            "1": 7,
+            "5": 14,
+            "10": 15,
+            "20": 22
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 15,
+            "1": 4,
+            "2": 5,
+            "3": 3,
+            "5": 1,
+            "6": 1,
+            "7": 1,
+            "9": 3,
+            "11": 1,
+            "12": 1,
+            "14": 2
+          }
+        },
+        "20": {
+          "count": 24,
+          "matched": 7,
+          "match_rate": 0.2916666666666667,
+          "matched_target_spacegroups": {
+            "1": 6,
+            "2": 1
+          },
+          "prefix_hits": {
+            "1": 0,
+            "5": 1,
+            "10": 3,
+            "20": 7
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 17,
+            "1": 4,
+            "2": 3
+          }
+        },
+        "22": {
+          "count": 17,
+          "matched": 2,
+          "match_rate": 0.11764705882352941,
+          "matched_target_spacegroups": {
+            "1": 1,
+            "2": 1
+          },
+          "prefix_hits": {
+            "1": 0,
+            "5": 1,
+            "10": 2,
+            "20": 2
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 15,
+            "1": 1,
+            "2": 1
+          }
+        },
+        "24": {
+          "count": 10,
+          "matched": 0,
+          "match_rate": 0.0,
+          "matched_target_spacegroups": {},
+          "prefix_hits": {
+            "1": 0,
+            "5": 0,
+            "10": 0,
+            "20": 0
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 10
+          }
+        }
+      },
+      "matched": 1196,
+      "prefix_hits": {
+        "1": 458,
+        "5": 906,
+        "10": 1077,
+        "20": 1196
+      },
+      "targets_with_rms_below": {
+        "0.1": 0,
+        "0.2": 3,
+        "0.3": 127
+      }
+    },
+    "carbon24_standard_vae_codemdt_test": {
+      "count": 2030,
+      "by_n": {
+        "6": {
+          "count": 705,
+          "matched": 333,
+          "match_rate": 0.4723404255319149,
+          "matched_target_spacegroups": {
+            "12": 174,
+            "74": 4,
+            "178": 5,
+            "2": 69,
+            "65": 4,
+            "71": 11,
+            "15": 17,
+            "63": 25,
+            "69": 18,
+            "229": 2,
+            "179": 3,
+            "194": 1
+          },
+          "prefix_hits": {
+            "1": 176,
+            "5": 274,
+            "10": 302,
+            "20": 333
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 372,
+            "1": 50,
+            "2": 19,
+            "3": 15,
+            "4": 11,
+            "5": 14,
+            "6": 6,
+            "7": 10,
+            "8": 9,
+            "9": 8,
+            "10": 6,
+            "11": 7,
+            "12": 6,
+            "13": 7,
+            "14": 20,
+            "15": 24,
+            "16": 28,
+            "17": 32,
+            "18": 24,
+            "19": 19,
+            "20": 18
+          }
+        },
+        "8": {
+          "count": 526,
+          "matched": 310,
+          "match_rate": 0.5893536121673004,
+          "matched_target_spacegroups": {
+            "5": 12,
+            "65": 16,
+            "2": 56,
+            "12": 135,
+            "63": 10,
+            "69": 4,
+            "20": 4,
+            "14": 5,
+            "15": 9,
+            "1": 14,
+            "140": 1,
+            "10": 19,
+            "44": 10,
+            "42": 1,
+            "74": 11,
+            "13": 1,
+            "8": 2
+          },
+          "prefix_hits": {
+            "1": 120,
+            "5": 242,
+            "10": 285,
+            "20": 310
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 216,
+            "1": 16,
+            "2": 36,
+            "3": 17,
+            "4": 30,
+            "5": 27,
+            "6": 28,
+            "7": 20,
+            "8": 23,
+            "9": 15,
+            "10": 21,
+            "11": 9,
+            "12": 8,
+            "13": 13,
+            "14": 11,
+            "15": 3,
+            "16": 6,
+            "17": 5,
+            "18": 12,
+            "19": 8,
+            "20": 2
+          }
+        },
+        "10": {
+          "count": 317,
+          "matched": 249,
+          "match_rate": 0.7854889589905363,
+          "matched_target_spacegroups": {
+            "1": 24,
+            "2": 72,
+            "5": 13,
+            "12": 58,
+            "8": 16,
+            "11": 15,
+            "6": 11,
+            "65": 2,
+            "10": 9,
+            "74": 4,
+            "44": 6,
+            "24": 5,
+            "71": 3,
+            "25": 2,
+            "35": 1,
+            "38": 8
+          },
+          "prefix_hits": {
+            "1": 88,
+            "5": 191,
+            "10": 229,
+            "20": 249
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 68,
+            "1": 23,
+            "2": 22,
+            "3": 23,
+            "4": 19,
+            "5": 25,
+            "6": 23,
+            "7": 14,
+            "8": 16,
+            "9": 9,
+            "10": 7,
+            "11": 9,
+            "12": 6,
+            "13": 11,
+            "14": 7,
+            "15": 7,
+            "16": 8,
+            "17": 7,
+            "18": 7,
+            "19": 5,
+            "20": 1
+          }
+        },
+        "12": {
+          "count": 200,
+          "matched": 135,
+          "match_rate": 0.675,
+          "matched_target_spacegroups": {
+            "1": 36,
+            "8": 10,
+            "12": 27,
+            "44": 1,
+            "2": 29,
+            "5": 5,
+            "122": 1,
+            "7": 1,
+            "6": 10,
+            "11": 1,
+            "38": 1,
+            "10": 3,
+            "74": 1,
+            "17": 1,
+            "36": 1,
+            "65": 1,
+            "63": 2,
+            "25": 1,
+            "31": 1,
+            "13": 1,
+            "148": 1
+          },
+          "prefix_hits": {
+            "1": 47,
+            "5": 102,
+            "10": 122,
+            "20": 135
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 65,
+            "1": 16,
+            "2": 13,
+            "3": 8,
+            "4": 8,
+            "5": 15,
+            "6": 9,
+            "7": 9,
+            "8": 8,
+            "9": 5,
+            "10": 5,
+            "11": 6,
+            "12": 5,
+            "13": 4,
+            "14": 4,
+            "15": 6,
+            "16": 4,
+            "17": 4,
+            "18": 5,
+            "19": 1
+          }
+        },
+        "14": {
+          "count": 110,
+          "matched": 87,
+          "match_rate": 0.7909090909090909,
+          "matched_target_spacegroups": {
+            "2": 13,
+            "8": 11,
+            "44": 2,
+            "1": 29,
+            "11": 3,
+            "12": 13,
+            "38": 2,
+            "5": 2,
+            "10": 2,
+            "166": 1,
+            "6": 8,
+            "63": 1
+          },
+          "prefix_hits": {
+            "1": 26,
+            "5": 63,
+            "10": 78,
+            "20": 87
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 23,
+            "1": 14,
+            "2": 12,
+            "3": 11,
+            "4": 9,
+            "5": 11,
+            "6": 4,
+            "7": 4,
+            "8": 3,
+            "9": 4,
+            "10": 1,
+            "11": 5,
+            "12": 1,
+            "13": 2,
+            "14": 1,
+            "15": 4,
+            "17": 1
+          }
+        },
+        "16": {
+          "count": 84,
+          "matched": 55,
+          "match_rate": 0.6547619047619048,
+          "matched_target_spacegroups": {
+            "6": 3,
+            "8": 8,
+            "2": 6,
+            "1": 26,
+            "12": 8,
+            "11": 1,
+            "10": 1,
+            "42": 1,
+            "74": 1
+          },
+          "prefix_hits": {
+            "1": 14,
+            "5": 34,
+            "10": 47,
+            "20": 55
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 29,
+            "1": 10,
+            "2": 9,
+            "3": 7,
+            "4": 8,
+            "5": 5,
+            "6": 2,
+            "7": 2,
+            "8": 5,
+            "9": 1,
+            "10": 2,
+            "12": 1,
+            "13": 1,
+            "16": 1,
+            "18": 1
+          }
+        },
+        "18": {
+          "count": 37,
+          "matched": 20,
+          "match_rate": 0.5405405405405406,
+          "matched_target_spacegroups": {
+            "1": 11,
+            "8": 3,
+            "2": 3,
+            "12": 2,
+            "6": 1
+          },
+          "prefix_hits": {
+            "1": 2,
+            "5": 14,
+            "10": 20,
+            "20": 20
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 17,
+            "1": 4,
+            "2": 5,
+            "3": 1,
+            "4": 2,
+            "5": 1,
+            "6": 2,
+            "7": 3,
+            "9": 1,
+            "13": 1
+          }
+        },
+        "20": {
+          "count": 24,
+          "matched": 10,
+          "match_rate": 0.4166666666666667,
+          "matched_target_spacegroups": {
+            "1": 7,
+            "2": 1,
+            "8": 1,
+            "6": 1
+          },
+          "prefix_hits": {
+            "1": 1,
+            "5": 5,
+            "10": 6,
+            "20": 10
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 14,
+            "1": 4,
+            "2": 2,
+            "3": 2,
+            "5": 1,
+            "10": 1
+          }
+        },
+        "22": {
+          "count": 17,
+          "matched": 3,
+          "match_rate": 0.17647058823529413,
+          "matched_target_spacegroups": {
+            "1": 1,
+            "6": 1,
+            "2": 1
+          },
+          "prefix_hits": {
+            "1": 0,
+            "5": 2,
+            "10": 2,
+            "20": 3
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 14,
+            "1": 1,
+            "2": 2
+          }
+        },
+        "24": {
+          "count": 10,
+          "matched": 1,
+          "match_rate": 0.1,
+          "matched_target_spacegroups": {
+            "8": 1
+          },
+          "prefix_hits": {
+            "1": 0,
+            "5": 0,
+            "10": 1,
+            "20": 1
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 9,
+            "1": 1
+          }
+        }
+      },
+      "matched": 1203,
+      "prefix_hits": {
+        "1": 474,
+        "5": 927,
+        "10": 1092,
+        "20": 1203
+      },
+      "targets_with_rms_below": {
+        "0.1": 0,
+        "0.2": 0,
+        "0.3": 91
+      }
+    },
+    "carbon24_standard_vae_standard_dit_test": {
+      "count": 2030,
+      "by_n": {
+        "6": {
+          "count": 705,
+          "matched": 343,
+          "match_rate": 0.48652482269503544,
+          "matched_target_spacegroups": {
+            "12": 187,
+            "74": 5,
+            "178": 2,
+            "69": 17,
+            "2": 69,
+            "65": 5,
+            "71": 11,
+            "15": 17,
+            "63": 25,
+            "229": 2,
+            "179": 2,
+            "194": 1
+          },
+          "prefix_hits": {
+            "1": 183,
+            "5": 277,
+            "10": 311,
+            "20": 343
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 362,
+            "1": 44,
+            "2": 26,
+            "3": 20,
+            "4": 16,
+            "5": 13,
+            "6": 6,
+            "7": 15,
+            "8": 7,
+            "9": 7,
+            "10": 8,
+            "11": 3,
+            "12": 8,
+            "13": 10,
+            "14": 17,
+            "15": 23,
+            "16": 30,
+            "17": 35,
+            "18": 25,
+            "19": 21,
+            "20": 9
+          }
+        },
+        "8": {
+          "count": 526,
+          "matched": 311,
+          "match_rate": 0.591254752851711,
+          "matched_target_spacegroups": {
+            "5": 12,
+            "65": 17,
+            "2": 58,
+            "12": 135,
+            "63": 11,
+            "20": 4,
+            "14": 5,
+            "15": 8,
+            "1": 11,
+            "140": 1,
+            "10": 19,
+            "69": 3,
+            "44": 10,
+            "42": 1,
+            "74": 11,
+            "8": 3,
+            "13": 1,
+            "25": 1
+          },
+          "prefix_hits": {
+            "1": 123,
+            "5": 265,
+            "10": 298,
+            "20": 311
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 215,
+            "1": 14,
+            "2": 17,
+            "3": 27,
+            "4": 38,
+            "5": 26,
+            "6": 29,
+            "7": 23,
+            "8": 17,
+            "9": 21,
+            "10": 16,
+            "11": 16,
+            "12": 13,
+            "13": 9,
+            "14": 6,
+            "15": 7,
+            "16": 3,
+            "17": 10,
+            "18": 6,
+            "19": 7,
+            "20": 6
+          }
+        },
+        "10": {
+          "count": 317,
+          "matched": 246,
+          "match_rate": 0.7760252365930599,
+          "matched_target_spacegroups": {
+            "1": 21,
+            "2": 73,
+            "5": 13,
+            "12": 56,
+            "8": 14,
+            "25": 1,
+            "11": 17,
+            "6": 12,
+            "65": 2,
+            "69": 1,
+            "10": 9,
+            "74": 4,
+            "44": 6,
+            "24": 5,
+            "71": 3,
+            "38": 8,
+            "42": 1
+          },
+          "prefix_hits": {
+            "1": 87,
+            "5": 196,
+            "10": 230,
+            "20": 246
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 71,
+            "1": 29,
+            "2": 20,
+            "3": 24,
+            "4": 17,
+            "5": 18,
+            "6": 20,
+            "7": 26,
+            "8": 9,
+            "9": 12,
+            "10": 5,
+            "11": 9,
+            "12": 5,
+            "13": 5,
+            "14": 10,
+            "15": 9,
+            "16": 5,
+            "17": 7,
+            "18": 9,
+            "19": 6,
+            "20": 1
+          }
+        },
+        "12": {
+          "count": 200,
+          "matched": 140,
+          "match_rate": 0.7,
+          "matched_target_spacegroups": {
+            "1": 35,
+            "8": 10,
+            "12": 29,
+            "44": 1,
+            "2": 32,
+            "5": 5,
+            "122": 1,
+            "7": 1,
+            "6": 10,
+            "11": 1,
+            "63": 2,
+            "38": 2,
+            "10": 4,
+            "74": 1,
+            "36": 1,
+            "65": 1,
+            "31": 1,
+            "25": 1,
+            "20": 1,
+            "13": 1
+          },
+          "prefix_hits": {
+            "1": 50,
+            "5": 108,
+            "10": 121,
+            "20": 140
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 60,
+            "1": 24,
+            "2": 11,
+            "3": 12,
+            "4": 7,
+            "5": 11,
+            "6": 8,
+            "7": 9,
+            "8": 7,
+            "9": 6,
+            "10": 4,
+            "11": 2,
+            "12": 4,
+            "13": 7,
+            "14": 6,
+            "15": 2,
+            "16": 3,
+            "17": 6,
+            "18": 5,
+            "19": 2,
+            "20": 4
+          }
+        },
+        "14": {
+          "count": 110,
+          "matched": 85,
+          "match_rate": 0.7727272727272727,
+          "matched_target_spacegroups": {
+            "8": 12,
+            "2": 13,
+            "44": 2,
+            "1": 28,
+            "11": 3,
+            "12": 12,
+            "38": 1,
+            "5": 2,
+            "166": 1,
+            "6": 10,
+            "63": 1
+          },
+          "prefix_hits": {
+            "1": 30,
+            "5": 72,
+            "10": 82,
+            "20": 85
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 25,
+            "1": 4,
+            "2": 13,
+            "3": 11,
+            "4": 3,
+            "5": 7,
+            "6": 7,
+            "7": 5,
+            "9": 11,
+            "10": 3,
+            "11": 2,
+            "12": 3,
+            "14": 6,
+            "15": 7,
+            "16": 3
+          }
+        },
+        "16": {
+          "count": 84,
+          "matched": 55,
+          "match_rate": 0.6547619047619048,
+          "matched_target_spacegroups": {
+            "2": 6,
+            "1": 28,
+            "12": 9,
+            "8": 7,
+            "11": 1,
+            "6": 1,
+            "10": 1,
+            "42": 1,
+            "74": 1
+          },
+          "prefix_hits": {
+            "1": 18,
+            "5": 38,
+            "10": 49,
+            "20": 55
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 29,
+            "1": 10,
+            "2": 8,
+            "3": 4,
+            "4": 4,
+            "5": 3,
+            "6": 4,
+            "7": 5,
+            "8": 2,
+            "9": 4,
+            "10": 2,
+            "11": 2,
+            "13": 2,
+            "14": 1,
+            "16": 1,
+            "18": 1,
+            "19": 2
+          }
+        },
+        "18": {
+          "count": 37,
+          "matched": 23,
+          "match_rate": 0.6216216216216216,
+          "matched_target_spacegroups": {
+            "1": 13,
+            "8": 3,
+            "2": 3,
+            "12": 3,
+            "6": 1
+          },
+          "prefix_hits": {
+            "1": 6,
+            "5": 15,
+            "10": 21,
+            "20": 23
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 14,
+            "1": 6,
+            "2": 3,
+            "3": 1,
+            "4": 4,
+            "6": 1,
+            "7": 2,
+            "8": 2,
+            "10": 3,
+            "13": 1
+          }
+        },
+        "20": {
+          "count": 24,
+          "matched": 14,
+          "match_rate": 0.5833333333333334,
+          "matched_target_spacegroups": {
+            "1": 9,
+            "2": 2,
+            "8": 2,
+            "6": 1
+          },
+          "prefix_hits": {
+            "1": 1,
+            "5": 6,
+            "10": 10,
+            "20": 14
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 10,
+            "1": 5,
+            "2": 1,
+            "3": 3,
+            "4": 2,
+            "5": 1,
+            "6": 1,
+            "7": 1
+          }
+        },
+        "22": {
+          "count": 17,
+          "matched": 1,
+          "match_rate": 0.058823529411764705,
+          "matched_target_spacegroups": {
+            "2": 1
+          },
+          "prefix_hits": {
+            "1": 0,
+            "5": 0,
+            "10": 1,
+            "20": 1
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 16,
+            "2": 1
+          }
+        },
+        "24": {
+          "count": 10,
+          "matched": 0,
+          "match_rate": 0.0,
+          "matched_target_spacegroups": {},
+          "prefix_hits": {
+            "1": 0,
+            "5": 0,
+            "10": 0,
+            "20": 0
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 10
+          }
+        }
+      },
+      "matched": 1218,
+      "prefix_hits": {
+        "1": 498,
+        "5": 977,
+        "10": 1123,
+        "20": 1218
+      },
+      "targets_with_rms_below": {
+        "0.1": 0,
+        "0.2": 5,
+        "0.3": 155
+      }
+    },
+    "carbon24_standard_vae_test_reconstruction": {
+      "count": 2030,
+      "by_n": {
+        "6": {
+          "count": 705,
+          "matched": 246,
+          "match_rate": 0.34893617021276596,
+          "matched_target_spacegroups": {
+            "12": 127,
+            "74": 3,
+            "2": 60,
+            "65": 4,
+            "71": 11,
+            "15": 11,
+            "69": 4,
+            "229": 2,
+            "179": 4,
+            "63": 7,
+            "227": 3,
+            "166": 6,
+            "178": 3,
+            "5": 1
+          },
+          "prefix_hits": {
+            "1": 211,
+            "5": 233,
+            "10": 238,
+            "20": 246
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 459,
+            "1": 10,
+            "2": 5,
+            "3": 2,
+            "4": 4,
+            "5": 2,
+            "6": 1,
+            "7": 4,
+            "8": 5,
+            "9": 3,
+            "11": 1,
+            "12": 2,
+            "13": 3,
+            "14": 1,
+            "15": 2,
+            "16": 3,
+            "17": 5,
+            "18": 2,
+            "19": 8,
+            "20": 183
+          }
+        },
+        "8": {
+          "count": 526,
+          "matched": 195,
+          "match_rate": 0.37072243346007605,
+          "matched_target_spacegroups": {
+            "65": 10,
+            "2": 30,
+            "12": 79,
+            "63": 9,
+            "166": 7,
+            "5": 5,
+            "15": 8,
+            "14": 4,
+            "140": 1,
+            "194": 5,
+            "11": 2,
+            "227": 4,
+            "42": 1,
+            "74": 8,
+            "1": 6,
+            "10": 6,
+            "44": 4,
+            "139": 1,
+            "69": 1,
+            "8": 3,
+            "20": 1
+          },
+          "prefix_hits": {
+            "1": 156,
+            "5": 182,
+            "10": 189,
+            "20": 195
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 331,
+            "1": 13,
+            "2": 5,
+            "3": 3,
+            "4": 6,
+            "5": 3,
+            "6": 1,
+            "7": 3,
+            "8": 3,
+            "9": 2,
+            "10": 2,
+            "12": 1,
+            "13": 2,
+            "14": 4,
+            "15": 3,
+            "16": 1,
+            "17": 3,
+            "18": 2,
+            "19": 5,
+            "20": 133
+          }
+        },
+        "10": {
+          "count": 317,
+          "matched": 100,
+          "match_rate": 0.31545741324921134,
+          "matched_target_spacegroups": {
+            "1": 10,
+            "12": 26,
+            "2": 28,
+            "6": 8,
+            "69": 1,
+            "10": 3,
+            "11": 5,
+            "44": 6,
+            "71": 1,
+            "8": 7,
+            "5": 3,
+            "74": 1,
+            "65": 1
+          },
+          "prefix_hits": {
+            "1": 89,
+            "5": 94,
+            "10": 98,
+            "20": 100
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 217,
+            "1": 4,
+            "2": 3,
+            "4": 2,
+            "5": 2,
+            "7": 1,
+            "10": 2,
+            "13": 1,
+            "16": 1,
+            "17": 1,
+            "18": 4,
+            "20": 79
+          }
+        },
+        "12": {
+          "count": 200,
+          "matched": 73,
+          "match_rate": 0.365,
+          "matched_target_spacegroups": {
+            "1": 17,
+            "44": 1,
+            "6": 5,
+            "2": 23,
+            "12": 11,
+            "8": 8,
+            "7": 1,
+            "11": 1,
+            "74": 1,
+            "10": 3,
+            "5": 1,
+            "148": 1
+          },
+          "prefix_hits": {
+            "1": 57,
+            "5": 65,
+            "10": 69,
+            "20": 73
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 127,
+            "1": 3,
+            "2": 4,
+            "3": 1,
+            "6": 2,
+            "8": 2,
+            "9": 3,
+            "10": 1,
+            "12": 1,
+            "13": 1,
+            "14": 1,
+            "18": 1,
+            "19": 3,
+            "20": 50
+          }
+        },
+        "14": {
+          "count": 110,
+          "matched": 43,
+          "match_rate": 0.39090909090909093,
+          "matched_target_spacegroups": {
+            "8": 7,
+            "2": 9,
+            "1": 14,
+            "6": 4,
+            "10": 1,
+            "12": 6,
+            "11": 1,
+            "5": 1
+          },
+          "prefix_hits": {
+            "1": 38,
+            "5": 39,
+            "10": 42,
+            "20": 43
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 67,
+            "1": 4,
+            "3": 1,
+            "7": 1,
+            "10": 1,
+            "14": 1,
+            "17": 1,
+            "18": 1,
+            "19": 1,
+            "20": 32
+          }
+        },
+        "16": {
+          "count": 84,
+          "matched": 28,
+          "match_rate": 0.3333333333333333,
+          "matched_target_spacegroups": {
+            "6": 4,
+            "1": 13,
+            "12": 2,
+            "2": 3,
+            "8": 3,
+            "11": 1,
+            "3": 2
+          },
+          "prefix_hits": {
+            "1": 22,
+            "5": 27,
+            "10": 28,
+            "20": 28
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 56,
+            "1": 1,
+            "3": 2,
+            "5": 1,
+            "8": 1,
+            "11": 1,
+            "16": 1,
+            "19": 1,
+            "20": 20
+          }
+        },
+        "18": {
+          "count": 37,
+          "matched": 7,
+          "match_rate": 0.1891891891891892,
+          "matched_target_spacegroups": {
+            "6": 2,
+            "12": 1,
+            "1": 3,
+            "2": 1
+          },
+          "prefix_hits": {
+            "1": 6,
+            "5": 6,
+            "10": 7,
+            "20": 7
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 30,
+            "4": 1,
+            "5": 1,
+            "16": 2,
+            "20": 3
+          }
+        },
+        "20": {
+          "count": 24,
+          "matched": 6,
+          "match_rate": 0.25,
+          "matched_target_spacegroups": {
+            "1": 5,
+            "2": 1
+          },
+          "prefix_hits": {
+            "1": 6,
+            "5": 6,
+            "10": 6,
+            "20": 6
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 18,
+            "20": 6
+          }
+        },
+        "22": {
+          "count": 17,
+          "matched": 3,
+          "match_rate": 0.17647058823529413,
+          "matched_target_spacegroups": {
+            "8": 1,
+            "1": 1,
+            "6": 1
+          },
+          "prefix_hits": {
+            "1": 2,
+            "5": 2,
+            "10": 2,
+            "20": 3
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 14,
+            "1": 1,
+            "20": 2
+          }
+        },
+        "24": {
+          "count": 10,
+          "matched": 1,
+          "match_rate": 0.1,
+          "matched_target_spacegroups": {
+            "1": 1
+          },
+          "prefix_hits": {
+            "1": 1,
+            "5": 1,
+            "10": 1,
+            "20": 1
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 9,
+            "20": 1
+          }
+        }
+      },
+      "matched": 702
+    },
+    "carbon24_test": {
+      "count": 2030,
+      "by_n": {
+        "6": {
+          "count": 705,
+          "matched": 61,
+          "match_rate": 0.08652482269503546,
+          "matched_target_spacegroups": {
+            "51": 22,
+            "63": 39
+          },
+          "prefix_hits": {
+            "1": 61,
+            "5": 61,
+            "10": 61,
+            "20": 61
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 644,
+            "20": 61
+          }
+        },
+        "8": {
+          "count": 526,
+          "matched": 23,
+          "match_rate": 0.043726235741444866,
+          "matched_target_spacegroups": {
+            "20": 3,
+            "25": 7,
+            "2": 7,
+            "12": 3,
+            "10": 1,
+            "13": 1,
+            "5": 1
+          },
+          "prefix_hits": {
+            "1": 14,
+            "5": 20,
+            "10": 20,
+            "20": 23
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 503,
+            "1": 5,
+            "7": 1,
+            "8": 1,
+            "10": 1,
+            "12": 1,
+            "14": 1,
+            "17": 1,
+            "19": 2,
+            "20": 10
+          }
+        },
+        "10": {
+          "count": 317,
+          "matched": 64,
+          "match_rate": 0.20189274447949526,
+          "matched_target_spacegroups": {
+            "25": 9,
+            "12": 8,
+            "6": 9,
+            "74": 4,
+            "10": 8,
+            "2": 7,
+            "47": 3,
+            "35": 3,
+            "1": 8,
+            "8": 1,
+            "11": 3,
+            "38": 1
+          },
+          "prefix_hits": {
+            "1": 48,
+            "5": 53,
+            "10": 57,
+            "20": 64
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 253,
+            "1": 8,
+            "2": 2,
+            "3": 1,
+            "4": 1,
+            "9": 3,
+            "11": 1,
+            "12": 2,
+            "14": 1,
+            "17": 2,
+            "18": 5,
+            "19": 8,
+            "20": 30
+          }
+        },
+        "12": {
+          "count": 200,
+          "matched": 49,
+          "match_rate": 0.245,
+          "matched_target_spacegroups": {
+            "8": 3,
+            "12": 7,
+            "6": 3,
+            "2": 9,
+            "11": 1,
+            "1": 9,
+            "63": 3,
+            "38": 2,
+            "10": 4,
+            "17": 1,
+            "65": 1,
+            "31": 2,
+            "25": 2,
+            "20": 1,
+            "5": 1
+          },
+          "prefix_hits": {
+            "1": 35,
+            "5": 46,
+            "10": 48,
+            "20": 49
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 151,
+            "1": 2,
+            "2": 2,
+            "5": 2,
+            "6": 1,
+            "8": 3,
+            "9": 1,
+            "10": 3,
+            "11": 1,
+            "12": 1,
+            "14": 2,
+            "15": 1,
+            "16": 1,
+            "17": 1,
+            "18": 4,
+            "19": 7,
+            "20": 17
+          }
+        },
+        "14": {
+          "count": 110,
+          "matched": 45,
+          "match_rate": 0.4090909090909091,
+          "matched_target_spacegroups": {
+            "8": 7,
+            "44": 2,
+            "1": 10,
+            "11": 2,
+            "12": 5,
+            "38": 2,
+            "25": 1,
+            "2": 3,
+            "10": 3,
+            "166": 1,
+            "6": 7,
+            "63": 1,
+            "5": 1
+          },
+          "prefix_hits": {
+            "1": 28,
+            "5": 37,
+            "10": 43,
+            "20": 45
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 65,
+            "1": 2,
+            "2": 3,
+            "3": 5,
+            "5": 1,
+            "6": 1,
+            "7": 3,
+            "9": 1,
+            "10": 2,
+            "11": 2,
+            "12": 1,
+            "13": 3,
+            "14": 1,
+            "16": 3,
+            "17": 3,
+            "18": 7,
+            "19": 2,
+            "20": 5
+          }
+        },
+        "16": {
+          "count": 84,
+          "matched": 28,
+          "match_rate": 0.3333333333333333,
+          "matched_target_spacegroups": {
+            "8": 4,
+            "12": 3,
+            "1": 14,
+            "6": 2,
+            "3": 2,
+            "10": 1,
+            "38": 1,
+            "74": 1
+          },
+          "prefix_hits": {
+            "1": 16,
+            "5": 26,
+            "10": 28,
+            "20": 28
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 56,
+            "1": 2,
+            "2": 2,
+            "4": 2,
+            "5": 3,
+            "6": 1,
+            "8": 2,
+            "9": 1,
+            "10": 1,
+            "11": 2,
+            "13": 1,
+            "14": 2,
+            "15": 2,
+            "18": 5,
+            "20": 2
+          }
+        },
+        "18": {
+          "count": 37,
+          "matched": 17,
+          "match_rate": 0.4594594594594595,
+          "matched_target_spacegroups": {
+            "8": 3,
+            "6": 3,
+            "12": 3,
+            "1": 7,
+            "10": 1
+          },
+          "prefix_hits": {
+            "1": 7,
+            "5": 15,
+            "10": 16,
+            "20": 17
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 20,
+            "1": 3,
+            "3": 1,
+            "4": 1,
+            "5": 1,
+            "6": 2,
+            "8": 2,
+            "9": 1,
+            "10": 1,
+            "14": 1,
+            "17": 2,
+            "18": 1,
+            "19": 1
+          }
+        },
+        "20": {
+          "count": 24,
+          "matched": 15,
+          "match_rate": 0.625,
+          "matched_target_spacegroups": {
+            "1": 9,
+            "2": 1,
+            "8": 3,
+            "6": 2
+          },
+          "prefix_hits": {
+            "1": 6,
+            "5": 8,
+            "10": 12,
+            "20": 15
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 9,
+            "1": 4,
+            "2": 1,
+            "3": 4,
+            "5": 2,
+            "11": 1,
+            "12": 1,
+            "15": 2
+          }
+        },
+        "22": {
+          "count": 17,
+          "matched": 12,
+          "match_rate": 0.7058823529411765,
+          "matched_target_spacegroups": {
+            "8": 4,
+            "1": 7,
+            "6": 1
+          },
+          "prefix_hits": {
+            "1": 1,
+            "5": 6,
+            "10": 8,
+            "20": 12
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 5,
+            "1": 4,
+            "2": 1,
+            "3": 3,
+            "5": 1,
+            "6": 3
+          }
+        },
+        "24": {
+          "count": 10,
+          "matched": 7,
+          "match_rate": 0.7,
+          "matched_target_spacegroups": {
+            "1": 5,
+            "8": 2
+          },
+          "prefix_hits": {
+            "1": 1,
+            "5": 2,
+            "10": 6,
+            "20": 7
+          },
+          "matching_candidates_per_target_histogram": {
+            "0": 3,
+            "1": 4,
+            "2": 1,
+            "3": 2
+          }
+        }
+      },
+      "matched": 321,
+      "prefix_hits": {
+        "1": 217,
+        "5": 274,
+        "10": 299,
+        "20": 321
+      },
+      "targets_with_rms_below": {
+        "0.1": 0,
+        "0.2": 0,
+        "0.3": 43
+      }
+    }
+  },
+  "hilo_c6_shared_targets": {
+    "models": 6,
+    "intersection": 61,
+    "union": 66
+  }
+}
