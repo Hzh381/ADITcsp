@@ -102,6 +102,27 @@ python src/train_csp.py `
   --output-dir runs/smoke_diversedit
 ```
 
+OT coupling 和 Terminal MMD 也可独立进行单 batch 冒烟测试：
+
+```powershell
+python src/train_csp.py `
+  --dataset carbon_24 `
+  --stage dit `
+  --denoiser dit `
+  --dit-layers 4 `
+  --vae-ckpt runs/smoke_vae/checkpoints/last.ckpt `
+  --ot-coupling `
+  --mmd-alignment `
+  --mmd-weight 0.05 `
+  --mmd-every 1 `
+  --mmd-steps 2 `
+  --mmd-batch-size 2 `
+  --epochs 1 `
+  --limit-batches 1 `
+  --batch-size 2 `
+  --output-dir runs/smoke_pa_otfm
+```
+
 运行一个测试目标和一次候选采样：
 
 ```powershell
@@ -147,6 +168,8 @@ python -m py_compile `
   src/models/encoders/transformer.py `
   src/models/decoders/transformer.py `
   src/models/components/hiloattention.py `
+  src/models/components/ot_coupling.py `
+  src/models/components/posterior_mmd.py `
   src/models/denoisers/code_mdt.py `
   src/models/denoisers/diverse_dit.py
 
@@ -155,6 +178,8 @@ python -B -c "import runpy; ns=runpy.run_path('tests/test_integrated_models.py')
 python -B CoDeMDT/test_code_mdt.py
 
 python -B tests/test_diverse_dit.py
+
+python -B tests/test_posterior_alignment.py
 ```
 
 `adit` 环境未安装 pytest，因此集成测试文件也支持上述 `runpy` 直接执行。

@@ -1,6 +1,44 @@
-# 训练输出与大型 checkpoint，不提交到仓库
+# 训练输出与大型权重，不提交到仓库
 /runs/
+*.ckpt
+*.safetensors
 
-# 根目录下的模型权重
-/dit-epoch=219.ckpt
-/vae-epoch=249-v1.ckpt
+# Python 字节码缓存
+__pycache__/
+*.py[cod]
+*$py.class
+
+# 打包 / 构建产物
+build/
+dist/
+*.egg-info/
+
+# 测试与静态检查缓存
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+coverage.xml
+htmlcov/
+.hypothesis/
+
+# Jupyter 检查点
+.ipynb_checkpoints/
+
+# 训练日志与实验追踪
+*.log
+lightning_logs/
+wandb/
+mlruns/
+
+# 虚拟环境
+.venv/
+venv/
+env/
+
+# 编辑器与系统文件
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+desktop.ini

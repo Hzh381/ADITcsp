@@ -9,6 +9,8 @@
 - 数据集：`carbon_24`、`mp_20`、`mpts_52`、`perov_5`。
 - 模型：HiLo 注意力编码的成分条件 VAE + 潜空间流匹配。第二阶段支持
   CoDeMDT、原始 DiT 和 DiverseDiT。
+- 可选 PA-OTFM 训练模块：Minibatch OT coupling 与 Terminal posterior-MMD。
+  两者独立开关，不增加网络参数。
 - 输入：100 维元素计数向量。
 - 输出：候选晶体结构、有效候选的 CIF 文件和 CSP 评价指标。
 
@@ -86,6 +88,8 @@ src/
     vae_module.py               成分条件 VAE
     ldm_module.py               潜空间采样与流匹配模块
     components/hiloattention.py HiLo 周期晶体注意力
+    components/ot_coupling.py   Minibatch Gaussian-posterior OT 配对
+    components/posterior_mmd.py 生成潜变量与 VAE 后验的终点 MMD
     encoders/transformer.py
     decoders/transformer.py
     denoisers/dit.py
@@ -98,6 +102,7 @@ src/
 tests/
   test_integrated_models.py      HiLo + CoDeMDT 的 CPU 集成测试
   test_diverse_dit.py            DiverseDiT 前向、CFG 和反传测试
+  test_posterior_alignment.py    OT coupling、MMD 和可反传 ODE 测试
 ```
 
 以下目录被保留，因为其中包含已有测试结果或论文图件：
@@ -332,6 +337,130 @@ python -m ADITcsp.src.test_csp `
   --output "runs/carbon24_hilovae_diversedit_test"
 ```
 
+## PA-OTFM：Posterior-Aligned OT Flow Matching
+
+PA-OTFM 在不修改 HiLo VAE 和 DiT 网络结构的前提下增加两个独立模块：
+
+- **Minibatch OT Coupling**：按完整元素组成分组，在每个 group 内使用
+  Hungarian 算法将高斯噪声与真实 posterior latent 一对一配对；只改变
+  Flow Matching 路径的端点对应关系。
+- **Terminal MMD Alignment**：保留计算图执行完整 flow ODE，将最终生成
+  latent 与冻结 VAE posterior latent 做多尺度 RBF MMD。
+
+两个模块都没有可训练网络参数。OT 和 MMD 可单独启用，也可同时启用。
+MMD 的对齐 ODE 使用条件 denoiser、关闭 CFG，直接约束条件潜变量分布与
+冻结 VAE 后验分布。
+下面的命令使用标准 DiT；把 `--denoiser dit` 改为 `--denoiser diverse_dit`
+即可测试 DiverseDiT + PA-OTFM。
+
+三种训练模式使用完全独立的开关：
+
+| 模式 | 开关 | 训练内容 |
+| --- | --- | --- |
+| OT-only | `--ot-coupling` | Flow Matching + OT 配对 |
+| MMD-only | `--mmd-alignment` | Flow Matching + 终点 MMD |
+| Joint | `--ot-coupling --mmd-alignment` | Flow Matching + OT + MMD |
+
+同一组对比实验应使用相同 VAE、相同基础 DiT checkpoint、相同 batch size
+和相同总 epoch 上限。
+
+### 阶段 1：仅 OT-FM
+
+```powershell
+python -m ADITcsp.src.train_csp `
+  --dataset carbon_24 `
+  --stage dit `
+  --vae-ckpt "runs/carbon24_hilovae/checkpoints/last.ckpt" `
+  --denoiser dit `
+  --dit-layers 6 `
+  --ot-coupling `
+  --epochs 300 `
+  --batch-size 32 `
+  --device cuda `
+  --output-dir "runs/carbon24_hilovae_dit_otfm"
+```
+
+### 阶段 2：OT-FM + Terminal MMD
+
+从阶段一的 checkpoint 继续训练。MMD 通过完整 ODE 反传，默认每 4 个
+Flow Matching step 执行一次：
+
+```powershell
+python -m ADITcsp.src.train_csp `
+  --dataset carbon_24 `
+  --stage dit `
+  --vae-ckpt "runs/carbon24_hilovae/checkpoints/last.ckpt" `
+  --denoiser dit `
+  --dit-layers 6 `
+  --ot-coupling `
+  --mmd-alignment `
+  --mmd-weight 0.05 `
+  --mmd-every 4 `
+  --mmd-steps 100 `
+  --mmd-batch-size 16 `
+  --mmd-kernel-scales "0.5,1,2,4" `
+  --resume "runs/carbon24_hilovae_dit_otfm/checkpoints/last.ckpt" `
+  --epochs 500 `
+  --batch-size 32 `
+  --device cuda `
+  --output-dir "runs/carbon24_hilovae_dit_otfm_mmd"
+```
+
+### 独立模式：仅 Terminal MMD
+
+不启用 OT，只从同一个基础 DiT checkpoint 开始训练 MMD：
+
+```powershell
+python -m ADITcsp.src.train_csp `
+  --dataset carbon_24 `
+  --stage dit `
+  --vae-ckpt "runs/carbon24_hilovae/checkpoints/last.ckpt" `
+  --denoiser dit `
+  --dit-layers 6 `
+  --mmd-alignment `
+  --mmd-weight 0.05 `
+  --mmd-every 4 `
+  --mmd-steps 100 `
+  --mmd-batch-size 16 `
+  --mmd-kernel-scales "0.5,1,2,4" `
+  --resume "runs/carbon24_hilovae_standard_dit/checkpoints/last.ckpt" `
+  --epochs 500 `
+  --batch-size 32 `
+  --device cuda `
+  --output-dir "runs/carbon24_hilovae_dit_mmd"
+```
+
+如果希望从头训练任一模式，删除 `--resume`；如果希望比较三种模式，则应
+为三个 run 使用相同的 checkpoint 和总 epoch 上限。
+
+`--mmd-steps` 应尽量与正式推理步数一致；快速调试可临时设为
+`10`。完整 ODE 会显著增加显存和训练时间，`--mmd-batch-size` 可独立于
+Flow Matching batch 设置。续训时 `--epochs` 是整个训练过程的总上限，
+不是追加轮数；例如阶段一训练到 300 epoch，可用 `--epochs 500` 再训练
+200 epoch。
+
+OT 只在 batch 内具有相同完整成分且至少有两个样本的 group 上执行；没有
+可配对 group 时 `ot_cost=0`。
+
+MMD 输入是 padded latent token 序列。所有样本 mask 相同时，会先展平
+有效 token；长度不一致时使用 masked mean，以保持批内可比较。带宽采用
+合并样本两两距离中位数的多尺度 RBF 核。
+
+训练 CSV 会记录：
+
+```text
+ot_cost        OT 配对后的平均归一化平方代价
+mmd_raw_loss   未乘权重的 Terminal MMD
+mmd_loss       实际加入总损失的 MMD 项
+mmd_bandwidth  median heuristic 得到的基准带宽
+```
+
+独立模块测试：
+
+```powershell
+python -B tests/test_posterior_alignment.py
+```
+
 ## 潜空间模型层间 CKA 热力图
 
 潜空间去噪器训练使用 PyTorch forward hook 捕获以下层的输出：
@@ -469,6 +598,11 @@ runs/<dataset>_vae_test_reconstruction/
 --diverse-blocks / --diverse-pairs
 --diverse-loss-weight
 --diverse-orth-weight / --diverse-mi-weight / --diverse-disp-weight
+--ot-coupling                   Minibatch posterior-aligned OT 配对
+--mmd-alignment                 Terminal posterior MMD
+--mmd-weight / --mmd-every
+--mmd-steps / --mmd-batch-size
+--mmd-kernel-scales
 --vae-attention hi_lo|standard 默认 hi_lo
 --hilo-low-freq-heads           默认 2
 --hilo-cutoff                   默认 5.0 Å

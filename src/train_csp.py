@@ -38,6 +38,8 @@ from src.data.crystal_datamodule import (  # noqa: E402
     CrystalDataModule,
 )
 from src.models.decoders.transformer import TransformerDecoder  # noqa: E402
+from src.models.components.ot_coupling import MinibatchOTCoupler  # noqa: E402
+from src.models.components.posterior_mmd import PosteriorMMD  # noqa: E402
 from src.models.denoisers.code_mdt import CoDeMDT  # noqa: E402
 from src.models.denoisers.dit import DiT  # noqa: E402
 from src.models.denoisers.diverse_dit import DiverseDiT  # noqa: E402
@@ -533,6 +535,25 @@ def parse_args():
         help="use absolute cosine similarity for the mutual-information proxy",
     )
     parser.add_argument(
+        "--ot-coupling",
+        action="store_true",
+        help="enable minibatch posterior-aligned OT coupling for flow matching",
+    )
+    parser.add_argument(
+        "--mmd-alignment",
+        action="store_true",
+        help="add terminal latent MMD alignment through the full flow ODE",
+    )
+    parser.add_argument("--mmd-weight", type=float, default=0.05)
+    parser.add_argument("--mmd-every", type=int, default=4)
+    parser.add_argument("--mmd-steps", type=int, default=100)
+    parser.add_argument("--mmd-batch-size", type=int, default=16)
+    parser.add_argument(
+        "--mmd-kernel-scales",
+        default="0.5,1,2,4",
+        help="comma-separated positive RBF bandwidth multipliers",
+    )
+    parser.add_argument(
         "--vae-attention",
         choices=["hi_lo", "standard"],
         default="hi_lo",
@@ -605,6 +626,26 @@ def parse_args():
         args.diverse_disp_weight,
     ) < 0.0:
         parser.error("diverse loss component weights must be non-negative")
+    if args.mmd_weight < 0.0:
+        parser.error("--mmd-weight must be non-negative")
+    if args.mmd_every <= 0:
+        parser.error("--mmd-every must be positive")
+    if args.mmd_steps < 1:
+        parser.error("--mmd-steps must be positive")
+    if args.mmd_batch_size < 2:
+        parser.error("--mmd-batch-size must be at least 2")
+    try:
+        mmd_kernel_scales = tuple(
+            float(value)
+            for value in args.mmd_kernel_scales.split(",")
+            if value.strip()
+        )
+    except ValueError as error:
+        parser.error("--mmd-kernel-scales must be comma-separated numbers")
+        raise error
+    if not mmd_kernel_scales or any(scale <= 0.0 for scale in mmd_kernel_scales):
+        parser.error("--mmd-kernel-scales must contain positive numbers")
+    args.mmd_kernel_scales = mmd_kernel_scales
     if not 0.0 < args.mask_ratio < 1.0:
         parser.error("--mask-ratio must be in (0, 1)")
     if args.mask_ratio_range < 0.0:
@@ -762,6 +803,18 @@ def build_ldm(args, output_dir):
         self_condition=True,
         self_condition_prob=0.5,
     )
+    ot_coupler = MinibatchOTCoupler() if args.ot_coupling else None
+    posterior_mmd = (
+        PosteriorMMD(kernel_scales=args.mmd_kernel_scales)
+        if args.mmd_alignment
+        else None
+    )
+    print(
+        f"[配置] ot_coupling={args.ot_coupling} "
+        f"mmd_alignment={args.mmd_alignment} "
+        f"mmd_weight={args.mmd_weight:g} mmd_every={args.mmd_every} "
+        f"mmd_steps={args.mmd_steps} mmd_batch_size={args.mmd_batch_size}"
+    )
     return LatentDiffusionLitModule(
         autoencoder_ckpt=args.vae_ckpt,
         denoiser=denoiser,
@@ -775,6 +828,12 @@ def build_ldm(args, output_dir):
         scheduler_frequency=VALIDATION_INTERVAL,
         compile=False,
         mask_loss_weight=args.mask_loss_weight,
+        ot_coupler=ot_coupler,
+        posterior_mmd=posterior_mmd,
+        mmd_weight=args.mmd_weight,
+        mmd_every=args.mmd_every,
+        mmd_steps=args.mmd_steps,
+        mmd_batch_size=args.mmd_batch_size,
     )
 
 

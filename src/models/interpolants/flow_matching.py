@@ -47,13 +47,14 @@ class FlowMatchingInterpolant:
         noise = torch.randn(batch_size, num_tokens, emb_dim, device=self.device)
         return noise - torch.mean(noise, dim=-2, keepdims=True)
 
-    def _corrupt_x(self, x_1, t, token_mask, diffuse_mask):
-        x_0 = self._centered_gaussian(*x_1.shape)
+    def _corrupt_x(self, x_1, t, token_mask, diffuse_mask, x_0=None):
+        if x_0 is None:
+            x_0 = self._centered_gaussian(*x_1.shape)
         x_t = (1 - t[..., None]) * x_0 + t[..., None] * x_1
         x_t = x_t * diffuse_mask[..., None] + x_1 * (~diffuse_mask[..., None])
         return x_t * token_mask[..., None]
 
-    def corrupt_batch(self, batch):
+    def corrupt_batch(self, batch, ot_coupler=None, group_ids=None):
         """Corrupts a batch of data by sampling a time t and interpolating to noisy samples.
 
         Args:
@@ -78,7 +79,18 @@ class FlowMatchingInterpolant:
 
         # Apply corruptions
         if self.corrupt:
-            x_t = self._corrupt_x(x_1, t, token_mask, diffuse_mask)
+            x_0 = self._centered_gaussian(*x_1.shape)
+            noisy_batch["x_0"] = x_0
+            if ot_coupler is not None:
+                x_1 = ot_coupler(x_0, x_1, token_mask, group_ids=group_ids)
+                noisy_batch["x_1"] = x_1
+            x_t = self._corrupt_x(
+                x_1,
+                t,
+                token_mask,
+                diffuse_mask,
+                x_0=x_0,
+            )
         else:
             x_t = x_1
         if torch.any(torch.isnan(x_t)):
@@ -86,6 +98,67 @@ class FlowMatchingInterpolant:
         noisy_batch["x_t"] = x_t
 
         return noisy_batch
+
+    def sample_for_alignment(
+        self,
+        batch_size,
+        num_tokens,
+        emb_dim,
+        model,
+        dataset_idx,
+        spacegroup,
+        num_timesteps=None,
+        token_mask=None,
+        composition=None,
+    ):
+        """Run the training-time flow ODE while retaining the autograd graph.
+
+        Unlike :meth:`sample`, this path intentionally has no ``no_grad`` or
+        classifier-free guidance. It is used only for terminal distribution
+        losses such as MMD.
+        """
+        if num_timesteps is None:
+            num_timesteps = self.num_timesteps
+        if token_mask is None:
+            token_mask = torch.ones(
+                batch_size,
+                num_tokens,
+                dtype=torch.bool,
+                device=self.device,
+            )
+
+        x_t = self._centered_gaussian(batch_size, num_tokens, emb_dim)
+        ts = torch.linspace(self.min_t, 1.0, num_timesteps, device=self.device)
+        t_1 = ts[0]
+        x_sc = None
+        for t_2 in ts[1:]:
+            t = torch.ones((batch_size, 1), device=self.device) * t_1
+            with torch.enable_grad():
+                pred_x_1 = model(
+                    x=x_t,
+                    t=t,
+                    dataset_idx=dataset_idx,
+                    spacegroup=spacegroup,
+                    mask=token_mask,
+                    x_sc=x_sc,
+                    composition=composition,
+                )
+            if self.self_condition:
+                x_sc = pred_x_1
+            x_t = self._x_euler_step(t_2 - t_1, t_1, pred_x_1, x_t)
+            t_1 = t_2
+
+        t = torch.ones((batch_size, 1), device=self.device) * t_1
+        with torch.enable_grad():
+            return model(
+                x=x_t,
+                t=t,
+                dataset_idx=dataset_idx,
+                spacegroup=spacegroup,
+                mask=token_mask,
+                x_sc=x_sc,
+                composition=composition,
+            )
 
     def _x_vector_field(self, t, x_1, x_t):
         return (x_1 - x_t) / (1 - t)

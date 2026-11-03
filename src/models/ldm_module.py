@@ -29,6 +29,12 @@ class LatentDiffusionLitModule(LightningModule):
         scheduler_frequency: int,
         compile: bool = False,
         mask_loss_weight: float = 1.0,
+        ot_coupler: torch.nn.Module | None = None,
+        posterior_mmd: torch.nn.Module | None = None,
+        mmd_weight: float = 0.0,
+        mmd_every: int = 0,
+        mmd_steps: int = 100,
+        mmd_batch_size: int = 0,
     ) -> None:
         super().__init__()
         self.save_hyperparameters(logger=False)
@@ -41,6 +47,12 @@ class LatentDiffusionLitModule(LightningModule):
             raise ValueError("The VAE checkpoint must be composition-conditioned.")
         self.denoiser = denoiser
         self.interpolant = interpolant
+        self.ot_coupler = ot_coupler
+        self.posterior_mmd = posterior_mmd
+        self.mmd_weight = float(mmd_weight)
+        self.mmd_every = int(mmd_every)
+        self.mmd_steps = int(mmd_steps)
+        self.mmd_batch_size = int(mmd_batch_size)
         self.masking_enabled = bool(getattr(denoiser, "supports_masking", False))
         self.has_diversity = bool(getattr(denoiser, "has_diversity", False))
         names = ["loss", "x_loss"]
@@ -55,6 +67,10 @@ class LatentDiffusionLitModule(LightningModule):
                 "loss_disp",
                 "div_weight",
             ]
+        if self.ot_coupler is not None:
+            names.append("ot_cost")
+        if self.posterior_mmd is not None:
+            names.extend(["mmd_loss", "mmd_raw_loss", "mmd_bandwidth"])
         self.train_metrics = torch.nn.ModuleDict({k: MeanMetric() for k in names})
         self.val_metrics = torch.nn.ModuleDict(
             {
@@ -77,12 +93,21 @@ class LatentDiffusionLitModule(LightningModule):
             encoded = self.autoencoder.encode(batch)
             x_1 = encoded["posterior"].sample()
             x_1, mask = to_dense_batch(x_1, encoded["batch"])
+        composition = composition_from_batch(batch, self.denoiser.composition_dim)
+        group_ids = None
+        if self.ot_coupler is not None:
+            _, group_ids = torch.unique(
+                composition.detach(),
+                dim=0,
+                return_inverse=True,
+            )
         self.interpolant.device = x_1.device
         noisy = self.interpolant.corrupt_batch(
-            {"x_1": x_1, "token_mask": mask, "diffuse_mask": mask}
+            {"x_1": x_1, "token_mask": mask, "diffuse_mask": mask},
+            ot_coupler=self.ot_coupler if self.training else None,
+            group_ids=group_ids,
         )
         dataset_idx = batch.dataset_idx + 1
-        composition = composition_from_batch(batch, self.denoiser.composition_dim)
         spacegroup = torch.zeros_like(batch.spacegroup)
         return noisy, {
             "dataset_idx": dataset_idx,
@@ -90,6 +115,39 @@ class LatentDiffusionLitModule(LightningModule):
             "mask": mask,
             "composition": composition,
         }
+
+    def _terminal_mmd_loss(self, noisy, conditioning):
+        batch_size = conditioning["mask"].size(0)
+        if self.mmd_batch_size > 0:
+            batch_size = min(batch_size, self.mmd_batch_size)
+        if batch_size < 2:
+            return None, None
+
+        mask = conditioning["mask"][:batch_size]
+        composition = conditioning["composition"][:batch_size]
+        dataset_idx = conditioning["dataset_idx"][:batch_size]
+        spacegroup = conditioning["spacegroup"][:batch_size]
+        posterior = noisy["x_1"][:batch_size]
+
+        was_training = self.denoiser.training
+        self.denoiser.eval()
+        try:
+            generated = self.interpolant.sample_for_alignment(
+                batch_size=batch_size,
+                num_tokens=mask.size(1),
+                emb_dim=self.denoiser.d_x,
+                model=self.denoiser,
+                dataset_idx=dataset_idx,
+                spacegroup=spacegroup,
+                num_timesteps=self.mmd_steps,
+                token_mask=mask,
+                composition=composition,
+            )
+        finally:
+            self.denoiser.train(was_training)
+        mmd_loss = self.posterior_mmd(generated, posterior, mask)
+        bandwidth = self.posterior_mmd.last_bandwidth
+        return mmd_loss, bandwidth
 
     def _denoise(self, noisy, conditioning, enable_mask: bool = False):
         """Run one denoiser pass, including optional learned self-conditioning."""
@@ -153,6 +211,14 @@ class LatentDiffusionLitModule(LightningModule):
             "x_loss": plain["x_loss"],
         }
         total = plain["loss"]
+        if self.ot_coupler is not None:
+            logs["ot_cost"] = torch.as_tensor(
+                0.0
+                if self.ot_coupler.last_cost is None
+                else self.ot_coupler.last_cost,
+                device=total.device,
+                dtype=total.dtype,
+            )
 
         if self.masking_enabled:
             logs["plain_loss"] = plain["loss"]
@@ -190,6 +256,33 @@ class LatentDiffusionLitModule(LightningModule):
                         device=total.device,
                         dtype=total.dtype,
                     )
+
+        if self.posterior_mmd is not None:
+            should_align = (
+                self.mmd_every > 0
+                and self.mmd_weight > 0.0
+                and self.global_step % self.mmd_every == 0
+            )
+            mmd_raw_loss = None
+            mmd_bandwidth = None
+            if should_align:
+                mmd_raw_loss, mmd_bandwidth = self._terminal_mmd_loss(
+                    noisy,
+                    conditioning,
+                )
+            if mmd_raw_loss is None:
+                mmd_raw_loss = total.new_zeros(())
+            mmd_loss = self.mmd_weight * mmd_raw_loss
+            total = total + mmd_loss
+            logs["mmd_loss"] = mmd_loss.detach()
+            logs["mmd_raw_loss"] = mmd_raw_loss.detach()
+            if mmd_bandwidth is None and self.posterior_mmd.last_bandwidth is not None:
+                mmd_bandwidth = self.posterior_mmd.last_bandwidth
+            logs["mmd_bandwidth"] = torch.as_tensor(
+                0.0 if mmd_bandwidth is None else mmd_bandwidth,
+                device=total.device,
+                dtype=total.dtype,
+            )
 
         logs["loss"] = total
         for name, value in logs.items():
