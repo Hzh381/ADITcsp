@@ -21,7 +21,7 @@ from src.models.crystal_mmfm_prior import (
     fit_global_gmm,
 )
 from src.models.decoders.transformer import TransformerDecoder
-from src.models.decoder_struct_loss import compute_struct_loss
+from src.models.decoder_struct_loss import compute_periodic_loss, compute_struct_loss
 from src.models.denoisers.dit import DiT
 from src.models.encoders.transformer import TransformerEncoder
 from src.models.interpolants.flow_matching import FlowMatchingInterpolant
@@ -172,6 +172,11 @@ def test_decoder_aware_loss_backpropagates():
         assert torch.isfinite(total)
         assert structure["cell_loss"] >= 0 and structure["geo_loss"] >= 0
         assert any(p.grad is not None for p in module.denoiser.parameters())
+        assert all(
+            torch.isfinite(p.grad).all()
+            for p in module.denoiser.parameters()
+            if p.grad is not None
+        )
         assert not any(p.requires_grad for p in module.autoencoder.parameters())
 
 
@@ -190,6 +195,26 @@ def test_struct_loss_is_zero_for_identical_structures():
     )
     assert result["cell_loss"].abs().item() < 1e-5
     assert result["geo_loss"].abs().item() < 1e-5
+
+
+def test_periodic_loss_is_finite_for_coincident_atoms():
+    pred_frac = torch.zeros(1, 2, 3, requires_grad=True)
+    target_frac = torch.zeros(1, 2, 3)
+    mask = torch.ones(1, 2, dtype=torch.bool)
+    lengths = torch.tensor([[2.0, 2.1, 2.2]])
+    angles = torch.deg2rad(torch.tensor([[90.0, 90.0, 90.0]]))
+    loss = compute_periodic_loss(
+        pred_frac,
+        lengths,
+        angles,
+        target_frac,
+        lengths,
+        angles,
+        mask,
+    )
+    loss.backward()
+    assert torch.isfinite(loss)
+    assert torch.isfinite(pred_frac.grad).all()
 
 
 def test_global_descriptor_shapes():
@@ -279,6 +304,7 @@ def test_mmfm_prior_source_and_sampling():
 def main():
     test_decoder_aware_loss_backpropagates()
     test_struct_loss_is_zero_for_identical_structures()
+    test_periodic_loss_is_finite_for_coincident_atoms()
     test_global_descriptor_shapes()
     test_gmm_and_token_prior_helpers()
     test_mmfm_prior_source_and_sampling()

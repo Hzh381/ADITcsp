@@ -1,5 +1,6 @@
 """Composition-conditioned latent flow-matching model for Carbon-24."""
 
+import math
 import random
 from typing import Dict
 
@@ -283,15 +284,32 @@ class LatentDiffusionLitModule(LightningModule):
         )
         scale = num_atoms.to(pred.dtype).pow(1.0 / 3.0)
         pred_lengths = decoded["lengths"] * scale[:, None]
-        return compute_struct_loss(
+        pred_frac = torch.nan_to_num(pred_frac, nan=0.0)
+        pred_lengths = torch.nan_to_num(
+            pred_lengths,
+            nan=1.0,
+            posinf=1e3,
+            neginf=1e-3,
+        )
+        pred_angles = torch.nan_to_num(
+            decoded["angles"],
+            nan=math.pi / 2.0,
+            posinf=math.pi - 0.1,
+            neginf=0.1,
+        )
+        result = compute_struct_loss(
             pred_frac,
             pred_lengths,
-            decoded["angles"],
+            pred_angles,
             noisy["target_frac"],
             noisy["target_lengths"],
             noisy["target_angles"],
             mask,
         )
+        return {
+            key: value if torch.isfinite(value) else pred.new_zeros(())
+            for key, value in result.items()
+        }
 
     def criterion(self, noisy, pred):
         target = noisy["x_1"]

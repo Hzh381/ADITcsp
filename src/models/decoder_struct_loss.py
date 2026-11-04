@@ -13,6 +13,8 @@ frozen VAE decoder back into the latent denoiser.
 
 from __future__ import annotations
 
+import math
+
 import torch
 import torch.nn.functional as F
 
@@ -24,14 +26,15 @@ def build_cell_matrices(lengths: torch.Tensor, angles: torch.Tensor) -> torch.Te
     StructureMatcher compares invariant geometry, so the absolute orientation
     does not matter.
     """
-    eps = 1e-6
+    eps = 1e-3
     lengths = lengths.clamp_min(eps)
+    angles = angles.clamp(min=0.1, max=math.pi - 0.1)
     a, b, c = lengths.unbind(dim=-1)
     alpha, beta, gamma = angles.unbind(dim=-1)
     cos_alpha = torch.cos(alpha)
     cos_beta = torch.cos(beta)
     cos_gamma = torch.cos(gamma)
-    sin_gamma = torch.sin(gamma).abs().clamp_min(eps)
+    sin_gamma = torch.sin(gamma).clamp_min(0.1)
 
     a_vec = torch.stack([a, torch.zeros_like(a), torch.zeros_like(a)], dim=-1)
     b_vec = torch.stack(
@@ -75,7 +78,9 @@ def periodic_pair_distances(
             if best is None
             else torch.minimum(best, distance_squared)
         )
-    return torch.sqrt(best.clamp_min(0.0))
+    # A pair of predicted atoms can coincide exactly; raw sqrt(0) has an
+    # infinite derivative and poisons the whole DiT update with NaN.
+    return torch.sqrt(best.clamp_min(0.0) + 1e-6)
 
 
 def periodic_pair_mask(token_mask: torch.Tensor) -> torch.Tensor:
@@ -99,14 +104,17 @@ def compute_cell_loss(
     Predicted lengths come from an unconstrained linear head, so a small
     positivity penalty keeps them inside the domain where the log is defined.
     """
-    eps = 1e-6
+    eps = 1e-3
     pred_pos = pred_lengths.clamp_min(eps)
     log_error = (
         torch.log(pred_pos) - torch.log(target_lengths.clamp_min(eps))
     ).abs()
     cos_error = (torch.cos(pred_angles) - torch.cos(target_angles)).abs()
     negative_penalty = F.relu(-pred_lengths)
-    per_graph = (log_error + cos_error + negative_penalty).sum(dim=-1)
+    angle_penalty = F.relu(-pred_angles) + F.relu(pred_angles - math.pi)
+    per_graph = (
+        log_error + cos_error + negative_penalty + angle_penalty
+    ).sum(dim=-1)
 
     if graph_mask is None:
         return per_graph.mean()
