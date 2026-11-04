@@ -30,7 +30,25 @@ def parse_args():
     parser.add_argument("--limit", type=int, default=50)
     parser.add_argument("--device", choices=["cpu", "cuda"], default="cpu")
     parser.add_argument("--output", default=None)
-    return parser.parse_args()
+    parser.add_argument(
+        "--mmfm-prior",
+        default=None,
+        help="override the Crystal-MM-FM prior path saved in the checkpoint",
+    )
+    parser.add_argument(
+        "--mmfm-balanced",
+        action=argparse.BooleanOptionalAction,
+        default=None,
+        help="override stratified GMM mode allocation at inference",
+    )
+    parser.add_argument("--cfg", type=float, default=2.0)
+    parser.add_argument("--steps", type=int, default=100)
+    args = parser.parse_args()
+    if args.cfg <= 0:
+        parser.error("--cfg must be positive")
+    if args.steps < 1:
+        parser.error("--steps must be at least 1")
+    return args
 
 
 def main():
@@ -43,12 +61,16 @@ def main():
     kwargs = {"map_location": "cpu"}
     if args.vae_ckpt:
         kwargs["autoencoder_ckpt"] = args.vae_ckpt
+    if args.mmfm_prior:
+        kwargs["mmfm_prior_path"] = args.mmfm_prior
+    if args.mmfm_balanced is not None:
+        kwargs["mmfm_balanced"] = args.mmfm_balanced
     model = LatentDiffusionLitModule.load_from_checkpoint(args.ckpt, **kwargs)
     model.to(device)
     model.eval()
     model.autoencoder.eval()
     model._device = device
-    model.interpolant.num_timesteps = 100
+    model.interpolant.num_timesteps = args.steps
 
     dataset = build_crystal_dataset(
         ROOT / "data" / args.dataset,
@@ -67,7 +89,7 @@ def main():
         target_counts = data.composition.float().cpu()
         target = dataset.get_structure(index)
         comp = target_counts.repeat(args.candidates, 1)
-        out, batch, _ = model.sample_and_decode(comp, cfg_scale=2.0)
+        out, batch, _ = model.sample_and_decode(comp, cfg_scale=args.cfg)
 
         best_rms = float("inf")
         any_comp = any_match = False
@@ -160,8 +182,8 @@ def main():
         "overall_valid_rate": overall_candidates / max(total * args.candidates, 1),
         "structure_match_at_k": match_hits / max(total, 1),
         "mean_best_rms": float(np.mean(finite)) if finite else None,
-        "cfg": 2.0,
-        "steps": 100,
+        "cfg": args.cfg,
+        "steps": args.steps,
     }
     (output / "summary.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")
     (output / "per_target.json").write_text(json.dumps(rows, indent=2), encoding="utf-8")

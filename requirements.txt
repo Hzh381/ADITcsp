@@ -35,6 +35,7 @@ reportlab==4.2.2
 Requests==2.32.3
 rich==13.9.4
 rootutils==1.0.7
+scikit-learn==1.7.2
 scipy==1.15.1
 SMACT==2.6
 submitit==1.5.2

@@ -87,6 +87,8 @@ src/
   models/
     vae_module.py               成分条件 VAE
     ldm_module.py               潜空间采样与流匹配模块
+    decoder_struct_loss.py      Decoder-aware FM 的晶胞与周期几何损失
+    crystal_mmfm_prior.py       Crystal-MM-FM 的 GMM 模式源
     components/hiloattention.py HiLo 周期晶体注意力
     components/ot_coupling.py   Minibatch Gaussian-posterior OT 配对
     components/posterior_mmd.py 生成潜变量与 VAE 后验的终点 MMD
@@ -99,10 +101,13 @@ src/
   eval/
     crystal.py
     crystal_reconstruction.py
+scripts/
+  build_crystal_gmm.py          从训练集拟合 Crystal-MM-FM 模式先验
 tests/
   test_integrated_models.py      HiLo + CoDeMDT 的 CPU 集成测试
   test_diverse_dit.py            DiverseDiT 前向、CFG 和反传测试
   test_posterior_alignment.py    OT coupling、MMD 和可反传 ODE 测试
+  test_decoder_aware_and_mmfm.py 两个新模块的 CPU 集成测试
 ```
 
 以下目录被保留，因为其中包含已有测试结果或论文图件：
@@ -461,6 +466,164 @@ mmd_bandwidth  median heuristic 得到的基准带宽
 python -B tests/test_posterior_alignment.py
 ```
 
+## Decoder-aware FM 与 Crystal-MM-FM
+
+两个模块是独立开关，默认关闭。关闭时仍使用原来的 Gaussian FM、独立配对和现有
+checkpoint 行为。两者都不能与 `--ot-coupling` 同时启用，因为 OT 会重排目标与源
+的对应关系，和这里的配对语义冲突。
+
+### Decoder-aware FM
+
+在原有潜变量 Flow Matching Loss 之外，把 DiT 预测的终点潜变量送入冻结的 VAE
+Decoder，增加晶胞和周期几何辅助损失：
+
+```text
+L = L_FM + cell_loss_weight * L_cell + geo_loss_weight * L_geo
+```
+
+Decoder 参数冻结，但前向不使用 `torch.no_grad()`，梯度会通过 Decoder 回传到 DiT。
+VAE、DiT 网络结构均不改变。
+
+下面的命令用 `--init-ckpt` 只加载修复 bug 后重训的 standard DiT 权重，不恢复
+旧 optimizer 和 epoch，并给 50 epoch 的有限微调预算。验证仍有改善时可以延长；
+已经平台化时直接停止。`--init-ckpt` 使用严格加载，目标模型必须与 checkpoint
+的 VAE/DiT 架构一致；若需要无缝续训并恢复 optimizer，则使用原有的 `--resume`。
+
+先只启用晶胞损失：
+
+```powershell
+python src/train_csp.py `
+  --dataset carbon_24 `
+  --stage dit `
+  --vae-ckpt "runs/carbon_24_hilo_vae/checkpoints/last.ckpt" `
+  --init-ckpt "runs/carbon24_hilovae_retrain_standard_dit/checkpoints/last.ckpt" `
+  --denoiser dit `
+  --decoder-aware-fm `
+  --cell-loss-weight 0.1 `
+  --geo-loss-weight 0 `
+  --epochs 50 `
+  --batch-size 32 `
+  --device cuda `
+  --output-dir "runs/carbon24_hilo_da_fm_cell"
+```
+
+再启用完整结构辅助损失：
+
+```powershell
+python src/train_csp.py `
+  --dataset carbon_24 `
+  --stage dit `
+  --vae-ckpt "runs/carbon_24_hilo_vae/checkpoints/last.ckpt" `
+  --init-ckpt "runs/carbon24_hilovae_retrain_standard_dit/checkpoints/last.ckpt" `
+  --denoiser dit `
+  --decoder-aware-fm `
+  --cell-loss-weight 0.1 `
+  --geo-loss-weight 0.1 `
+  --epochs 50 `
+  --batch-size 32 `
+  --device cuda `
+  --output-dir "runs/carbon24_hilo_da_fm_full"
+```
+
+训练 CSV 会新增 `train/cell_loss` 和 `train/geo_loss`。
+
+### Crystal-MM-FM
+
+先用训练集和已训练的 VAE 构建 GMM 源先验。默认 K=8，建议分别尝试
+`--num-modes 4`、`8`、`16`：
+
+```powershell
+python scripts/build_crystal_gmm.py `
+  --dataset carbon_24 `
+  --vae-ckpt "runs/carbon_24_hilo_vae/checkpoints/last.ckpt" `
+  --num-modes 8 `
+  --batch-size 32 `
+  --device cuda `
+  --output "runs/carbon_24_hilo_mmfm_prior.pt"
+```
+
+脚本只读取 train split，保存每个训练晶体的软分配概率、每个模式的 token-level
+均值和方差、以及成分到模式比例的映射。输出旁边会生成同名 `.json` 摘要。
+成分模式比例默认加入 `--composition-smoothing 1e-3` 的均匀平滑，避免某个
+模式在训练成分中概率变成严格零。当前 DiT 直接使用原始后验潜变量，因此
+GMM 先验与 DiT 处于同一潜空间；以后若增加潜变量标准化，必须先逆变换再解码。
+
+只用 GMM 源，不做目标模式配对（MM-FM-Prior）：
+
+```powershell
+python src/train_csp.py `
+  --dataset carbon_24 `
+  --stage dit `
+  --vae-ckpt "runs/carbon_24_hilo_vae/checkpoints/last.ckpt" `
+  --init-ckpt "runs/carbon24_hilovae_retrain_standard_dit/checkpoints/last.ckpt" `
+  --denoiser dit `
+  --mmfm-prior "runs/carbon_24_hilo_mmfm_prior.pt" `
+  --no-mmfm-mode-coupling `
+  --epochs 50 `
+  --batch-size 32 `
+  --device cuda `
+  --output-dir "runs/carbon24_hilo_mmfm_prior"
+```
+
+启用目标模式配对（MM-FM-Full）：
+
+```powershell
+python src/train_csp.py `
+  --dataset carbon_24 `
+  --stage dit `
+  --vae-ckpt "runs/carbon_24_hilo_vae/checkpoints/last.ckpt" `
+  --init-ckpt "runs/carbon24_hilovae_retrain_standard_dit/checkpoints/last.ckpt" `
+  --denoiser dit `
+  --mmfm-prior "runs/carbon_24_hilo_mmfm_prior.pt" `
+  --mmfm-mode-coupling `
+  --epochs 50 `
+  --batch-size 32 `
+  --device cuda `
+  --output-dir "runs/carbon24_hilo_mmfm_full"
+```
+
+推理时默认按成分的模式比例采样。候选数不少于模式数时，加 `--mmfm-balanced`
+可以按比例分层分配模式，减少 K=20 中重复落在同一模式的情况：
+
+```powershell
+python src/test_csp.py `
+  --dataset carbon_24 `
+  --ckpt "runs/carbon24_hilo_mmfm_full/checkpoints/last.ckpt" `
+  --vae-ckpt "runs/carbon_24_hilo_vae/checkpoints/last.ckpt" `
+  --candidates 20 `
+  --limit 0 `
+  --device cuda `
+  --mmfm-balanced `
+  --output "runs/carbon24_hilo_mmfm_full_test"
+```
+
+先验路径会写入 checkpoint 的 hparams。若服务器路径变化，测试时可用
+`--mmfm-prior` 覆盖。
+
+### 两个模块组合
+
+```powershell
+python src/train_csp.py `
+  --dataset carbon_24 `
+  --stage dit `
+  --vae-ckpt "runs/carbon_24_hilo_vae/checkpoints/last.ckpt" `
+  --init-ckpt "runs/carbon24_hilovae_retrain_standard_dit/checkpoints/last.ckpt" `
+  --denoiser dit `
+  --decoder-aware-fm `
+  --cell-loss-weight 0.1 `
+  --geo-loss-weight 0.1 `
+  --mmfm-prior "runs/carbon_24_hilo_mmfm_prior.pt" `
+  --mmfm-mode-coupling `
+  --epochs 50 `
+  --batch-size 32 `
+  --device cuda `
+  --output-dir "runs/carbon24_hilo_da_fm_mmfm"
+```
+
+如果只想控制成本，先固定同一 VAE、同一训练预算，只跑 Baseline、
+DA-FM-Full、MM-FM-Full 三条。确认方向后再拆 Cell-only、MM-FM-Prior
+和组合，避免一次展开过多实验。
+
 ## 潜空间模型层间 CKA 热力图
 
 潜空间去噪器训练使用 PyTorch forward hook 捕获以下层的输出：
@@ -591,6 +754,7 @@ runs/<dataset>_vae_test_reconstruction/
 --dropout              默认 0.05，作用于 VAE 和去噪器的 Attention/MLP
 --weight-decay         AdamW 权重衰减，默认 1e-4
 --vae-ckpt          仅阶段二需要
+--init-ckpt        仅加载模型权重，不恢复优化器和 epoch
 --dit-size s|b|l
 --dit-layers                    覆盖 --dit-size 的 block 数
 --denoiser code_mdt|dit|diverse_dit 默认 code_mdt
@@ -603,6 +767,12 @@ runs/<dataset>_vae_test_reconstruction/
 --mmd-weight / --mmd-every
 --mmd-steps / --mmd-batch-size
 --mmd-kernel-scales
+--decoder-aware-fm             Decoder-aware 晶胞/周期结构辅助损失
+--cell-loss-weight             默认 0.1
+--geo-loss-weight              默认 0.1
+--mmfm-prior                   Crystal-MM-FM GMM 先验文件
+--mmfm-mode-coupling           目标模式配对；默认关闭
+--mmfm-balanced                推理时分层分配 GMM 模式
 --vae-attention hi_lo|standard 默认 hi_lo
 --hilo-low-freq-heads           默认 2
 --hilo-cutoff                   默认 5.0 Å
@@ -666,6 +836,10 @@ python src/train_csp.py `
 --limit             0 表示评价所选数据集的全部测试结构
 --device cpu|cuda
 --output
+--mmfm-prior        覆盖 checkpoint 中保存的 GMM 先验路径
+--mmfm-balanced     覆盖 checkpoint 中的推理分层设置
+--cfg               默认 2.0
+--steps             默认 100
 ```
 
 ## 已移除的旧入口

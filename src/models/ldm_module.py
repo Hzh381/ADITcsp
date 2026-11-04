@@ -12,6 +12,8 @@ from torch_geometric.utils import to_dense_batch
 from torchmetrics import MeanMetric
 
 from src.data.components.composition_utils import composition_from_batch
+from src.models.crystal_mmfm_prior import CrystalMMFMPrior
+from src.models.decoder_struct_loss import compute_struct_loss
 from src.models.vae_module import VariationalAutoencoderLitModule
 from src.utils import pylogger
 
@@ -35,6 +37,12 @@ class LatentDiffusionLitModule(LightningModule):
         mmd_every: int = 0,
         mmd_steps: int = 100,
         mmd_batch_size: int = 0,
+        decoder_aware: bool = False,
+        cell_loss_weight: float = 0.1,
+        geo_loss_weight: float = 0.1,
+        mmfm_prior_path: str | None = None,
+        mmfm_mode_coupling: bool = False,
+        mmfm_balanced: bool = False,
     ) -> None:
         super().__init__()
         self.save_hyperparameters(logger=False)
@@ -53,6 +61,29 @@ class LatentDiffusionLitModule(LightningModule):
         self.mmd_every = int(mmd_every)
         self.mmd_steps = int(mmd_steps)
         self.mmd_batch_size = int(mmd_batch_size)
+        self.decoder_aware = bool(decoder_aware)
+        self.cell_loss_weight = float(cell_loss_weight)
+        self.geo_loss_weight = float(geo_loss_weight)
+        self.mmfm_prior_path = mmfm_prior_path
+        self.mmfm_mode_coupling = bool(mmfm_mode_coupling)
+        self.mmfm_balanced = bool(mmfm_balanced)
+        self.mmfm_prior = (
+            CrystalMMFMPrior.load(mmfm_prior_path) if mmfm_prior_path else None
+        )
+        if self.decoder_aware and ot_coupler is not None:
+            raise ValueError(
+                "Decoder-aware FM and minibatch OT coupling are alternative "
+                "pairing schemes; run them in separate experiments."
+            )
+        if self.mmfm_prior is not None and ot_coupler is not None:
+            raise ValueError(
+                "Crystal-MM-FM and minibatch OT coupling are alternative "
+                "pairing schemes; run them in separate experiments."
+            )
+        if self.decoder_aware and (
+            self.cell_loss_weight < 0.0 or self.geo_loss_weight < 0.0
+        ):
+            raise ValueError("Decoder-aware loss weights must be non-negative.")
         self.masking_enabled = bool(getattr(denoiser, "supports_masking", False))
         self.has_diversity = bool(getattr(denoiser, "has_diversity", False))
         names = ["loss", "x_loss"]
@@ -71,6 +102,8 @@ class LatentDiffusionLitModule(LightningModule):
             names.append("ot_cost")
         if self.posterior_mmd is not None:
             names.extend(["mmd_loss", "mmd_raw_loss", "mmd_bandwidth"])
+        if self.decoder_aware:
+            names.extend(["cell_loss", "geo_loss"])
         self.train_metrics = torch.nn.ModuleDict({k: MeanMetric() for k in names})
         self.val_metrics = torch.nn.ModuleDict(
             {
@@ -114,11 +147,34 @@ class LatentDiffusionLitModule(LightningModule):
                 return_inverse=True,
             )
         self.interpolant.device = x_1.device
+        x_0 = None
+        if self.mmfm_prior is not None:
+            batch_ids = getattr(batch, "id", None)
+            if isinstance(batch_ids, str):
+                batch_ids = [batch_ids]
+            elif batch_ids is not None and not isinstance(batch_ids, list):
+                batch_ids = [str(value) for value in batch_ids]
+            x_0 = self.mmfm_prior.sample_train_source(
+                composition,
+                mask,
+                batch_ids=batch_ids,
+                mode_coupling=self.mmfm_mode_coupling,
+            )
         noisy = self.interpolant.corrupt_batch(
-            {"x_1": x_1, "token_mask": mask, "diffuse_mask": mask},
+            {
+                "x_1": x_1,
+                "token_mask": mask,
+                "diffuse_mask": mask,
+            },
             ot_coupler=self.ot_coupler if self.training else None,
             group_ids=group_ids,
+            x_0=x_0,
         )
+        if self.decoder_aware:
+            target_frac, _ = to_dense_batch(batch.frac_coords, encoded["batch"])
+            noisy["target_frac"] = target_frac
+            noisy["target_lengths"] = batch.lengths
+            noisy["target_angles"] = batch.angles_radians
         dataset_idx = batch.dataset_idx + 1
         spacegroup = torch.zeros_like(batch.spacegroup)
         return noisy, {
@@ -126,6 +182,7 @@ class LatentDiffusionLitModule(LightningModule):
             "spacegroup": spacegroup,
             "mask": mask,
             "composition": composition,
+            "num_atoms": batch.num_atoms.view(-1),
         }
 
     def _terminal_mmd_loss(self, noisy, conditioning):
@@ -140,6 +197,13 @@ class LatentDiffusionLitModule(LightningModule):
         dataset_idx = conditioning["dataset_idx"][:batch_size]
         spacegroup = conditioning["spacegroup"][:batch_size]
         posterior = noisy["x_1"][:batch_size]
+        x_0 = None
+        if self.mmfm_prior is not None:
+            x_0 = self.mmfm_prior.sample_train_source(
+                composition,
+                mask,
+                mode_coupling=False,
+            )
 
         was_training = self.denoiser.training
         self.denoiser.eval()
@@ -154,6 +218,7 @@ class LatentDiffusionLitModule(LightningModule):
                 num_timesteps=self.mmd_steps,
                 token_mask=mask,
                 composition=composition,
+                x_0=x_0,
             )
         finally:
             self.denoiser.train(was_training)
@@ -194,6 +259,40 @@ class LatentDiffusionLitModule(LightningModule):
         noisy, conditioning = self._prepare_batch(batch)
         return self._denoise(noisy, conditioning), noisy
 
+    def _decoder_structure_loss(self, pred, conditioning, noisy):
+        """Decode the predicted endpoint and return cell/periodic losses."""
+        mask = conditioning["mask"]
+        num_atoms = conditioning["num_atoms"]
+        batch_size = pred.size(0)
+        flat_batch = torch.repeat_interleave(
+            torch.arange(batch_size, device=pred.device),
+            num_atoms,
+        )
+        flat = {
+            "x": pred[mask],
+            "num_atoms": num_atoms,
+            "batch": flat_batch,
+            "token_idx": (torch.cumsum(mask, dim=-1, dtype=torch.int64) - 1)[mask],
+            "composition": conditioning["composition"],
+        }
+        decoded = self.autoencoder.decode(flat)
+        pred_frac, _ = to_dense_batch(
+            decoded["frac_coords"],
+            flat_batch,
+            max_num_nodes=mask.size(1),
+        )
+        scale = num_atoms.to(pred.dtype).pow(1.0 / 3.0)
+        pred_lengths = decoded["lengths"] * scale[:, None]
+        return compute_struct_loss(
+            pred_frac,
+            pred_lengths,
+            decoded["angles"],
+            noisy["target_frac"],
+            noisy["target_lengths"],
+            noisy["target_angles"],
+            mask,
+        )
+
     def criterion(self, noisy, pred):
         target = noisy["x_1"]
         scale = 1 - torch.min(noisy["t"].unsqueeze(-1), torch.tensor(0.9, device=target.device))
@@ -217,12 +316,22 @@ class LatentDiffusionLitModule(LightningModule):
 
     def training_step(self, batch, batch_idx):
         noisy, conditioning = self._prepare_batch(batch)
-        plain = self.criterion(noisy, self._denoise(noisy, conditioning))
+        pred = self._denoise(noisy, conditioning)
+        plain = self.criterion(noisy, pred)
         logs = {
             "loss": plain["loss"],
             "x_loss": plain["x_loss"],
         }
         total = plain["loss"]
+        if self.decoder_aware and (
+            self.cell_loss_weight > 0.0 or self.geo_loss_weight > 0.0
+        ):
+            structure = self._decoder_structure_loss(pred, conditioning, noisy)
+            cell_term = self.cell_loss_weight * structure["cell_loss"]
+            geo_term = self.geo_loss_weight * structure["geo_loss"]
+            total = total + cell_term + geo_term
+            logs["cell_loss"] = structure["cell_loss"].detach()
+            logs["geo_loss"] = structure["geo_loss"].detach()
         if self.ot_coupler is not None:
             logs["ot_cost"] = torch.as_tensor(
                 0.0
@@ -340,6 +449,13 @@ class LatentDiffusionLitModule(LightningModule):
         mask = torch.zeros(batch_size, int(lengths.max()), dtype=torch.bool, device=self.device)
         for i, length in enumerate(lengths):
             mask[i, :length] = True
+        x_0 = None
+        if self.mmfm_prior is not None:
+            x_0 = self.mmfm_prior.sample_inference_source(
+                composition,
+                mask,
+                balanced=self.mmfm_balanced,
+            )
         samples = self.interpolant.sample_with_classifier_free_guidance(
             batch_size=batch_size,
             num_tokens=int(lengths.max()),
@@ -350,6 +466,7 @@ class LatentDiffusionLitModule(LightningModule):
             cfg_scale=cfg_scale,
             token_mask=mask,
             composition=composition,
+            x_0=x_0,
         )
         x = samples["clean_traj"][-1][mask]
         batch = {

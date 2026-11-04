@@ -65,7 +65,7 @@ class FlowMatchingInterpolant:
         x_t = x_t * diffuse_mask[..., None] + x_1 * (~diffuse_mask[..., None])
         return x_t * token_mask[..., None]
 
-    def corrupt_batch(self, batch, ot_coupler=None, group_ids=None):
+    def corrupt_batch(self, batch, ot_coupler=None, group_ids=None, x_0=None):
         """Corrupts a batch of data by sampling a time t and interpolating to noisy samples.
 
         Args:
@@ -90,7 +90,10 @@ class FlowMatchingInterpolant:
 
         # Apply corruptions
         if self.corrupt:
-            x_0 = self._centered_gaussian(*x_1.shape, token_mask=token_mask)
+            if x_0 is None:
+                x_0 = self._centered_gaussian(*x_1.shape, token_mask=token_mask)
+            else:
+                x_0 = x_0 * token_mask[..., None].to(x_0.dtype)
             noisy_batch["x_0"] = x_0
             if ot_coupler is not None:
                 x_1 = ot_coupler(x_0, x_1, token_mask, group_ids=group_ids)
@@ -121,6 +124,7 @@ class FlowMatchingInterpolant:
         num_timesteps=None,
         token_mask=None,
         composition=None,
+        x_0=None,
     ):
         """Run the training-time flow ODE while retaining the autograd graph.
 
@@ -138,7 +142,12 @@ class FlowMatchingInterpolant:
                 device=self.device,
             )
 
-        x_t = self._centered_gaussian(batch_size, num_tokens, emb_dim, token_mask=token_mask)
+        if x_0 is None:
+            x_t = self._centered_gaussian(
+                batch_size, num_tokens, emb_dim, token_mask=token_mask
+            )
+        else:
+            x_t = x_0 * token_mask[..., None].to(x_0.dtype)
         ts = torch.linspace(self.min_t, 1.0, num_timesteps, device=self.device)
         t_1 = ts[0]
         x_sc = None

@@ -488,6 +488,11 @@ def parse_args():
     parser.add_argument("--stage", choices=["vae", "dit"], default="vae")
     parser.add_argument("--output-dir", default=None)
     parser.add_argument("--vae-ckpt", default=None)
+    parser.add_argument(
+        "--init-ckpt",
+        default=None,
+        help="load model weights only; optimizer and epoch are not restored",
+    )
     parser.add_argument("--epochs", type=int, default=300)
     parser.add_argument("--batch-size", type=int, default=32)
     parser.add_argument(
@@ -558,6 +563,39 @@ def parse_args():
         choices=["hi_lo", "standard"],
         default="hi_lo",
         help="VAE encoder attention; decoder remains standard for CSP generation",
+    )
+    parser.add_argument(
+        "--decoder-aware-fm",
+        action="store_true",
+        help="add decoder-aware cell/periodic losses to latent flow matching",
+    )
+    parser.add_argument(
+        "--cell-loss-weight",
+        type=float,
+        default=0.1,
+        help="weight for the decoder-aware cell loss",
+    )
+    parser.add_argument(
+        "--geo-loss-weight",
+        type=float,
+        default=0.1,
+        help="weight for the decoder-aware periodic geometry loss",
+    )
+    parser.add_argument(
+        "--mmfm-prior",
+        default=None,
+        help="path to a Crystal-MM-FM GMM prior built by scripts/build_crystal_gmm.py",
+    )
+    parser.add_argument(
+        "--mmfm-mode-coupling",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+        help="pair each training crystal with a mode sampled from its own responsibility",
+    )
+    parser.add_argument(
+        "--mmfm-balanced",
+        action="store_true",
+        help="stratify inference candidates across GMM modes instead of iid sampling",
     )
     parser.add_argument(
         "--hilo-low-freq-heads",
@@ -654,6 +692,17 @@ def parse_args():
         parser.error("--mask-loss-weight must be non-negative")
     if args.decode_layer < 1:
         parser.error("--decode-layer must be positive")
+    if args.cell_loss_weight < 0.0 or args.geo_loss_weight < 0.0:
+        parser.error("decoder-aware loss weights must be non-negative")
+    if args.mmfm_prior is not None and not Path(args.mmfm_prior).is_file():
+        parser.error(f"--mmfm-prior does not exist: {args.mmfm_prior}")
+    if args.init_ckpt is not None and not Path(args.init_ckpt).is_file():
+        parser.error(f"--init-ckpt does not exist: {args.init_ckpt}")
+    if args.ot_coupling and (args.decoder_aware_fm or args.mmfm_prior):
+        parser.error(
+            "--ot-coupling is an alternative pairing scheme; do not combine it "
+            "with --decoder-aware-fm or --mmfm-prior"
+        )
     if not 0 <= args.hilo_low_freq_heads <= 8:
         parser.error("--hilo-low-freq-heads must be in [0, 8]")
     if args.hilo_cutoff <= 0.0:
@@ -815,6 +864,14 @@ def build_ldm(args, output_dir):
         f"mmd_weight={args.mmd_weight:g} mmd_every={args.mmd_every} "
         f"mmd_steps={args.mmd_steps} mmd_batch_size={args.mmd_batch_size}"
     )
+    print(
+        f"[配置] decoder_aware={args.decoder_aware_fm} "
+        f"cell_weight={args.cell_loss_weight:g} "
+        f"geo_weight={args.geo_loss_weight:g} "
+        f"mmfm_prior={args.mmfm_prior} "
+        f"mmfm_mode_coupling={args.mmfm_mode_coupling} "
+        f"mmfm_balanced={args.mmfm_balanced}"
+    )
     return LatentDiffusionLitModule(
         autoencoder_ckpt=args.vae_ckpt,
         denoiser=denoiser,
@@ -834,6 +891,12 @@ def build_ldm(args, output_dir):
         mmd_every=args.mmd_every,
         mmd_steps=args.mmd_steps,
         mmd_batch_size=args.mmd_batch_size,
+        decoder_aware=args.decoder_aware_fm,
+        cell_loss_weight=args.cell_loss_weight,
+        geo_loss_weight=args.geo_loss_weight,
+        mmfm_prior_path=args.mmfm_prior,
+        mmfm_mode_coupling=args.mmfm_mode_coupling,
+        mmfm_balanced=args.mmfm_balanced,
     )
 
 
@@ -860,6 +923,15 @@ def main():
         f"vae_attention={args.vae_attention}"
     )
     model = build_vae(args, output_dir) if args.stage == "vae" else build_ldm(args, output_dir)
+    if args.init_ckpt:
+        checkpoint_data = torch.load(
+            args.init_ckpt,
+            map_location="cpu",
+            weights_only=False,
+        )
+        state_dict = checkpoint_data.get("state_dict", checkpoint_data)
+        model.load_state_dict(state_dict, strict=True)
+        print(f"[初始化] loaded model weights from {args.init_ckpt}")
 
     accelerator = "gpu" if args.device == "cuda" or (
         args.device == "auto" and torch.cuda.is_available()
