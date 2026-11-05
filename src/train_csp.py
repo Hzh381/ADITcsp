@@ -567,7 +567,7 @@ def parse_args():
     parser.add_argument(
         "--decoder-aware-fm",
         action="store_true",
-        help="add decoder-aware cell/periodic losses to latent flow matching",
+        help="add decoder-aware cell/periodic/coordinate losses to latent flow matching",
     )
     parser.add_argument(
         "--cell-loss-weight",
@@ -580,6 +580,30 @@ def parse_args():
         type=float,
         default=0.1,
         help="weight for the decoder-aware periodic geometry loss",
+    )
+    parser.add_argument(
+        "--coord-loss-weight",
+        type=float,
+        default=0.1,
+        help="weight for periodic Hungarian-matched coordinate loss",
+    )
+    parser.add_argument(
+        "--coord-max-shifts",
+        type=int,
+        default=1,
+        help="integer lattice-shift radius for periodic coordinate matching",
+    )
+    parser.add_argument(
+        "--coord-shift-candidates",
+        type=int,
+        default=4,
+        help="maximum translation candidates searched per crystal",
+    )
+    parser.add_argument(
+        "--coord-batch-size",
+        type=int,
+        default=8,
+        help="number of crystals per step for Hungarian coordinate matching; 0 uses all",
     )
     parser.add_argument(
         "--mmfm-prior",
@@ -692,8 +716,22 @@ def parse_args():
         parser.error("--mask-loss-weight must be non-negative")
     if args.decode_layer < 1:
         parser.error("--decode-layer must be positive")
-    if args.cell_loss_weight < 0.0 or args.geo_loss_weight < 0.0:
+    if (
+        args.cell_loss_weight < 0.0
+        or args.geo_loss_weight < 0.0
+        or args.coord_loss_weight < 0.0
+    ):
         parser.error("decoder-aware loss weights must be non-negative")
+    if (
+        args.coord_max_shifts < 0
+        or args.coord_shift_candidates < 1
+        or args.coord_batch_size < 0
+    ):
+        parser.error(
+            "--coord-max-shifts must be non-negative and "
+            "--coord-shift-candidates must be positive; "
+            "--coord-batch-size must be non-negative"
+        )
     if args.mmfm_prior is not None and not Path(args.mmfm_prior).is_file():
         parser.error(f"--mmfm-prior does not exist: {args.mmfm_prior}")
     if args.init_ckpt is not None and not Path(args.init_ckpt).is_file():
@@ -702,6 +740,20 @@ def parse_args():
         parser.error(
             "--ot-coupling is an alternative pairing scheme; do not combine it "
             "with --decoder-aware-fm or --mmfm-prior"
+        )
+    if args.stage == "vae" and (
+        args.decoder_aware_fm
+        or args.mmfm_prior
+        or args.mmfm_mode_coupling
+        or args.mmfm_balanced
+    ):
+        parser.error(
+            "Decoder-aware FM and Crystal-MM-FM are stage-2 options; "
+            "use --stage dit."
+        )
+    if (args.mmfm_mode_coupling or args.mmfm_balanced) and not args.mmfm_prior:
+        parser.error(
+            "--mmfm-mode-coupling and --mmfm-balanced require --mmfm-prior."
         )
     if not 0 <= args.hilo_low_freq_heads <= 8:
         parser.error("--hilo-low-freq-heads must be in [0, 8]")
@@ -868,6 +920,10 @@ def build_ldm(args, output_dir):
         f"[配置] decoder_aware={args.decoder_aware_fm} "
         f"cell_weight={args.cell_loss_weight:g} "
         f"geo_weight={args.geo_loss_weight:g} "
+        f"coord_weight={args.coord_loss_weight:g} "
+        f"coord_shifts={args.coord_max_shifts} "
+        f"coord_candidates={args.coord_shift_candidates} "
+        f"coord_batch={args.coord_batch_size} "
         f"mmfm_prior={args.mmfm_prior} "
         f"mmfm_mode_coupling={args.mmfm_mode_coupling} "
         f"mmfm_balanced={args.mmfm_balanced}"
@@ -894,6 +950,10 @@ def build_ldm(args, output_dir):
         decoder_aware=args.decoder_aware_fm,
         cell_loss_weight=args.cell_loss_weight,
         geo_loss_weight=args.geo_loss_weight,
+        coord_loss_weight=args.coord_loss_weight,
+        coord_max_shifts=args.coord_max_shifts,
+        coord_shift_candidates=args.coord_shift_candidates,
+        coord_batch_size=args.coord_batch_size,
         mmfm_prior_path=args.mmfm_prior,
         mmfm_mode_coupling=args.mmfm_mode_coupling,
         mmfm_balanced=args.mmfm_balanced,

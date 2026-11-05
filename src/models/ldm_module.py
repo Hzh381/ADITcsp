@@ -41,6 +41,10 @@ class LatentDiffusionLitModule(LightningModule):
         decoder_aware: bool = False,
         cell_loss_weight: float = 0.1,
         geo_loss_weight: float = 0.1,
+        coord_loss_weight: float = 0.1,
+        coord_max_shifts: int = 1,
+        coord_shift_candidates: int = 4,
+        coord_batch_size: int = 8,
         mmfm_prior_path: str | None = None,
         mmfm_mode_coupling: bool = False,
         mmfm_balanced: bool = False,
@@ -65,6 +69,10 @@ class LatentDiffusionLitModule(LightningModule):
         self.decoder_aware = bool(decoder_aware)
         self.cell_loss_weight = float(cell_loss_weight)
         self.geo_loss_weight = float(geo_loss_weight)
+        self.coord_loss_weight = float(coord_loss_weight)
+        self.coord_max_shifts = int(coord_max_shifts)
+        self.coord_shift_candidates = int(coord_shift_candidates)
+        self.coord_batch_size = int(coord_batch_size)
         self.mmfm_prior_path = mmfm_prior_path
         self.mmfm_mode_coupling = bool(mmfm_mode_coupling)
         self.mmfm_balanced = bool(mmfm_balanced)
@@ -82,9 +90,18 @@ class LatentDiffusionLitModule(LightningModule):
                 "pairing schemes; run them in separate experiments."
             )
         if self.decoder_aware and (
-            self.cell_loss_weight < 0.0 or self.geo_loss_weight < 0.0
+            self.cell_loss_weight < 0.0
+            or self.geo_loss_weight < 0.0
+            or self.coord_loss_weight < 0.0
         ):
             raise ValueError("Decoder-aware loss weights must be non-negative.")
+        if self.coord_max_shifts < 0 or self.coord_shift_candidates < 1:
+            raise ValueError(
+                "coord_max_shifts must be non-negative and "
+                "coord_shift_candidates must be positive."
+            )
+        if self.coord_batch_size < 0:
+            raise ValueError("coord_batch_size must be non-negative.")
         self.masking_enabled = bool(getattr(denoiser, "supports_masking", False))
         self.has_diversity = bool(getattr(denoiser, "has_diversity", False))
         names = ["loss", "x_loss"]
@@ -104,7 +121,7 @@ class LatentDiffusionLitModule(LightningModule):
         if self.posterior_mmd is not None:
             names.extend(["mmd_loss", "mmd_raw_loss", "mmd_bandwidth"])
         if self.decoder_aware:
-            names.extend(["cell_loss", "geo_loss"])
+            names.extend(["cell_loss", "geo_loss", "coord_loss"])
         self.train_metrics = torch.nn.ModuleDict({k: MeanMetric() for k in names})
         self.val_metrics = torch.nn.ModuleDict(
             {
@@ -176,6 +193,7 @@ class LatentDiffusionLitModule(LightningModule):
             noisy["target_frac"] = target_frac
             noisy["target_lengths"] = batch.lengths
             noisy["target_angles"] = batch.angles_radians
+            noisy["target_atom_types"] = batch.atom_types
         dataset_idx = batch.dataset_idx + 1
         spacegroup = torch.zeros_like(batch.spacegroup)
         return noisy, {
@@ -297,6 +315,26 @@ class LatentDiffusionLitModule(LightningModule):
             posinf=math.pi - 0.1,
             neginf=0.1,
         )
+        pred_types = None
+        target_types = None
+        if self.coord_loss_weight > 0.0:
+            pred_types_flat = decoded["atom_types"].argmax(dim=-1)
+            pred_types, _ = to_dense_batch(
+                pred_types_flat.float(),
+                flat_batch,
+                max_num_nodes=mask.size(1),
+            )
+            target_flat = noisy.get("target_atom_types")
+            if target_flat is not None:
+                target_types, _ = to_dense_batch(
+                    target_flat.float(),
+                    flat_batch,
+                    max_num_nodes=mask.size(1),
+                )
+                target_types = target_types.long()
+            pred_types = pred_types.long()
+            if target_types is None:
+                pred_types = None
         result = compute_struct_loss(
             pred_frac,
             pred_lengths,
@@ -305,6 +343,12 @@ class LatentDiffusionLitModule(LightningModule):
             noisy["target_lengths"],
             noisy["target_angles"],
             mask,
+            pred_types=pred_types,
+            target_types=target_types,
+            include_coord=self.coord_loss_weight > 0.0,
+            coord_max_shifts=self.coord_max_shifts,
+            coord_shift_candidates=self.coord_shift_candidates,
+            coord_batch_size=self.coord_batch_size,
         )
         return {
             key: value if torch.isfinite(value) else pred.new_zeros(())
@@ -342,14 +386,18 @@ class LatentDiffusionLitModule(LightningModule):
         }
         total = plain["loss"]
         if self.decoder_aware and (
-            self.cell_loss_weight > 0.0 or self.geo_loss_weight > 0.0
+            self.cell_loss_weight > 0.0
+            or self.geo_loss_weight > 0.0
+            or self.coord_loss_weight > 0.0
         ):
             structure = self._decoder_structure_loss(pred, conditioning, noisy)
             cell_term = self.cell_loss_weight * structure["cell_loss"]
             geo_term = self.geo_loss_weight * structure["geo_loss"]
-            total = total + cell_term + geo_term
+            coord_term = self.coord_loss_weight * structure["coord_loss"]
+            total = total + cell_term + geo_term + coord_term
             logs["cell_loss"] = structure["cell_loss"].detach()
             logs["geo_loss"] = structure["geo_loss"].detach()
+            logs["coord_loss"] = structure["coord_loss"].detach()
         if self.ot_coupler is not None:
             logs["ot_cost"] = torch.as_tensor(
                 0.0

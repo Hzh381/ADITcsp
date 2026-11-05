@@ -18,6 +18,8 @@ import math
 import torch
 import torch.nn.functional as F
 
+from src.models.periodic_coord_loss import periodic_coord_loss
+
 
 def build_cell_matrices(lengths: torch.Tensor, angles: torch.Tensor) -> torch.Tensor:
     """Build lattice matrices (vectors as rows) from lengths and angles.
@@ -177,10 +179,16 @@ def compute_struct_loss(
     target_lengths: torch.Tensor,
     target_angles: torch.Tensor,
     token_mask: torch.Tensor,
+    pred_types: torch.Tensor | None = None,
+    target_types: torch.Tensor | None = None,
+    include_coord: bool = False,
+    coord_max_shifts: int = 1,
+    coord_shift_candidates: int = 4,
+    coord_batch_size: int = 0,
     rho: torch.Tensor | None = None,
     sigma: float = 0.5,
 ) -> dict[str, torch.Tensor]:
-    """Return the cell and periodic terms without applying experiment weights."""
+    """Return cell, periodic and optional atom-coordinate terms."""
     cell_loss = compute_cell_loss(
         pred_lengths,
         pred_angles,
@@ -198,4 +206,35 @@ def compute_struct_loss(
         rho=rho,
         sigma=sigma,
     )
-    return {"cell_loss": cell_loss, "geo_loss": geo_loss}
+    if include_coord:
+        target_cell = build_cell_matrices(target_lengths, target_angles)
+        if coord_batch_size > 0 and pred_frac_coords.size(0) > coord_batch_size:
+            selected = torch.randperm(
+                pred_frac_coords.size(0),
+                device=pred_frac_coords.device,
+            )[:coord_batch_size]
+        else:
+            selected = slice(None)
+        selected_pred_types = (
+            pred_types[selected] if pred_types is not None else None
+        )
+        selected_target_types = (
+            target_types[selected] if target_types is not None else None
+        )
+        coord_loss = periodic_coord_loss(
+            pred_frac_coords[selected],
+            target_frac_coords[selected],
+            target_cell[selected],
+            pred_types=selected_pred_types,
+            target_types=selected_target_types,
+            atom_mask=token_mask[selected],
+            max_shifts=coord_max_shifts,
+            max_shift_candidates=coord_shift_candidates,
+        )
+    else:
+        coord_loss = pred_frac_coords.new_zeros(())
+    return {
+        "cell_loss": cell_loss,
+        "geo_loss": geo_loss,
+        "coord_loss": coord_loss,
+    }

@@ -22,6 +22,7 @@ from src.models.crystal_mmfm_prior import (
 )
 from src.models.decoders.transformer import TransformerDecoder
 from src.models.decoder_struct_loss import compute_periodic_loss, compute_struct_loss
+from src.models.periodic_coord_loss import periodic_coord_loss
 from src.models.denoisers.dit import DiT
 from src.models.encoders.transformer import TransformerEncoder
 from src.models.interpolants.flow_matching import FlowMatchingInterpolant
@@ -167,10 +168,19 @@ def test_decoder_aware_loss_backpropagates():
         pred = module._denoise(noisy, conditioning)
         plain = module.criterion(noisy, pred)
         structure = module._decoder_structure_loss(pred, conditioning, noisy)
-        total = plain["loss"] + 0.1 * structure["cell_loss"] + 0.1 * structure["geo_loss"]
+        total = (
+            plain["loss"]
+            + 0.1 * structure["cell_loss"]
+            + 0.1 * structure["geo_loss"]
+            + 0.1 * structure["coord_loss"]
+        )
         total.backward()
         assert torch.isfinite(total)
-        assert structure["cell_loss"] >= 0 and structure["geo_loss"] >= 0
+        assert (
+            structure["cell_loss"] >= 0
+            and structure["geo_loss"] >= 0
+            and structure["coord_loss"] >= 0
+        )
         assert any(p.grad is not None for p in module.denoiser.parameters())
         assert all(
             torch.isfinite(p.grad).all()
@@ -215,6 +225,55 @@ def test_periodic_loss_is_finite_for_coincident_atoms():
     loss.backward()
     assert torch.isfinite(loss)
     assert torch.isfinite(pred_frac.grad).all()
+
+
+def test_periodic_coord_loss_handles_permutation_and_translation():
+    target_frac = torch.tensor(
+        [
+            [[0.0, 0.0, 0.0],
+             [0.5, 0.5, 0.5],
+             [0.2, 0.3, 0.4],
+             [0.7, 0.1, 0.6]]
+        ],
+        dtype=torch.float32,
+    )
+    target_types = torch.tensor([[1, 2, 1, 2]])
+    permutation = torch.tensor([2, 0, 3, 1])
+    shift = torch.tensor([0.2, -0.1, 0.3])
+    pred_frac = (
+        target_frac[:, permutation] + shift.view(1, 1, 3)
+    ).requires_grad_(True)
+    pred_types = target_types[:, permutation]
+    lattice = torch.diag(torch.tensor([2.0, 2.2, 2.4])).unsqueeze(0)
+    mask = torch.ones(1, 4, dtype=torch.bool)
+    loss = periodic_coord_loss(
+        pred_frac,
+        target_frac,
+        lattice,
+        pred_types=pred_types,
+        target_types=target_types,
+        atom_mask=mask,
+        max_shift_candidates=16,
+    )
+    loss.backward()
+    assert loss.item() < 1e-8
+    assert torch.isfinite(pred_frac.grad).all()
+
+
+def test_periodic_coord_loss_skips_incompatible_composition():
+    pred_frac = torch.zeros(1, 2, 3, requires_grad=True)
+    target_frac = torch.zeros(1, 2, 3)
+    lattice = torch.eye(3).unsqueeze(0)
+    mask = torch.ones(1, 2, dtype=torch.bool)
+    loss = periodic_coord_loss(
+        pred_frac,
+        target_frac,
+        lattice,
+        pred_types=torch.tensor([[1, 1]]),
+        target_types=torch.tensor([[1, 2]]),
+        atom_mask=mask,
+    )
+    assert loss.item() == 0.0
 
 
 def test_global_descriptor_shapes():
@@ -305,6 +364,8 @@ def main():
     test_decoder_aware_loss_backpropagates()
     test_struct_loss_is_zero_for_identical_structures()
     test_periodic_loss_is_finite_for_coincident_atoms()
+    test_periodic_coord_loss_handles_permutation_and_translation()
+    test_periodic_coord_loss_skips_incompatible_composition()
     test_global_descriptor_shapes()
     test_gmm_and_token_prior_helpers()
     test_mmfm_prior_source_and_sampling()
