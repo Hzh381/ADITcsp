@@ -1,0 +1,69 @@
+{
+  "DiffCSP": {
+    "query": "all:\"Joint Equivariant Diffusion\" AND all:crystal",
+    "records": [
+      {
+        "title": "Crystal Structure Prediction by Joint Equivariant Diffusion",
+        "id": "http://arxiv.org/abs/2309.04475v2",
+        "published": "2023-07-30T15:46:33Z",
+        "summary": "Crystal Structure Prediction (CSP) is crucial in various scientific disciplines. While CSP can be addressed by employing currently-prevailing generative models (e.g. diffusion models), this task encounters unique challenges owing to the symmetric geometry of crystal structures -- the invariance of translation, rotation, and periodicity. To incorporate the above symmetries, this paper proposes DiffCSP, a novel diffusion model to learn the structure distribution from stable crystals. To be specific, DiffCSP jointly generates the lattice and atom coordinates for each crystal by employing a periodic-E(3)-equivariant denoising model, to better model the crystal geometry. Notably, different from related equivariant generative approaches, DiffCSP leverages fractional coordinates other than Cartesian coordinates to represent crystals, remarkably promoting the diffusion and the generation process of atom positions. Extensive experiments verify that our DiffCSP significantly outperforms existing CSP methods, with a much lower computation cost in contrast to DFT-based methods. Moreover, the superiority of DiffCSP is also observed when it is extended for ab initio crystal generation.",
+        "comment": "NeurIPS 2023"
+      }
+    ]
+  },
+  "M3GNet": {
+    "query": "all:\"Graph Networks as a Universal Machine Learning Framework\"",
+    "records": [
+      {
+        "title": "Graph Networks as a Universal Machine Learning Framework for Molecules and Crystals",
+        "id": "http://arxiv.org/abs/1812.05055v2",
+        "published": "2018-12-12T17:53:00Z",
+        "summary": "Graph networks are a new machine learning (ML) paradigm that supports both relational reasoning and combinatorial generalization. Here, we develop universal MatErials Graph Network (MEGNet) models for accurate property prediction in both molecules and crystals. We demonstrate that the MEGNet models outperform prior ML models such as the SchNet in 11 out of 13 properties of the QM9 molecule data set. Similarly, we show that MEGNet models trained on $\\sim 60,000$ crystals in the Materials Project substantially outperform prior ML models in the prediction of the formation energies, band gaps and elastic moduli of crystals, achieving better than DFT accuracy over a much larger data set. We present two new strategies to address data limitations common in materials science and chemistry. First, we demonstrate a physically-intuitive approach to unify four separate molecular MEGNet models for the internal energy at 0 K and room temperature, enthalpy and Gibbs free energy into a single free energy MEGNet model by incorporating the temperature, pressure and entropy as global state inputs. Second, we show that the learned element embeddings in MEGNet models encode periodic chemical trends and can be transfer-learned from a property model trained on a larger data set (formation energies) to improve property models with smaller amounts of data (band gaps and elastic moduli).",
+        "comment": ""
+      }
+    ]
+  },
+  "MACE": {
+    "query": "all:\"A foundation model for atomistic materials chemistry\"",
+    "records": [
+      {
+        "title": "A foundation model for atomistic materials chemistry",
+        "id": "http://arxiv.org/abs/2401.00096v3",
+        "published": "2023-12-29T23:08:59Z",
+        "summary": "Atomistic simulations of matter, especially those that leverage first-principles (ab initio) electronic structure theory, provide a microscopic view of the world, underpinning much of our understanding of chemistry and materials science. Over the last decade or so, machine-learned force fields have transformed atomistic modeling by enabling simulations of ab initio quality over unprecedented time and length scales. However, early ML force fields have largely been limited by: (i) the substantial computational and human effort of developing and validating potentials for each particular system of interest; and (ii) a general lack of transferability from one chemical system to the next. Here we show that it is possible to create a general-purpose atomistic ML model, trained on a public dataset of moderate size, that is capable of running stable molecular dynamics for a wide range of molecules and materials. We demonstrate the power of the MACE-MP-0 model - and its qualitative and at times quantitative accuracy - on a diverse set of problems in the physical sciences, including properties of solids, liquids, gases, chemical reactions, interfaces and even the dynamics of a small protein. The model can be applied out of the box as a starting or \"foundation\" model for any atomistic system of interest and, when desired, can be fine-tuned on just a handful of application-specific data points to reach ab initio accuracy. Establishing that a stable force-field model can cover almost all materials changes atomistic modeling in a fundamental way: experienced users get reliable results much faster, and beginners face a lower barrier to entry. Foundation models thus represent a step towards democratising the revolution in atomic-scale modeling that has been brought about by ML force fields.",
+        "comment": "154 pages, 83 figures, 80MB PDF"
+      },
+      {
+        "title": "Thermal Conductivity Predictions with Foundation Atomistic Models",
+        "id": "http://arxiv.org/abs/2408.00755v5",
+        "published": "2024-08-01T17:57:24Z",
+        "summary": "Advances in machine learning have led to the development of foundation models for atomistic materials chemistry, enabling quantum-accurate descriptions of interatomic forces across chemically diverse compounds at reduced computational cost. Hitherto, the accuracy and utility of these models have been assessed relying on descriptors based on formation energies or idealized harmonic atomic vibrations. Yet, the rigorous and physically interpretable quantification of their capability to describe both realistic anharmonic atomic dynamics and technologically relevant observables remains a pressing problem. Here, we address this problem, leveraging the Wigner formulation of heat transport and the Grüneisen approach to thermal expansion to connect the atomic-physics awareness of foundation models to their utility in predicting experimentally observable thermomechanical properties, presenting standards and fine-tuning protocols needed to achieve first-principles accuracy. We apply our framework to a database of 103 solids with diverse compositions and structures, demonstrating that it overcomes the major bottlenecks of current methods for designing heat-management materials -- high cost, limited transferability, or lack of physics awareness -- and its potential to discover materials for next-gen technologies ranging from thermal insulation to neuromorphic computing.",
+        "comment": "10 pages with 5 figures (main text), 13 pages with 11 figures (methods)"
+      }
+    ]
+  },
+  "CrystalFlow": {
+    "query": "ti:\"CrystalFlow\"",
+    "records": [
+      {
+        "title": "CrystalFlow: A Flow-Based Generative Model for Crystalline Materials",
+        "id": "http://arxiv.org/abs/2412.11693v4",
+        "published": "2024-12-16T12:12:30Z",
+        "summary": "Deep learning-based generative models have emerged as powerful tools for modeling complex data distributions and generating high-fidelity samples, offering a transformative approach to efficiently explore the configuration space of crystalline materials. In this work, we present CrystalFlow, a flow-based generative model specifically developed for the generation of crystalline materials. CrystalFlow constructs Continuous Normalizing Flows to model lattice parameters, atomic coordinates, and/or atom types, which are trained using Conditional Flow Matching techniques. Through an appropriate choice of data representation and the integration of a graph-based equivariant neural network, the model effectively captures the fundamental symmetries of crystalline materials, which ensures data-efficient learning and enables high-quality sampling. Our experiments demonstrate that CrystalFlow achieves state-of-the-art performance across standard generation benchmarks, and exhibits versatile conditional generation capabilities including producing structures optimized for specific external pressures or desired material properties. These features highlight the model's potential to address realistic crystal structure prediction challenges, offering a robust and efficient framework for advancing data-driven research in condensed matter physics and material science.",
+        "comment": "Update references and acknowledgments"
+      }
+    ]
+  },
+  "TFMat": {
+    "query": "all:\"Text-guided flow matching\" AND all:crystal",
+    "records": [
+      {
+        "title": "Text-guided flow matching enables sample-efficient crystal structure generation",
+        "id": "http://arxiv.org/abs/2609.01076v2",
+        "published": "2026-09-01T11:07:18Z",
+        "summary": "Crystal generators can now propose periodic structures, but their control interfaces remain poorly matched to the mixed descriptors used in materials design. Text provides a compact way to combine composition, symmetry, prototype and property cues, yet it has not been clear whether such information can steer flow-based crystal generation. Here we introduce TFMat, a text-conditioned flow-matching framework that uses structured materials language as a semantic prior for a CrystalFlow generator. Across Perov-5, Carbon-24 and MP-20 crystal structure prediction benchmarks, TFMat improves one-candidate match rates over CrystalFlow and reaches a 92.04% MP-20 match rate with 20 candidates; in de novo generation, it improves element-count and density distribution alignment while retaining coarse property consistency in composition-selected outputs. These results position structured text as an inspectable control layer for translating human-readable materials intent into candidate crystals for downstream simulation and validation.",
+        "comment": "20 pages"
+      }
+    ]
+  }
+}

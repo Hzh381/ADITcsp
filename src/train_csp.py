@@ -596,14 +596,8 @@ def parse_args():
     parser.add_argument(
         "--coord-shift-candidates",
         type=int,
-        default=4,
-        help="maximum translation candidates searched per crystal",
-    )
-    parser.add_argument(
-        "--coord-batch-size",
-        type=int,
         default=8,
-        help="number of crystals per step for Hungarian coordinate matching; 0 uses all",
+        help="translation candidates per crystal; 0 uses all relative displacements",
     )
     parser.add_argument(
         "--mmfm-prior",
@@ -724,13 +718,11 @@ def parse_args():
         parser.error("decoder-aware loss weights must be non-negative")
     if (
         args.coord_max_shifts < 0
-        or args.coord_shift_candidates < 1
-        or args.coord_batch_size < 0
+        or args.coord_shift_candidates < 0
     ):
         parser.error(
             "--coord-max-shifts must be non-negative and "
-            "--coord-shift-candidates must be positive; "
-            "--coord-batch-size must be non-negative"
+            "--coord-shift-candidates must be non-negative"
         )
     if args.mmfm_prior is not None and not Path(args.mmfm_prior).is_file():
         parser.error(f"--mmfm-prior does not exist: {args.mmfm_prior}")
@@ -923,7 +915,6 @@ def build_ldm(args, output_dir):
         f"coord_weight={args.coord_loss_weight:g} "
         f"coord_shifts={args.coord_max_shifts} "
         f"coord_candidates={args.coord_shift_candidates} "
-        f"coord_batch={args.coord_batch_size} "
         f"mmfm_prior={args.mmfm_prior} "
         f"mmfm_mode_coupling={args.mmfm_mode_coupling} "
         f"mmfm_balanced={args.mmfm_balanced}"
@@ -953,7 +944,6 @@ def build_ldm(args, output_dir):
         coord_loss_weight=args.coord_loss_weight,
         coord_max_shifts=args.coord_max_shifts,
         coord_shift_candidates=args.coord_shift_candidates,
-        coord_batch_size=args.coord_batch_size,
         mmfm_prior_path=args.mmfm_prior,
         mmfm_mode_coupling=args.mmfm_mode_coupling,
         mmfm_balanced=args.mmfm_balanced,

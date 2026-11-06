@@ -1,0 +1,355 @@
+{
+  "DiffCSP": {
+    "query": "ti:\"DiffCSP\"",
+    "records": []
+  },
+  "FlowMM": {
+    "query": "ti:\"FlowMM\"",
+    "records": [
+      {
+        "title": "FlowMM: Generating Materials with Riemannian Flow Matching",
+        "id": "http://arxiv.org/abs/2406.04713v1",
+        "published": "2024-06-07T07:46:23Z",
+        "summary": "Crystalline materials are a fundamental component in next-generation technologies, yet modeling their distribution presents unique computational challenges. Of the plausible arrangements of atoms in a periodic lattice only a vanishingly small percentage are thermodynamically stable, which is a key indicator of the materials that can be experimentally realized. Two fundamental tasks in this area are to (a) predict the stable crystal structure of a known composition of elements and (b) propose novel compositions along with their stable structures. We present FlowMM, a pair of generative models that achieve state-of-the-art performance on both tasks while being more efficient and more flexible than competing methods. We generalize Riemannian Flow Matching to suit the symmetries inherent to crystals: translation, rotation, permutation, and periodic boundary conditions. Our framework enables the freedom to choose the flow base distributions, drastically simplifying the problem of learning crystal structures compared with diffusion models. In addition to standard benchmarks, we validate FlowMM's generated structures with quantum chemistry calculations, demonstrating that it is about 3x more efficient, in terms of integration steps, at finding stable materials compared to previous open methods.",
+        "comment": "https://github.com/facebookresearch/flowmm",
+        "authors": [
+          "Benjamin Kurt Miller",
+          "Ricky T. Q. Chen",
+          "Anuroop Sriram",
+          "Brandon M Wood"
+        ]
+      },
+      {
+        "title": "FlowMM: Cross-Modal Information Flow Guided KV Cache Merging for Efficient Multimodal Context Inference",
+        "id": "http://arxiv.org/abs/2511.05534v2",
+        "published": "2025-10-29T13:20:16Z",
+        "summary": "Traditional KV cache eviction strategies, which discard less critical KV-pairs based on attention scores, often degrade generation quality, causing context loss or hallucinations. Recent efforts shift toward KV merging, merging eviction tokens with retention tokens based on similarity. However, in multimodal scenarios, distributional biases across modality tokens and attentional biases in cross-modal interactions limit its effectiveness. This work introduces FlowMM, an adaptive framework for cross-modal information flow-guided multimodal KV cache merging. FlowMM leverages cross-modal information flow to dynamically apply layer-specific merging strategies, capturing modality-specific patterns while preserving contextual integrity. Furthermore, we introduce a sensitivity-adaptive token matching mechanism that jointly evaluates token similarity and task-critical sensitivity, merging low-risk tokens while safeguarding high-sensitivity ones. Extensive experiments across diverse leading MLLMs show that FlowMM reduces KV cache memory by 80% to 95% and decoding latency by 1.3-1.8x, while maintaining competitive task performance.",
+        "comment": "",
+        "authors": [
+          "Kunxi Li",
+          "Yufan Xiong",
+          "Zhonghua Jiang",
+          "Yiyun Zhou",
+          "Zhaode Wang",
+          "Chengfei Lv",
+          "Shengyu Zhang"
+        ]
+      }
+    ]
+  },
+  "MatterGen": {
+    "query": "ti:\"MatterGen\"",
+    "records": [
+      {
+        "title": "MatterGen: a generative model for inorganic materials design",
+        "id": "http://arxiv.org/abs/2312.03687v2",
+        "published": "2023-12-06T18:52:16Z",
+        "summary": "The design of functional materials with desired properties is essential in driving technological advances in areas like energy storage, catalysis, and carbon capture. Generative models provide a new paradigm for materials design by directly generating entirely novel materials given desired property constraints. Despite recent progress, current generative models have low success rate in proposing stable crystals, or can only satisfy a very limited set of property constraints. Here, we present MatterGen, a model that generates stable, diverse inorganic materials across the periodic table and can further be fine-tuned to steer the generation towards a broad range of property constraints. To enable this, we introduce a new diffusion-based generative process that produces crystalline structures by gradually refining atom types, coordinates, and the periodic lattice. We further introduce adapter modules to enable fine-tuning towards any given property constraints with a labeled dataset. Compared to prior generative models, structures produced by MatterGen are more than twice as likely to be novel and stable, and more than 15 times closer to the local energy minimum. After fine-tuning, MatterGen successfully generates stable, novel materials with desired chemistry, symmetry, as well as mechanical, electronic and magnetic properties. Finally, we demonstrate multi-property materials design capabilities by proposing structures that have both high magnetic density and a chemical composition with low supply-chain risk. We believe that the quality of generated materials and the breadth of MatterGen's capabilities represent a major advancement towards creating a universal generative model for materials design.",
+        "comment": "13 pages main text, 35 pages supplementary information",
+        "authors": [
+          "Claudio Zeni",
+          "Robert Pinsler",
+          "Daniel Zügner",
+          "Andrew Fowler",
+          "Matthew Horton",
+          "Xiang Fu",
+          "Sasha Shysheya",
+          "Jonathan Crabbé",
+          "Lixin Sun",
+          "Jake Smith",
+          "Bichlien Nguyen",
+          "Hannes Schulz",
+          "Sarah Lewis",
+          "Chin-Wei Huang",
+          "Ziheng Lu",
+          "Yichi Zhou",
+          "Han Yang",
+          "Hongxia Hao",
+          "Jielan Li",
+          "Ryota Tomioka",
+          "Tian Xie"
+        ]
+      }
+    ]
+  },
+  "SpaceGroupFlow": {
+    "query": "ti:\"Space Group Conditional Flow Matching\"",
+    "records": [
+      {
+        "title": "Space Group Conditional Flow Matching",
+        "id": "http://arxiv.org/abs/2509.23822v1",
+        "published": "2025-09-28T11:51:29Z",
+        "summary": "Inorganic crystals are periodic, highly-symmetric arrangements of atoms in three-dimensional space. Their structures are constrained by the symmetry operations of a crystallographic \\emph{space group} and restricted to lie in specific affine subspaces known as \\emph{Wyckoff positions}. The frequency an atom appears in the crystal and its rough positioning are determined by its Wyckoff position. Most generative models that predict atomic coordinates overlook these symmetry constraints, leading to unrealistically high populations of proposed crystals exhibiting limited symmetry. We introduce Space Group Conditional Flow Matching, a novel generative framework that samples significantly closer to the target population of highly-symmetric, stable crystals. We achieve this by conditioning the entire generation process on a given space group and set of Wyckoff positions; specifically, we define a conditionally symmetric noise base distribution and a group-conditioned, equivariant, parametric vector field that restricts the motion of atoms to their initial Wyckoff position. Our form of group-conditioned equivariance is achieved using an efficient reformulation of \\emph{group averaging} tailored for symmetric crystals. Importantly, it reduces the computational overhead of symmetrization to a negligible level. We achieve state of the art results on crystal structure prediction and de novo generation benchmarks. We also perform relevant ablations.",
+        "comment": "",
+        "authors": [
+          "Omri Puny",
+          "Yaron Lipman",
+          "Benjamin Kurt Miller"
+        ]
+      }
+    ]
+  },
+  "PrototypeDependence": {
+    "query": "ti:\"Deep Generative Crystal Structure Prediction\"",
+    "records": [
+      {
+        "title": "Deep Generative Crystal Structure Prediction: A Benchmark Study and a Controlled Test of Prototype Dependence",
+        "id": "http://arxiv.org/abs/2609.26502v2",
+        "published": "2026-09-22T14:35:38Z",
+        "summary": "Deep generative models are widely reported to enable de novo crystal structure prediction (CSP), but their capability has not been measured consistently against template-based methods. We evaluate 12 representative generative CSP models, spanning latent-variable, diffusion, flow-matching, autoregressive, and manifold random-walk architectures, against TCSP 2.0 on 180 test structures and a leakage-controlled subset of 46. All methods use identical structure-matching, symmetry, and consensus criteria. Template retrieval is the strongest single method, reaching 68.3% top-1 success; symmetry-aware EquiCSP (66.4%) and Uni-3DAR (62.9%) form the next tier. However, comparison with TCSP 2.0 shows that most structures correctly predicted by generative models are also correctly predicted by template substitution. Thus, the set of structures uniquely reachable by generation is small, limiting its practical advantage for discovering structures outside existing prototype libraries. To test the source of this performance, we removed entire stoichiometric prototype families from the training set and retrained the strongest generative model. Accuracy declined by 50-78% across four families, establishing that performance is substantially prototype-dependent. A small minority of structures survived removal of their prototype family, demonstrating a real but limited retrieval-independent predictive capacity. Present generative CSP models therefore function largely as implicit, softer-edged prototype libraries rather than genuinely de novo predictors. Enlarging this residual capacity, rather than aggregate match rate alone, is the central open problem.",
+        "comment": "18 pages",
+        "authors": [
+          "Lai Wei",
+          "Rongzhi Dong",
+          "Ying Feng",
+          "Madeline Miklos",
+          "Jianjun Hu"
+        ]
+      }
+    ]
+  },
+  "MatterSim": {
+    "query": "ti:\"MatterSim\"",
+    "records": [
+      {
+        "title": "MatterSim: A Deep Learning Atomistic Model Across Elements, Temperatures and Pressures",
+        "id": "http://arxiv.org/abs/2405.04967v2",
+        "published": "2024-05-08T11:13:30Z",
+        "summary": "Accurate and fast prediction of materials properties is central to the digital transformation of materials design. However, the vast design space and diverse operating conditions pose significant challenges for accurately modeling arbitrary material candidates and forecasting their properties. We present MatterSim, a deep learning model actively learned from large-scale first-principles computations, for efficient atomistic simulations at first-principles level and accurate prediction of broad material properties across the periodic table, spanning temperatures from 0 to 5000 K and pressures up to 1000 GPa. Out-of-the-box, the model serves as a machine learning force field, and shows remarkable capabilities not only in predicting ground-state material structures and energetics, but also in simulating their behavior under realistic temperatures and pressures, signifying an up to ten-fold enhancement in precision compared to the prior best-in-class. This enables MatterSim to compute materials' lattice dynamics, mechanical and thermodynamic properties, and beyond, to an accuracy comparable with first-principles methods. Specifically, MatterSim predicts Gibbs free energies for a wide range of inorganic solids with near-first-principles accuracy and achieves a 15 meV/atom resolution for temperatures up to 1000K compared with experiments. This opens an opportunity to predict experimental phase diagrams of materials at minimal computational cost. Moreover, MatterSim also serves as a platform for continuous learning and customization by integrating domain-specific data. The model can be fine-tuned for atomistic simulations at a desired level of theory or for direct structure-to-property predictions, achieving high data efficiency with a reduction in data requirements by up to 97%.",
+        "comment": "",
+        "authors": [
+          "Han Yang",
+          "Chenxi Hu",
+          "Yichi Zhou",
+          "Xixian Liu",
+          "Yu Shi",
+          "Jielan Li",
+          "Guanzhi Li",
+          "Zekun Chen",
+          "Shuizhou Chen",
+          "Claudio Zeni",
+          "Matthew Horton",
+          "Robert Pinsler",
+          "Andrew Fowler",
+          "Daniel Zügner",
+          "Tian Xie",
+          "Jake Smith",
+          "Lixin Sun",
+          "Qian Wang",
+          "Lingyu Kong",
+          "Chang Liu",
+          "Hongxia Hao",
+          "Ziheng Lu"
+        ]
+      },
+      {
+        "title": "MatterSim-MT: A multi-task foundation model for in silico materials characterization",
+        "id": "http://arxiv.org/abs/2605.07927v2",
+        "published": "2026-05-08T16:01:20Z",
+        "summary": "Accurate property characterization is a major bottleneck in materials design. While first-principles methods and task-specific machine-learning models have driven important progress, they remain fundamentally limited in scalability and generalizability across the vast space of structures and properties relevant to real-world materials design. We present MatterSim-MT, a multi-task foundation model for in silico materials simulation and property characterization. The model is pretrained on over 35 million first-principles-labeled structures covering 89 elements, temperatures up to 5000 K and pressures up to 1000 GPa, and is fine-tuned on various properties including Bader charges, magnetic moments, Born effective charges, and dielectric matrices. Out of the box, MatterSim-MT not only serves as a foundation model for predicting material structure, dynamics and thermodynamics, its multi-task architecture also enables a wide range of complex simulations that cannot be captured by potential energy surfaces alone. For example, we demonstrate pressure-dependent LO-TO phonon splitting in SiC with close agreement with experiment, electric hysteresis in ferroelectric BaTiO3, and the cationic-to-anionic redox transition during delithiation of a Li-rich cathode material. Finally, we show that MatterSim-MT scales well with more data and parameters, can be efficiently fine-tuned to higher levels of theory, and can be efficiently extended to new systems via active learning. Overall, we believe this approach provides a scalable route to accurate in silico materials characterization.",
+        "comment": "",
+        "authors": [
+          "Han Yang",
+          "Xixian Liu",
+          "Chenxi Hu",
+          "Yichi Zhou",
+          "Yu Shi",
+          "Chang Liu",
+          "Junfu Tan",
+          "Jielan Li",
+          "Guanzhi Li",
+          "Qian Wang",
+          "Yu Zhu",
+          "Zekun Chen",
+          "Shuizhou Chen",
+          "Fabian Thiemann",
+          "Claudio Zeni",
+          "Matthew Horton",
+          "Robert Pinsler",
+          "Andrew Fowler",
+          "Daniel Zügner",
+          "Tian Xie",
+          "Lixin Sun",
+          "Yicheng Chen",
+          "Lingyu Kong",
+          "Yeqi Bai",
+          "Deniz Gunceler",
+          "Frank Noé",
+          "Hongxia Hao",
+          "Ziheng Lu"
+        ]
+      }
+    ]
+  },
+  "M3GNet": {
+    "query": "ti:\"M3GNet\"",
+    "records": []
+  },
+  "CHGNet": {
+    "query": "ti:\"CHGNet\"",
+    "records": [
+      {
+        "title": "CHGNet: Pretrained universal neural network potential for charge-informed atomistic modeling",
+        "id": "http://arxiv.org/abs/2302.14231v2",
+        "published": "2023-02-28T01:30:06Z",
+        "summary": "The simulation of large-scale systems with complex electron interactions remains one of the greatest challenges for the atomistic modeling of materials. Although classical force fields often fail to describe the coupling between electronic states and ionic rearrangements, the more accurate \\textit{ab-initio} molecular dynamics suffers from computational complexity that prevents long-time and large-scale simulations, which are essential to study many technologically relevant phenomena, such as reactions, ion migrations, phase transformations, and degradation. In this work, we present the Crystal Hamiltonian Graph neural Network (CHGNet) as a novel machine-learning interatomic potential (MLIP), using a graph-neural-network-based force field to model a universal potential energy surface. CHGNet is pretrained on the energies, forces, stresses, and magnetic moments from the Materials Project Trajectory Dataset, which consists of over 10 years of density functional theory static and relaxation trajectories of $\\sim 1.5$ million inorganic structures. The explicit inclusion of magnetic moments enables CHGNet to learn and accurately represent the orbital occupancy of electrons, enhancing its capability to describe both atomic and electronic degrees of freedom. We demonstrate several applications of CHGNet in solid-state materials, including charge-informed molecular dynamics in Li$_x$MnO$_2$, the finite temperature phase diagram for Li$_x$FePO$_4$ and Li diffusion in garnet conductors. We critically analyze the significance of including charge information for capturing appropriate chemistry, and we provide new insights into ionic systems with additional electronic degrees of freedom that can not be observed by previous MLIPs.",
+        "comment": "",
+        "authors": [
+          "Bowen Deng",
+          "Peichen Zhong",
+          "KyuJung Jun",
+          "Janosh Riebesell",
+          "Kevin Han",
+          "Christopher J. Bartel",
+          "Gerbrand Ceder"
+        ]
+      },
+      {
+        "title": "High-Throughput NEB for Li-Ion Conductor Discovery via Fine-Tuned CHGNet Potential",
+        "id": "http://arxiv.org/abs/2507.02334v1",
+        "published": "2025-07-03T05:58:35Z",
+        "summary": "Solid-state electrolytes are essential in the development of all-solid-state batteries. While density functional theory (DFT)-based nudged elastic band (NEB) and ab initio molecular dynamics (AIMD) methods provide fundamental insights on lithium-ion migration barriers and ionic conductivity, their computational costs make large-scale materials exploration challenging. In this study, we developed a high-throughput NEB computational framework integrated with the fine-tuned universal machine learning interatomic potentials (uMLIPs), enabling accelerated prediction of migration barriers based on transition state theory for the efficient discovery of fast-ion conductors. This framework automates the construction of initial/final states and migration paths, mitigating the inaccurate barriers prediction in pretrained potentials due to the insufficient training data on high-energy states. We employed the fine-tuned CHGNet model into NEB/MD calculations and the dual CHGNet-NEB/MD achieves a balance between computational speed and accuracy, as validated in NASICON-type Li$_{1+x}$Al$_x$Ti$_{2-x}$(PO$_4$)$_3$ (LATP) structures. Through high-throughput screening, we identified orthorhombic Pnma-group structures (LiMgPO$_4$, LiTiPO$_5$, etc.) which can serve as promising frameworks for fast ion conductors. Their aliovalent-doped variants, Li$_{0.5}$Mg$_{0.5}$Al$_{0.5}$PO$_4$ and Li$_{0.5}$TiPO$_{4.5}$F$_{0.5}$, were predicted to possess low activation energies, as well as high ionic conductivity of 0.19 mS/cm and 0.024 mS/cm, respectively.",
+        "comment": "",
+        "authors": [
+          "Jingchen Lian",
+          "Xiao Fu",
+          "Xuhe Gong",
+          "Ruijuan Xiao",
+          "Hong Li"
+        ]
+      },
+      {
+        "title": "Benchmarking CHGNet Universal Machine Learning Interatomic Potential Against DFT and EXAFS: Case of Layered WS2 and MoS2",
+        "id": "http://arxiv.org/abs/2509.08498v1",
+        "published": "2025-09-10T11:14:25Z",
+        "summary": "Universal machine learning interatomic potentials (uMLIPs) deliver near ab initio accuracy in energy and force calculations at low computational cost, making them invaluable for materials modeling. Although uMLIPs are pre-trained on vast ab initio datasets, rigorous validation remains essential for their ongoing adoption. In this study, we use the CHGNet uMLIP to model thermal disorder in isostructural layered 2Hc-WS2 and 2Hc-MoS2, benchmarking it against ab initio data and extended X-ray absorption fine structure (EXAFS) spectra, which capture thermal variations in bond lengths and angles. Fine-tuning CHGNet with compound-specific ab initio (DFT) data mitigates the systematic softening (i.e., force underestimation) typical of uMLIPs and simultaneously improves alignment between molecular dynamics-derived and experimental EXAFS spectra. While fine-tuning with a single DFT structure is viable, using ~100 structures is recommended to accurately reproduce EXAFS spectra and achieve DFT-level accuracy. Benchmarking the CHGNet uMLIP against both DFT and experimental EXAFS data reinforces confidence in its performance and provides guidance for determining optimal fine-tuning dataset sizes.",
+        "comment": "",
+        "authors": [
+          "Pjotrs Žguns",
+          "Inga Pudza",
+          "Alexei Kuzmin"
+        ]
+      }
+    ]
+  },
+  "MACE": {
+    "query": "ti:\"MACE-MP-0\"",
+    "records": [
+      {
+        "title": "Modelling Silica using MACE-MP-0 Machine Learnt Interatomic Potentials",
+        "id": "http://arxiv.org/abs/2411.00436v1",
+        "published": "2024-11-01T08:02:02Z",
+        "summary": "Silica polymorphs and zeolites are fundamental to a wide range of industrial applications owing to their diverse structural characteristics, thermodynamic and mechanical stability under varying conditions and due to their geological importance. Computational modelling has played a crucial role in understanding the relationship between the structure and functionality of silicas and silicates including zeolites. In this study, we apply the MACE-MP-0 machine learnt interatomic potentials (ML-IP) to model the framework energies of siliceous zeolites and examine the phase transitions of silica and ZSM-5 polymorphs under high-pressure conditions. The results reproduce the known metastability of siliceous zeolites relative to α-quartz, with energy differences between microporous and dense phases calculated by MACE-MP-0 medium ML-IP and density functional theory (DFT) methods closely aligning with experimental calorimetric data. The high-pressure simulations reveal distinct compression behaviour in the quartz, coesite, and stishovite polymorphs of silica, with coesite and stishovite showing increased stability at elevated pressures in line with experimental data. The calculated phase transition pressures from quartz to coesite (~3.5 GPa) and coesite to stishovite (~9 GPa) are close to experimental findings, demonstrating the reliability of MACE ML-IP in modelling the structural and energetic properties of silica polymorphs.",
+        "comment": "21 pages, 7 figures",
+        "authors": [
+          "Jamal Abdul Nasir",
+          "Jingcheng Guan",
+          "Woongkyu Jee",
+          "Scott M. Woodley",
+          "Alexey A. Sokol",
+          "C. Richard A. Catlow",
+          "Alin Marin Elena"
+        ]
+      },
+      {
+        "title": "Performance of the MACE-MP-0 potential for calculating viscosity in LiF molten salt",
+        "id": "http://arxiv.org/abs/2410.23679v1",
+        "published": "2024-10-31T07:05:10Z",
+        "summary": "We perform molecular dynamics simulations of molten Lithium Fluoride using the MACE-MP-0 (small) machine learnt interatomic potential and the classical Buckingham and Born-Huggins-Mayer potentials. We find that the MACE-MP-0, out-of-the-box, is able to accurately reproduce the experimental viscosity across the liquid state. Whilst the previous predicted viscosities from classical potentials are under-predicted, which has previously been attributed to a suppressed melting temperature. We find that the melting temperature simulated by MACE-MP-0, simply by heating a crystal structure, is significantly closer to the experimental melting temperature of LiF.",
+        "comment": "7 pages, 5 figures",
+        "authors": [
+          "Harvey L. Devereux",
+          "Margaret-Ann Withington",
+          "Cillian Cockrell",
+          "Kostya Trachenko",
+          "Alin Marin Elena"
+        ]
+      },
+      {
+        "title": "Stability and Dynamics of Sn-based Halide Perovskites: Insights from MACE-MP-0 and Molecular Dynamics Simulations",
+        "id": "http://arxiv.org/abs/2510.26998v1",
+        "published": "2025-10-30T20:56:38Z",
+        "summary": "Tin-based halide perovskites have emerged as promising lead-free alternatives for optoelectronic applications, yet their structural stability and phase behavior at finite temperatures remain challenging to predict. Here, we assess the predictive capabilities of the foundational machine learning model MACE-MP-0 - trained on a broad chemical space and applied without system-specific fine-tuning - for the temperature-dependent behavior of CsSnBr3 and Cs2SnBr6. Molecular Dynamics simulations in the NpT ensemble were performed from 100 K to 500 K, and thermodynamic and structural descriptors including enthalpy, specific heat, radial distribution functions, translational order, bond angle distributions, and vibrational spectra were analyzed. Our results show that CsSnBr3 undergoes a low-temperature orthorhombic-to-cubic phase transition, evidenced by both the evolution of lattice parameters and subtle anomalies in enthalpy and specific heat, although the experimentally observed intermediate tetragonal phase is not captured. In contrast, Cs2SnBr6 remains cubic and maintains a more rigid octahedral framework across the entire temperature range. Overall, MACE-MP-0 qualitatively reproduces key thermal and structural features of these materials, highlighting its usefulness as a first step for studying new materials. For cases where capturing more subtle phase behavior is required, system-specific fine-tuning with Density Functional Theory data should be considered.",
+        "comment": "",
+        "authors": [
+          "Thiago Puccinelli",
+          "Lucas Martin Farigliano",
+          "Gustavo Martini Dalpian"
+        ]
+      }
+    ]
+  },
+  "TFMat": {
+    "query": "ti:\"TFMat\"",
+    "records": []
+  },
+  "AtomSteer": {
+    "query": "ti:\"AtomSteer\"",
+    "records": [
+      {
+        "title": "AtomSteer: Test-Time Constraint Steering for Atomistic Generative Models",
+        "id": "http://arxiv.org/abs/2610.38517v1",
+        "published": "2026-10-28T09:29:17Z",
+        "summary": "Diffusion and flow matching models offer scalable approaches to generating crystalline materials, molecular conformers, and protein-ligand complexes. However, satisfying crystallographic symmetry, structural geometry, and accurate stereochemistry remains challenging. Satisfying these requirements calls for corrections that preserve the geometry already captured by the pretrained model. In this work, we propose AtomSteer, a test-time inference framework for steering pretrained atomistic generative models with structural constraints. During sampling, AtomSteer corrects intermediate structure predictions with bounded local projections, graph-rigid stereochemical transformations, and projections over periodic symmetries, accepting updates that improve constraint satisfaction while limiting changes to the rest of the structure. We demonstrate AtomSteer across three pretrained backbones, FlowMM, ET-Flow, and Boltz-2, spanning de novo crystal generation and crystal structure prediction, molecular conformer generation, and protein-ligand complex structure prediction. AtomSteer improves space-group distribution coverage in de novo crystal generation and improves target space-group recovery in crystal structure prediction. AtomSteer improves molecular validity and E/Z stereochemical accuracy while retaining conformer ensemble fidelity. For protein-ligand complexes, AtomSteer reduces ligand E/Z errors relative to experimental reference structures while achieving competitive docking success and PoseBusters validity. Our method provides a unified framework for adding chemical and crystallographic control to existing atomistic generative models without retraining or architectural changes.",
+        "comment": "",
+        "authors": [
+          "Pengfei Cai",
+          "Katharina S. C. Jäger",
+          "Utkarsh Utkarsh",
+          "Nofit Segal",
+          "Bowen Deng",
+          "Akshay Subramanian",
+          "Rafael Gomez-Bombarelli"
+        ]
+      }
+    ]
+  },
+  "DiverseFlow": {
+    "query": "all:\"DiverseFlow\"",
+    "records": [
+      {
+        "title": "DiverseFlow: Sample-Efficient Diverse Mode Coverage in Flows",
+        "id": "http://arxiv.org/abs/2504.07894v1",
+        "published": "2025-04-10T16:09:50Z",
+        "summary": "Many real-world applications of flow-based generative models desire a diverse set of samples that cover multiple modes of the target distribution. However, the predominant approach for obtaining diverse sets is not sample-efficient, as it involves independently obtaining many samples from the source distribution and mapping them through the flow until the desired mode coverage is achieved. As an alternative to repeated sampling, we introduce DiverseFlow: a training-free approach to improve the diversity of flow models. Our key idea is to employ a determinantal point process to induce a coupling between the samples that drives diversity under a fixed sampling budget. In essence, DiverseFlow allows exploration of more variations in a learned flow model with fewer samples. We demonstrate the efficacy of our method for tasks where sample-efficient diversity is desirable, such as text-guided image generation with polysemous words, inverse problems like large-hole inpainting, and class-conditional image synthesis.",
+        "comment": "",
+        "authors": [
+          "Mashrur M. Morshed",
+          "Vishnu Boddeti"
+        ]
+      },
+      {
+        "title": "FlowBank: Query-Adaptive Agentic Workflows Optimization through Precompute-and-Reuse",
+        "id": "http://arxiv.org/abs/2606.11290v1",
+        "published": "2026-06-09T17:58:21Z",
+        "summary": "Large Language Model (LLM)-based multi-agent systems are increasingly powerful, but current agentic workflow optimization paradigms make an unsatisfying trade-off. Task-level methods spend substantial offline compute yet deploy only a single workflow, leaving complementary candidates unused, while query-level methods synthesize a new workflow per query at substantial inference cost. Our motivating analysis shows these paradigms are more complementary than competing: workflows discovered during offline search often solve different subsets of queries, and many queries handled by expensive query-level generation can already be solved by cheaper precomputed workflows. This suggests a different objective: rather than searching for one universally best workflow or regenerating one per instance, we should build a compact bank of reusable, complementary workflows and select among them adaptively at inference time. Doing so requires solving three coupled problems: generating complementary rather than redundant candidates, compressing them into a small deployable portfolio, and assigning each query to the right workflow under a performance-cost trade-off. To this end, we present FlowBank, a three-stage framework for portfolio-based agentic workflow optimization. Diversifying proposes DiverseFlow to steer search toward under-covered queries and produce a high-coverage candidate pool. Curating proposes CuraFlow to compress this pool into a compact portfolio with minimal redundancy. Matching casts deployment as edge-value prediction on a query-workflow bipartite graph and routes each incoming query to the portfolio member with the best predicted utility. Across five benchmarks, FlowBank achieves the highest average score among the evaluated methods while remaining cost-competitive, improving over the strongest automated and handcrafted baselines by 4.26% and 14.92% relative, respectively.",
+        "comment": "",
+        "authors": [
+          "Lingzhi Yuan",
+          "Chenghao Deng",
+          "Fangxu Yu",
+          "Souradip Chakraborty",
+          "Mohammad Rostami",
+          "Furong Huang"
+        ]
+      },
+      {
+        "title": "MAHL: Multi-Agent LLM-Guided Hierarchical Chiplet Design with Adaptive Debugging",
+        "id": "http://arxiv.org/abs/2508.14053v2",
+        "published": "2025-08-08T05:47:31Z",
+        "summary": "As program workloads (e.g., AI) increase in size and algorithmic complexity, the primary challenge lies in their high dimensionality, encompassing computing cores, array sizes, and memory hierarchies. To overcome these obstacles, innovative approaches are required. Agile chip design has already benefited from machine learning integration at various stages, including logic synthesis, placement, and routing. With Large Language Models (LLMs) recently demonstrating impressive proficiency in Hardware Description Language (HDL) generation, it is promising to extend their abilities to 2.5D integration, an advanced technique that saves area overhead and development costs. However, LLM-driven chiplet design faces challenges such as flatten design, high validation cost and imprecise parameter optimization, which limit its chiplet design capability. To address this, we propose MAHL, a hierarchical LLM-based chiplet design generation framework that features six agents which collaboratively enable AI algorithm-hardware mapping, including hierarchical description generation, retrieval-augmented code generation, diverseflow-based validation, and multi-granularity design space exploration. These components together enhance the efficient generation of chiplet design with optimized Power, Performance and Area (PPA). Experiments show that MAHL not only significantly improves the generation accuracy of simple RTL design, but also increases the generation accuracy of real-world chiplet design, evaluated by Pass@5, from 0 to 0.72 compared to conventional LLMs under the best-case scenario. Compared to state-of-the-art CLARIE (expert-based), MAHL achieves comparable or even superior PPA results under certain optimization objectives.",
+        "comment": "",
+        "authors": [
+          "Jinwei Tang",
+          "Jiayin Qin",
+          "Nuo Xu",
+          "Pragnya Sudershan Nalla",
+          "Yu Cao",
+          " Yang",
+          " Zhao",
+          "Caiwen Ding"
+        ]
+      }
+    ]
+  }
+}

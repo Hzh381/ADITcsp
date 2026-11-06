@@ -914,16 +914,14 @@ $$
 `L_cell` 单独监督，避免晶格尺度错误和坐标错误重复计分。损失按每个晶体
 的有效原子数归一化，padding 不参与匹配。若预测与目标的原子数不同或元素
 约束下不存在完整匹配，该晶体跳过坐标项；Carbon-24 不会触发这种情况。
-坐标项公式中的 `B` 是本次参与匹配的晶体数；默认每个训练步抽 8 个。
+坐标项公式中的 `B` 是当前 batch 中所有有效晶体。
 
-默认 `--coord-loss-weight 0.1`、`--coord-shift-candidates 4`、
-`--coord-max-shifts 1`、`--coord-batch-size 8`。每个训练步随机抽取
-8 个晶体做 Hungarian 匹配，cell/RDF 仍对全 batch 计算；把
-`--coord-batch-size` 设为 `0` 则对所有晶体匹配。把权重设为 `0` 即可
-关闭坐标项。增大 `--coord-shift-candidates` 或缩小
-`--coord-batch-size` 会改变匹配覆盖/成本；前者更充分但更慢。
-当前实现是受控候选搜索，不是对全部 N² 相对位移穷举；默认候选包括
-零平移、均值/中位相对位移和量化后的高频位移，并做一次匹配后修正。
+默认 `--coord-loss-weight 0.1`、`--coord-shift-candidates 8`、
+`--coord-max-shifts 1`。每个 batch 的所有有效晶体都参与 Hungarian
+匹配。`--coord-shift-candidates 0` 表示使用全部预测/目标相对位移候选；
+正数会保留出现频率最高的相对位移候选，主要用于降低训练成本。把
+`--coord-loss-weight` 设为 `0` 即可关闭坐标项。全候选搜索在
+N 较大、batch 较大时开销明显，长时间训练可设置一个正数上限。
 
 当前实现假设预测和真实晶体使用相同的晶胞基底；晶胞旋转、轴置换或
 等价晶胞表示差异不在这一项的规范化范围内。若需要比较这类表示，应先做
@@ -1289,8 +1287,7 @@ runs/<dataset>_vae_test_reconstruction/
 --geo-loss-weight              默认 0.1
 --coord-loss-weight            周期坐标损失权重，默认 0.1
 --coord-max-shifts             坐标匹配整数平移半径，默认 1
---coord-shift-candidates       每晶体平移候选上限，默认 4
---coord-batch-size             每步做坐标匹配的晶体数，默认 8；0=全部
+--coord-shift-candidates       每晶体平移候选上限，默认 8；0=全部相对位移
 --mmfm-prior                   Crystal-MM-FM GMM 先验文件
 --mmfm-mode-coupling           目标模式配对；默认关闭
 --mmfm-balanced                推理时分层分配 GMM 模式

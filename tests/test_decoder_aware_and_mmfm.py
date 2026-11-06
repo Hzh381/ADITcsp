@@ -253,7 +253,7 @@ def test_periodic_coord_loss_handles_permutation_and_translation():
         pred_types=pred_types,
         target_types=target_types,
         atom_mask=mask,
-        max_shift_candidates=16,
+        max_shift_candidates=0,
     )
     loss.backward()
     assert loss.item() < 1e-8

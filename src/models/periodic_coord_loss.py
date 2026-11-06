@@ -93,38 +93,25 @@ def _candidate_shifts(
     target_frac: torch.Tensor,
     max_candidates: int,
 ) -> list[torch.Tensor]:
-    """Generate deterministic translation candidates without a full N^2 sweep."""
+    """Return zero plus relative-displacement candidates.
+
+    ``max_candidates=0`` keeps every unique candidate. A positive value keeps
+    the most frequently occurring relative displacements for predictable
+    training cost.
+    """
     # ``shift`` is added to the prediction, so the candidate is target - pred.
     difference = _wrapped_difference(target_frac, pred_frac)
     flat = difference.reshape(-1, 3)
-    candidates = [
-        pred_frac.new_zeros(3),
-        flat.mean(dim=0),
-        flat.median(dim=0).values,
-    ]
-    quantized = torch.round(flat / 1e-2)
-    unique_shifts, counts = torch.unique(quantized, dim=0, return_counts=True)
-    top_count = min(3, counts.numel())
-    for index in torch.topk(counts, k=top_count).indices:
-        candidates.append(unique_shifts[index].to(flat.dtype) * 1e-2)
-    num_atoms = min(pred_frac.size(0), target_frac.size(0))
-    for index in range(num_atoms):
-        candidates.append(difference[index % target_frac.size(0), index])
-        candidates.append(difference[index, index % pred_frac.size(0)])
-
-    if flat.size(0) <= max_candidates:
-        candidates.extend(flat.unbind(dim=0))
-
-    unique = []
-    for candidate in candidates:
-        if not any(
-            torch.allclose(candidate, existing, atol=1e-6, rtol=0.0)
-            for existing in unique
-        ):
-            unique.append(candidate)
-        if len(unique) >= max_candidates:
-            break
-    return unique
+    unique, counts = torch.unique(flat, dim=0, return_counts=True)
+    zero = pred_frac.new_zeros(1, 3)
+    if max_candidates > 0:
+        selected = unique[
+            torch.topk(counts, k=min(max_candidates - 1, counts.numel())).indices
+        ]
+        candidates = torch.unique(torch.cat([zero, selected], dim=0), dim=0)
+    else:
+        candidates = torch.unique(torch.cat([zero, unique], dim=0), dim=0)
+    return list(candidates.unbind(dim=0))
 
 
 def periodic_hungarian_match(
@@ -134,13 +121,13 @@ def periodic_hungarian_match(
     pred_types: torch.Tensor | None = None,
     target_types: torch.Tensor | None = None,
     max_shifts: int = 1,
-    max_shift_candidates: int = 4,
+    max_shift_candidates: int = 8,
 ) -> tuple[torch.Tensor, torch.Tensor, float] | None:
     """Search a translation and return a fixed element-constrained assignment."""
     from scipy.optimize import linear_sum_assignment
 
-    if max_shift_candidates < 1:
-        raise ValueError("max_shift_candidates must be positive.")
+    if max_shift_candidates < 0:
+        raise ValueError("max_shift_candidates must be non-negative.")
 
     def evaluate(shift):
         cost = periodic_cost_matrix(
@@ -184,20 +171,6 @@ def periodic_hungarian_match(
         if candidate is not None and (best is None or candidate[2] < best[2]):
             best = candidate
 
-    # Refine the translation from the currently matched pairs. This recovers
-    # translations that are not present among the capped anchor candidates.
-    for _ in range(1):
-        if best is None:
-            break
-        matched_difference = (
-            target_frac.detach()[best[1]] - pred_frac.detach()
-        )
-        matched_difference = matched_difference - torch.round(matched_difference)
-        refined_shift = matched_difference.mean(dim=0)
-        candidate = evaluate(refined_shift)
-        if candidate is None or candidate[2] >= best[2] - 1e-9:
-            break
-        best = candidate
     return best
 
 
@@ -234,7 +207,7 @@ def periodic_coord_loss(
     target_types: torch.Tensor | None = None,
     atom_mask: torch.Tensor | None = None,
     max_shifts: int = 1,
-    max_shift_candidates: int = 4,
+    max_shift_candidates: int = 8,
 ) -> torch.Tensor:
     """Return the mean matched periodic squared-coordinate error.
 
@@ -278,15 +251,16 @@ def periodic_coord_loss(
         target_type = (
             target_types[batch_index, indices] if target_types is not None else None
         )
-        match = periodic_hungarian_match(
-            pred,
-            target,
-            lattice[batch_index],
-            pred_type,
-            target_type,
-            max_shifts=max_shifts,
-            max_shift_candidates=max_shift_candidates,
-        )
+        with torch.no_grad():
+            match = periodic_hungarian_match(
+                pred,
+                target,
+                lattice[batch_index],
+                pred_type,
+                target_type,
+                max_shifts=max_shifts,
+                max_shift_candidates=max_shift_candidates,
+            )
         if match is None:
             continue
         shift, assignment, _ = match

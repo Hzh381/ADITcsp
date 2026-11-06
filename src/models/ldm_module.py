@@ -43,8 +43,7 @@ class LatentDiffusionLitModule(LightningModule):
         geo_loss_weight: float = 0.1,
         coord_loss_weight: float = 0.1,
         coord_max_shifts: int = 1,
-        coord_shift_candidates: int = 4,
-        coord_batch_size: int = 8,
+        coord_shift_candidates: int = 8,
         mmfm_prior_path: str | None = None,
         mmfm_mode_coupling: bool = False,
         mmfm_balanced: bool = False,
@@ -72,7 +71,6 @@ class LatentDiffusionLitModule(LightningModule):
         self.coord_loss_weight = float(coord_loss_weight)
         self.coord_max_shifts = int(coord_max_shifts)
         self.coord_shift_candidates = int(coord_shift_candidates)
-        self.coord_batch_size = int(coord_batch_size)
         self.mmfm_prior_path = mmfm_prior_path
         self.mmfm_mode_coupling = bool(mmfm_mode_coupling)
         self.mmfm_balanced = bool(mmfm_balanced)
@@ -95,13 +93,10 @@ class LatentDiffusionLitModule(LightningModule):
             or self.coord_loss_weight < 0.0
         ):
             raise ValueError("Decoder-aware loss weights must be non-negative.")
-        if self.coord_max_shifts < 0 or self.coord_shift_candidates < 1:
+        if self.coord_max_shifts < 0 or self.coord_shift_candidates < 0:
             raise ValueError(
-                "coord_max_shifts must be non-negative and "
-                "coord_shift_candidates must be positive."
+                "coord_max_shifts and coord_shift_candidates must be non-negative."
             )
-        if self.coord_batch_size < 0:
-            raise ValueError("coord_batch_size must be non-negative.")
         self.masking_enabled = bool(getattr(denoiser, "supports_masking", False))
         self.has_diversity = bool(getattr(denoiser, "has_diversity", False))
         names = ["loss", "x_loss"]
@@ -348,7 +343,6 @@ class LatentDiffusionLitModule(LightningModule):
             include_coord=self.coord_loss_weight > 0.0,
             coord_max_shifts=self.coord_max_shifts,
             coord_shift_candidates=self.coord_shift_candidates,
-            coord_batch_size=self.coord_batch_size,
         )
         return {
             key: value if torch.isfinite(value) else pred.new_zeros(())

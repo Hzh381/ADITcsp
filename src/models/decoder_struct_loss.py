@@ -183,8 +183,7 @@ def compute_struct_loss(
     target_types: torch.Tensor | None = None,
     include_coord: bool = False,
     coord_max_shifts: int = 1,
-    coord_shift_candidates: int = 4,
-    coord_batch_size: int = 0,
+    coord_shift_candidates: int = 8,
     rho: torch.Tensor | None = None,
     sigma: float = 0.5,
 ) -> dict[str, torch.Tensor]:
@@ -208,26 +207,13 @@ def compute_struct_loss(
     )
     if include_coord:
         target_cell = build_cell_matrices(target_lengths, target_angles)
-        if coord_batch_size > 0 and pred_frac_coords.size(0) > coord_batch_size:
-            selected = torch.randperm(
-                pred_frac_coords.size(0),
-                device=pred_frac_coords.device,
-            )[:coord_batch_size]
-        else:
-            selected = slice(None)
-        selected_pred_types = (
-            pred_types[selected] if pred_types is not None else None
-        )
-        selected_target_types = (
-            target_types[selected] if target_types is not None else None
-        )
         coord_loss = periodic_coord_loss(
-            pred_frac_coords[selected],
-            target_frac_coords[selected],
-            target_cell[selected],
-            pred_types=selected_pred_types,
-            target_types=selected_target_types,
-            atom_mask=token_mask[selected],
+            pred_frac_coords,
+            target_frac_coords,
+            target_cell,
+            pred_types=pred_types,
+            target_types=target_types,
+            atom_mask=token_mask,
             max_shifts=coord_max_shifts,
             max_shift_candidates=coord_shift_candidates,
         )
